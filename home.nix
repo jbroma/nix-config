@@ -23,6 +23,7 @@
         "j.romanczyk@gmail.com";
     signing = {
       key = "93C4B07A21F540D0";
+      signByDefault = true;
     };
     extraConfig = {
       core.editor = "vim";
