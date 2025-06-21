@@ -30,7 +30,7 @@
         
       darwin.lib.darwinSystem {
         inherit system;
-        specialArgs = { };
+        specialArgs = { inherit type; };
         modules = darwinModules ++ [];
       };
     in
