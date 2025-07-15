@@ -34,6 +34,7 @@ in
       "cursor"
       "1password-gui"
       "1password"
+      "raycast"
   ];
 
   # List packages you want to install system-wide.
@@ -41,6 +42,7 @@ in
     # xcode
     google-chrome
     code-cursor
+    raycast
     _1password-gui
     git
     ghostty-bin
