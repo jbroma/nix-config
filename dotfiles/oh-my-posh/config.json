@@ -77,10 +77,5 @@
     }
   ],
   "console_title_template": "{{ .Folder }}",
-  "transient_prompt": {
-    "background": "transparent",
-    "foreground": "#FEF5ED",
-    "template": "{{ .Shell }}"
-  },
   "version": 3
 }
