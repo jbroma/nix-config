@@ -43,7 +43,6 @@ in
     code-cursor
     _1password-gui
     git
-    gnupg
     vim
   ];
 
