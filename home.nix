@@ -8,7 +8,9 @@
 {
   # List packages you want to install for your user only.
   home.packages = with pkgs; [
+    fzf
     htop
+    tree
   ];
 
   home.stateVersion = "25.11";
