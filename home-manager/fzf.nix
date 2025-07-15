@@ -7,6 +7,7 @@
 in {
   programs.fzf = rec {
     enable = true;
+    enableZshIntegration = true;
     defaultCommand = "${fd} -H --type f";
     defaultOptions = ["--height 50%"];
     fileWidgetCommand = "${defaultCommand}";

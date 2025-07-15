@@ -19,5 +19,6 @@
     ./home-manager/zsh.nix
     ./home-manager/git.nix
     ./home-manager/1password.nix
+    ./home-manager/fzf.nix
   ];
 }
