@@ -3,15 +3,24 @@
   pkgs,
   type ? "personal",
   ... 
-}:
-
-{
+}: let
+  onePassSockPath = "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
+in {
   # List packages you want to install for your user only.
   home.packages = with pkgs; [
     htop
   ];
 
   home.stateVersion = "25.11";
+
+  # 1password ssh agent
+  home.sessionVariables = {
+    SSH_AUTH_SOCK = onePassSockPath;
+  };
+
+  programs.ssh = {
+    enable = true;
+  };
 
   programs.git = {
     enable = true;
@@ -21,15 +30,10 @@
         "jakub.romanczyk@callstack.com"
       else
         "j.romanczyk@gmail.com";
-    signing = {
-      key = "93C4B07A21F540D0";
-      signByDefault = true;
-    };
     extraConfig = {
       core.editor = "vim";
       push.autoSetupRemote = true;
       push.default = "simple";
-      gpg.program = "gpg";
       url."ssh://git@github.com/".insteadof="https://github.com/";
       url."https://".insteadof="git://";
     };
@@ -43,5 +47,4 @@
       ll = "ls -l";
     };
   };
-
 }
