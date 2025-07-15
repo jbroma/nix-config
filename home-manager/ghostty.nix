@@ -6,12 +6,13 @@
 }:
 
 {
-  programs.oh-my-posh = {
+  programs.ghostty = {
     enable = true;
+    package = pkgs.ghostty-bin;
     enableZshIntegration = true;
     settings = {
       font-family = "FiraCode Nerd Font";
-      theme = "catppuccin-mocha";
-    }
+      theme = "GitHub Dark";
+    };
   };
 }
