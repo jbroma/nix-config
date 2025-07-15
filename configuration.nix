@@ -2,7 +2,7 @@
   config, 
   lib,
   pkgs, 
-  type ? "personal",
+  type,
   ... 
 }:
 

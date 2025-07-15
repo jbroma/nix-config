@@ -1,7 +1,7 @@
 { 
   config, 
   pkgs,
-  type ? "personal",
+  type,
   ... 
 }: 
 
@@ -12,15 +12,6 @@
   ];
 
   home.stateVersion = "25.11";
-
-  # 1password ssh agent
-  # home.sessionVariables = {
-  #   SSH_AUTH_SOCK = onePassSockPath;
-  # };
-
-  # programs.ssh = {
-  #   enable = true;
-  # };
 
   programs.git = {
     enable = true;

@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  type,
   ...
 }: let
   home = config.home.homeDirectory;
@@ -9,6 +10,9 @@
   signPath = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
   sockLink = ".1password/agent.sock";
   sockPath = "${home}/${sockLink}";
+
+  signingKey = if type == "work" then "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+aLyPSbvGQTUA/UQDMsNJFsek1uJ" 
+               else null;
 in {
   home.sessionVariables = {
     SSH_AUTH_SOCK = sockPath;
@@ -24,9 +28,6 @@ in {
   };
 
   programs.git = {
-    commit = {
-      gpgsign = true;
-    };
     signing = {
       signByDefault = true;
       key = null;
@@ -34,6 +35,7 @@ in {
     };
     extraConfig = {
       gpg.format = "ssh";
+      user.signingKey = signingKey;
     };
   };
 }
