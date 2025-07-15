@@ -44,7 +44,13 @@ in
     _1password-gui
     git
     ghostty-bin
+    oh-my-posh
+    nerd-fonts.fira-code
     vim
+  ];
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.fira-code
   ];
 
   home-manager = {
