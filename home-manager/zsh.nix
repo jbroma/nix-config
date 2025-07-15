@@ -9,9 +9,13 @@
   programs.zsh = {
     enable = true;
     shellAliases = {
+      # rebuild shortcut
       darwin-rebuild-switch = "sudo ~/.nix/rebuild-and-switch.sh";
-      code = "cursor";
+      # basic utils
+      cat = "bat";
       ll = "ls -l";
+      # editors
+      code = "cursor";
     };
   };
 }
