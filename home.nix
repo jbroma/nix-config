@@ -42,7 +42,7 @@ in {
   programs.zsh = {
     enable = true;
     shellAliases = {
-      darwin-rebuild-switch = "~/.nix/rebuild-and-switch.sh";
+      darwin-rebuild-switch = "sudo ~/.nix/rebuild-and-switch.sh";
       code = "cursor";
       ll = "ls -l";
     };
