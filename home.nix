@@ -14,6 +14,7 @@
     lsd
     tree
     zellij
+    vim
   ];
 
   home.stateVersion = "25.11";
@@ -28,5 +29,6 @@
     ./home-manager/oh-my-posh.nix
     ./home-manager/zellij.nix
     ./home-manager/lsd.nix
+    ./home-manager/vim.nix
   ];
 }
