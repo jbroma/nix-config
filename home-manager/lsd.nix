@@ -1,8 +1,4 @@
-{ 
-  pkgs, 
-  lib, 
-  ... 
-}: 
+{ ... }: 
 
 {
   programs.lsd = { 
