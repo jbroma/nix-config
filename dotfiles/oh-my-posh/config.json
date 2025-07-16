@@ -67,11 +67,11 @@
         {
           "type": "status",
           "style": "diamond",
-          "foreground": "#00c7fc",
+          "foreground": "#3c6eb4",
           "properties": {
             "always_enabled": true
           },
-          "template": "<#00c7fc>\u276f</>_: "
+          "template": "<#3c6eb4>\u276f</>_: "
         }
       ]
     }
