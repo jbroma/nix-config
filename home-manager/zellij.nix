@@ -13,6 +13,7 @@
     };
   };
 
+  # start zellij on ghostty startup
   programs.ghostty = {
     settings = {
       initial-command = "${lib.getExe pkgs.zsh} -l -c zellij -l welcome";
