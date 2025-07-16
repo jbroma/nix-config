@@ -13,8 +13,8 @@
     htop
     lsd
     tree
-    zellij
     vim
+    zellij
   ];
 
   home.stateVersion = "25.11";
