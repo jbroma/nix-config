@@ -12,6 +12,7 @@
     fzf
     htop
     tree
+    zellij
   ];
 
   home.stateVersion = "25.11";
@@ -24,5 +25,6 @@
     ./home-manager/bat.nix
     ./home-manager/fzf.nix
     ./home-manager/oh-my-posh.nix
+    ./home-manager/zellij.nix
   ];
 }
