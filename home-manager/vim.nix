@@ -7,13 +7,16 @@
 {
   programs.vim = { 
     enable = true; 
-    settings = {
-      background = "dark";
-      mouse = "a";
-      number = true;
-    };
     extraConfig = ''
+      "Number lines
+      set nu
+      set background=dark
       set encoding=utf-8
+
+      "Mouse support
+      set mouse=a
+
+      "Syntax highlighting
       syntax on
       "Custom highlight groups
       highlight BadWhitespace ctermbg=red 

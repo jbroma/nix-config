@@ -13,7 +13,6 @@
     htop
     lsd
     tree
-    vim
     zellij
   ];
 
