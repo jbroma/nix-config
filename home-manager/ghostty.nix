@@ -11,6 +11,7 @@
     package = pkgs.ghostty-bin;
     enableZshIntegration = true;
     settings = {
+      cursor-style = "underline";
       font-family = "FiraCode Nerd Font Mono Reg";
       font-family-bold = "FiraCode Nerd Font Mono Bold";
       font-synthetic-style = [
@@ -18,6 +19,8 @@
         "bold-italic"
       ];
       font-size = 14;
+      maximize = true;
+      quit-after-last-window-closed = true;
       theme = "GitHub Dark";
     };
   };
