@@ -11,6 +11,7 @@
     bat
     fzf
     htop
+    lsd
     tree
     zellij
   ];
@@ -26,5 +27,6 @@
     ./home-manager/fzf.nix
     ./home-manager/oh-my-posh.nix
     ./home-manager/zellij.nix
+    ./home-manager/lsd.nix
   ];
 }
