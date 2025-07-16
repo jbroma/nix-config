@@ -12,6 +12,7 @@
     fzf
     htop
     lsd
+    mise
     tree
     zellij
   ];
@@ -29,5 +30,6 @@
     ./home-manager/zellij.nix
     ./home-manager/lsd.nix
     ./home-manager/vim.nix
+    ./home-manager/mise.nix
   ];
 }
