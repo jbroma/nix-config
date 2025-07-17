@@ -39,7 +39,7 @@ in
 
   # List packages you want to install system-wide.
   environment.systemPackages = with pkgs; [
-    # xcode
+    darwin.xcode_16_4
     google-chrome
     code-cursor
     raycast
