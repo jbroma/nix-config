@@ -49,6 +49,8 @@ in
     oh-my-posh
     nerd-fonts.fira-code
     vim
+    # libs
+    libyaml
   ];
 
   fonts.packages = with pkgs; [
@@ -78,4 +80,10 @@ in
     name = username;
     home = "/Users/${username}";
   };
+
+  system.activationScripts.preActivation.text = ''
+    if ! xcode-select --version 2>/dev/null; then
+      xcode-select --install
+    fi
+  '';
 }
