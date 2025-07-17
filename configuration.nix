@@ -70,6 +70,14 @@ in
     dock = {
       autohide = true;
     };
+    
+    NSGlobalDomain = {
+      AppleInterfaceStyle = "Dark";
+      AppleMetricUnits = 1;
+      AppleTemperatureUnit = "Celsius";
+      AppleShowScrollBars = "WhenScrolling";
+      AppleShowAllExtensions = true;
+    };
   };
 
   system.primaryUser = username;
@@ -86,4 +94,9 @@ in
       xcode-select --install
     fi
   '';
+
+  # macos preferences
+  imports = [
+    ./macos/dock.nix
+  ];
 }
