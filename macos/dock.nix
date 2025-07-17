@@ -28,6 +28,10 @@
         mineffect = "scale";
         # Remove the Dock recents section
         show-recents = 0;
+        # Set bottom right screen corner to no-op
+        wvous-br-corner = 0;
+        # Show indicator lights for open applications in the Dock
+        show-process-indicators = true;
     };
   };
 }
