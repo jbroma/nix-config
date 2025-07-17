@@ -67,10 +67,6 @@ in
   };
 
   system.defaults = {
-    dock = {
-      autohide = true;
-    };
-    
     NSGlobalDomain = {
       AppleInterfaceStyle = "Dark";
       AppleMetricUnits = 1;
@@ -79,6 +75,12 @@ in
       AppleShowAllExtensions = true;
     };
   };
+
+  # macos preferences
+  imports = [
+    ./macos/desktop.nix
+    ./macos/dock.nix
+  ];
 
   system.primaryUser = username;
 
@@ -94,9 +96,4 @@ in
       xcode-select --install
     fi
   '';
-
-  # macos preferences
-  imports = [
-    ./macos/dock.nix
-  ];
 }
