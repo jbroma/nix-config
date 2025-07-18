@@ -11,6 +11,7 @@
     package = pkgs.ghostty-bin;
     enableZshIntegration = true;
     settings = {
+      auto-update = "off";
       cursor-style = "underline";
       font-family = "FiraCode Nerd Font Mono Reg";
       font-family-bold = "FiraCode Nerd Font Mono Bold";
