@@ -2,6 +2,14 @@
 
 {
   system.defaults.NSGlobalDomain = {
+    # Set dark mode
+    AppleInterfaceStyle = "Dark";
+    # Use metric units
+    AppleMetricUnits = 1;
+    # Use Celsius for temperature units
+    AppleTemperatureUnit = "Celsius";
+    # Show scroll bars when scrolling
+    AppleShowScrollBars = "WhenScrolling";
     # Disable automatic termination of inactive apps
     NSDisableAutomaticTermination = true;
   };
