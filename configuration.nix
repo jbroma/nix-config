@@ -39,13 +39,13 @@ in
 
   # List packages you want to install system-wide.
   environment.systemPackages = with pkgs; [
-    darwin.xcode_16_4
+    xcode
     google-chrome
     code-cursor
     raycast
     _1password-gui
     git
-    ghostty-bin
+    ghostty
     oh-my-posh
     nerd-fonts.fira-code
     vim
@@ -93,9 +93,15 @@ in
     home = "/Users/${username}";
   };
 
+  # install xcode command line tools if not installed
   system.activationScripts.preActivation.text = ''
     if ! xcode-select --version 2>/dev/null; then
       xcode-select --install
     fi
   '';
+
+  # set xcode-select to the xcode app
+  # system.activationScripts.postActivation.text = ''
+  #   sudo xcode-select -s ${pkgs.xcode}
+  # '';
 }

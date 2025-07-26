@@ -8,7 +8,6 @@
 {
   programs.ghostty = {
     enable = true;
-    package = pkgs.ghostty-bin;
     enableZshIntegration = true;
     settings = {
       auto-update = "off";

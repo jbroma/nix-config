@@ -27,11 +27,28 @@
           system,
           type ? "personal",
       }:
-        
+      let
+        pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfreePredicate =
+          pkg: builtins.elem (nixpkgs.lib.getName pkg) [
+            "Xcode.app"
+          ];
+        };
+      in
       darwin.lib.darwinSystem {
         inherit system;
         specialArgs = { inherit type; };
-        modules = darwinModules ++ [];
+        modules = darwinModules ++ [
+          {
+            nixpkgs.overlays = [
+              (self: super: {
+                xcode = pkgs.darwin.xcode_16_4;
+                ghostty = pkgs.ghostty-bin;
+              })
+            ];
+          }
+        ];
       };
     in
     {
