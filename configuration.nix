@@ -82,7 +82,6 @@ in
   # macos preferences
   imports = [
     ./macos/desktop.nix
-    ./macos/dock.nix
   ];
 
   system.primaryUser = username;
