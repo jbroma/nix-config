@@ -54,6 +54,7 @@
                   ghostty = pkgs.ghostty-bin;
                   android-studio = customPkgs.android-studio;
                   minisim = customPkgs.minisim;
+                  cursor = pkgs.code-cursor;
                 })
               ];
             }

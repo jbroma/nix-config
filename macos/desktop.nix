@@ -22,7 +22,7 @@
       "${pkgs.xcode}"
       "${pkgs.xcode}/Contents/Developer/Applications/Simulator.app"
       "${pkgs.ghostty}/Applications/Ghostty.app"
-      "${pkgs.code-cursor}/Applications/Cursor.app"
+      "${pkgs.cursor}/Applications/Cursor.app"
       "/Applications/Slack.app"
       "${pkgs.discord}/Applications/Discord.app"
       "${pkgs.spotify}/Applications/Spotify.app"
