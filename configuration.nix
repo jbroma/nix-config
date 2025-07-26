@@ -71,6 +71,7 @@ in
 
   # macos preferences
   imports = [
+    ./macos/control-center.nix
     ./macos/desktop.nix
     ./macos/finder.nix
     ./macos/keyboard.nix
