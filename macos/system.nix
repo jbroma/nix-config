@@ -12,6 +12,9 @@
     AppleShowScrollBars = "WhenScrolling";
     # Disable automatic termination of inactive apps
     NSDisableAutomaticTermination = true;
+    # Expand save panel by default
+    NSNavPanelExpandedStateForSaveMode = true;
+    NSNavPanelExpandedStateForSaveMode2 = true;
   };
 
   system.defaults.screensaver = {
@@ -29,6 +32,12 @@
     "com.apple.print.PrintingPrefs" = {
       # Automatically quit printer app once the print jobs complete
       "Quit When Finished" = true;
+    };
+
+    "com.apple.desktopservices" = {
+      # Avoid creating .DS_Store files on network or USB volumes
+      DSDontWriteNetworkStores = true;
+      DSDontWriteUSBStores = true;
     };
 
     "com.apple.systempreferences" = {
