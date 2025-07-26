@@ -39,5 +39,6 @@
     ./home-manager/vim.nix
     ./home-manager/mise.nix
     ./home-manager/delta.nix
+    ./home-manager/ripgrep.nix
   ];
 }
