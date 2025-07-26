@@ -35,6 +35,8 @@ in
       "1password-gui"
       "1password"
       "raycast"
+      "discord"
+      "spotify"
   ];
 
   environment = {
@@ -44,6 +46,8 @@ in
       google-chrome
       code-cursor
       raycast
+      discord
+      spotify
       _1password-gui
       git
       ghostty
