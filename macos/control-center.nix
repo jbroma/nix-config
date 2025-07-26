@@ -40,6 +40,6 @@ in
 
     "com.apple.spotlight" = {
       MenuItemHidden = true;
-    }
+    };
   };
 }
