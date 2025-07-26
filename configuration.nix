@@ -54,6 +54,7 @@ in
       ghostty
       oh-my-posh
       nerd-fonts.fira-code
+      nixfmt-rfc-style
       vim
       # libs
       libyaml
