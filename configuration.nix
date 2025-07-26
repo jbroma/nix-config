@@ -58,6 +58,15 @@ in
       # libs
       libyaml
     ];
+
+    systemPath = [
+      "$PATH:$ANDROID_HOME/emulator"
+      "$PATH:$ANDROID_HOME/platform-tools"
+    ];
+
+    variables = {
+      ANDROID_HOME = "$HOME/Library/Android/sdk";
+    };
   };
 
   fonts.packages = with pkgs; [
