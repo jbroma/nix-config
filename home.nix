@@ -10,6 +10,7 @@
   home.packages = with pkgs; [
     # dev
     bat
+    bun
     delta
     fd
     fzf
@@ -18,6 +19,7 @@
     karabiner-elements
     lsd
     mise
+    pnpm
     ripgrep
     tree
     watchman
