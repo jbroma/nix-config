@@ -37,14 +37,8 @@ in
       "raycast"
   ];
 
-  # List packages you want to install system-wide.
   environment = {
-    shellAliases = {
-      darwin-rebuild-switch = "sudo ~/.nix/rebuild-and-switch.sh";
-      darwin-cleanup = "sudo nix-collect-garbage --delete-older-than 7d";
-      flake-update = "(cd /Users/${username}/.nix && nix flake update)";
-    };
-
+    # List packages you want to install system-wide.
     systemPackages = with pkgs; [
       xcode
       google-chrome
