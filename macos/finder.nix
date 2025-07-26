@@ -7,6 +7,12 @@
   };
 
   system.defaults.finder = {
+    # Allow quitting via ⌘ + Q;
+    QuitMenuItem = true;
+    # Show status bar
+    ShowStatusBar = true;
+    # Show item info sidebar
+    ShowItemInfo = true;
     # Show path bar
     ShowPathbar = true;
     # Set default view style to Column View
@@ -17,5 +23,12 @@
     FXDefaultSearchScope = "SCcf";
     # Disable the warning when changing a file extension
     FXEnableExtensionChangeWarning = false;
+  };
+
+  system.defaults.CustomUserPreferences = {
+    "com.apple.finder" = {
+      # Disable animations in Finder
+      DisableAllAnimations = true;
+    };
   };
 }
