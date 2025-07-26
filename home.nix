@@ -38,5 +38,6 @@
     ./home-manager/lsd.nix
     ./home-manager/vim.nix
     ./home-manager/mise.nix
+    ./home-manager/delta.nix
   ];
 }
