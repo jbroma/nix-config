@@ -8,7 +8,7 @@
 
   system.defaults.screensaver = {
     # Require password immediately after sleep or screen saver begins
-    askForPassword = 1;
+    askForPassword = true;
     askForPasswordDelay = 0;
   };
 
@@ -18,11 +18,9 @@
   };
 
   system.defaults.CustomUserPreferences = {
-    "com.apple.printer" = {
-      PrintingPrefs = {
-        # Automatically quit printer app once the print jobs complete
-        "Quit When Finished" = true;
-      }
+    "com.apple.print.PrintingPrefs" = {
+      # Automatically quit printer app once the print jobs complete
+      "Quit When Finished" = true;
     };
 
     "com.apple.systempreferences" = {
