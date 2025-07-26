@@ -23,39 +23,41 @@
         home-manager.darwinModules.home-manager
       ];
 
-      configuration = {
+      configuration =
+        {
           system,
           type ? "personal",
-      }:
-      let
-        pkgs = import inputs.nixpkgs {
+        }:
+        let
+          pkgs = import inputs.nixpkgs {
+            inherit system;
+            config.allowUnfreePredicate =
+              pkg:
+              builtins.elem (nixpkgs.lib.getName pkg) [
+                "Xcode.app"
+              ];
+          };
+          # automatically call all packages in ./pkgs
+          customPkgs = pkgs.lib.attrsets.mapAttrs' (name: value: {
+            name = pkgs.lib.strings.removeSuffix ".nix" name;
+            value = pkgs.callPackage (./pkgs + "/${name}") { };
+          }) (builtins.readDir ./pkgs);
+        in
+        darwin.lib.darwinSystem {
           inherit system;
-          config.allowUnfreePredicate =
-          pkg: builtins.elem (nixpkgs.lib.getName pkg) [
-            "Xcode.app"
+          specialArgs = { inherit type; };
+          modules = darwinModules ++ [
+            {
+              nixpkgs.overlays = [
+                (self: super: {
+                  xcode = pkgs.darwin.xcode_16_4;
+                  ghostty = pkgs.ghostty-bin;
+                  android-studio = customPkgs.android-studio;
+                })
+              ];
+            }
           ];
         };
-        # automatically call all packages in ./pkgs
-        customPkgs = pkgs.lib.attrsets.mapAttrs' (name: value: {
-          name = pkgs.lib.strings.removeSuffix ".nix" name;
-          value = pkgs.callPackage (./pkgs + "/${name}") { };
-        }) (builtins.readDir ./pkgs);
-      in
-      darwin.lib.darwinSystem {
-        inherit system;
-        specialArgs = { inherit type; };
-        modules = darwinModules ++ [
-          {
-            nixpkgs.overlays = [
-              (self: super: {
-                xcode = pkgs.darwin.xcode_16_4;
-                ghostty = pkgs.ghostty-bin;
-                android-studio = customPkgs.android-studio;
-              })
-            ];
-          }
-        ];
-      };
     in
     {
       darwinConfigurations = {

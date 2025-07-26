@@ -1,8 +1,9 @@
-{ 
-  pkgs, 
-  lib, 
-  ... 
-}: let
+{
+  pkgs,
+  lib,
+  ...
+}:
+let
   configureOpts = builtins.concatStringsSep " " [
     "--with-libyaml-include=${lib.getInclude pkgs.libyaml}"
     "--with-libyaml-lib=${lib.getLib pkgs.libyaml}"
@@ -12,8 +13,8 @@
   ];
 in
 {
-  programs.mise = { 
-    enable = true; 
+  programs.mise = {
+    enable = true;
     enableZshIntegration = true;
 
     settings = {
@@ -24,7 +25,7 @@ in
       hooks = {
         enter = "mise install";
       };
-      
+
       tools = {
         node = "lts";
         ruby = "3.3";

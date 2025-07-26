@@ -1,9 +1,9 @@
-{ 
-  config, 
+{
+  config,
   pkgs,
   type,
-  ... 
-}: 
+  ...
+}:
 
 {
   # List packages you want to install for your user only.

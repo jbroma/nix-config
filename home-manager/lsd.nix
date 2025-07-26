@@ -1,8 +1,8 @@
-{ ... }: 
+{ ... }:
 
 {
-  programs.lsd = { 
-    enable = true; 
+  programs.lsd = {
+    enable = true;
     # adds ls aliases to zsh
     # reference: https://github.com/nix-community/home-manager/blob/e8c19a3cec2814c754f031ab3ae7316b64da085b/modules/programs/lsd.nix#L106-L113
     enableZshIntegration = true;

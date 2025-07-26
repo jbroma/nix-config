@@ -14,7 +14,7 @@
     # Show path bar
     ShowPathbar = true;
     # Set default view style to List View
-    FXPreferredViewStyle = "Nlsv";  
+    FXPreferredViewStyle = "Nlsv";
     # Keep folders on top when sorting by name
     _FXSortFoldersFirst = true;
     # When performing a search, search the current folder by default

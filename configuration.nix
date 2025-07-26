@@ -1,9 +1,9 @@
-{ 
-  config, 
+{
+  config,
   lib,
-  pkgs, 
+  pkgs,
   type,
-  ... 
+  ...
 }:
 
 let
@@ -15,8 +15,8 @@ in
 
   nix.settings = {
     experimental-features = "nix-command flakes";
-    trusted-users = [ 
-      "root" 
+    trusted-users = [
+      "root"
       username
     ];
     keep-going = true;
@@ -37,7 +37,7 @@ in
       "raycast"
       "discord"
       "spotify"
-  ];
+    ];
 
   environment = {
     # List packages you want to install system-wide.

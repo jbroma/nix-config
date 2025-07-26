@@ -1,12 +1,12 @@
-{ 
-  pkgs, 
-  lib, 
-  ... 
-}: 
+{
+  pkgs,
+  lib,
+  ...
+}:
 
 {
-  programs.vim = { 
-    enable = true; 
+  programs.vim = {
+    enable = true;
     extraConfig = ''
       "Number lines
       set nu

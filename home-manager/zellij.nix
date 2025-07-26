@@ -1,12 +1,12 @@
-{ 
-  pkgs, 
-  lib, 
-  ... 
-}: 
+{
+  pkgs,
+  lib,
+  ...
+}:
 
 {
-  programs.zellij = { 
-    enable = true; 
+  programs.zellij = {
+    enable = true;
     settings = {
       show_startup_tips = false;
       theme = "ao";
