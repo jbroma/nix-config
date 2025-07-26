@@ -8,12 +8,6 @@
 
 let
   username = "jbroma";
-
-  # automatically call all packages in ./pkgs
-  customPkgs = lib.attrsets.mapAttrs' (name: value: {
-    inherit name;
-    value = pkgs.callPackage (./pkgs + "/${name}") { };
-  }) (builtins.readDir ./pkgs);
 in
 {
   # use Determinate Nix daemon
@@ -47,7 +41,7 @@ in
 
   environment = {
     # List packages you want to install system-wide.
-    systemPackages = with pkgs // customPkgs; [
+    systemPackages = with pkgs; [
       xcode
       android-studio
       google-chrome

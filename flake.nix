@@ -35,6 +35,11 @@
             "Xcode.app"
           ];
         };
+        # automatically call all packages in ./pkgs
+        customPkgs = pkgs.lib.attrsets.mapAttrs' (name: value: {
+          name = pkgs.lib.strings.removeSuffix ".nix" name;
+          value = pkgs.callPackage (./pkgs + "/${name}") { };
+        }) (builtins.readDir ./pkgs);
       in
       darwin.lib.darwinSystem {
         inherit system;
@@ -45,6 +50,7 @@
               (self: super: {
                 xcode = pkgs.darwin.xcode_16_4;
                 ghostty = pkgs.ghostty-bin;
+                android-studio = customPkgs.android-studio;
               })
             ];
           }
