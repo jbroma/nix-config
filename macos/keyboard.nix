@@ -4,7 +4,7 @@
   system.defaults.NSGlobalDomain = {
     # Enable keyboard navigation
     AppleKeyboardUIMode = 3;
-    # Boost keyboard speed and disable any auto correction
+    # Boost keyboard speed
     KeyRepeat = 2;
     InitialKeyRepeat = 15;
     # Disable press-and-hold for keys in favor of key repeat
