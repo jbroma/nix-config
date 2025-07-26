@@ -14,13 +14,14 @@ in
 {
   # menu bar clock settings
   system.defaults.menuExtraClock = {
+    FlashDateSeparators = false;
     IsAnalog   = false;
     Show24Hour = true;
     ShowAMPM   = false;
     ShowDate   = 1;
     ShowDayOfMonth = true;
-    ShowDayOfWeek  = true;
-    ShowSeconds    = true;
+    ShowDayOfWeek  = false;
+    ShowSeconds    = false;
   };
 
   system.defaults.CustomUserPreferences = {
@@ -34,11 +35,7 @@ in
       WiFi = 1;
     };
 
-    "com.apple.menuextra.clock" = {
-      FlashDateSeparators = true;
-    };
-
-    "com.apple.spotlight" = {
+    "com.apple.Spotlight" = {
       MenuItemHidden = true;
     };
   };
