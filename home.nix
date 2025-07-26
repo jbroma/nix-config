@@ -8,12 +8,14 @@
 {
   # List packages you want to install for your user only.
   home.packages = with pkgs; [
+    # dev
     bat
     fzf
     htop
     lsd
     mise
     tree
+    watchman
     zellij
   ];
 
