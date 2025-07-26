@@ -11,8 +11,6 @@
     QuitMenuItem = true;
     # Show status bar
     ShowStatusBar = true;
-    # Show item info sidebar
-    ShowItemInfo = true;
     # Show path bar
     ShowPathbar = true;
     # Set default view style to Column View
