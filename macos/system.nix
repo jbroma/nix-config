@@ -40,6 +40,9 @@
       DSDontWriteUSBStores = true;
     };
 
+    # Prevent Photos from opening automatically when devices are plugged in
+    "com.apple.ImageCapture".disableHotPlug = true;
+
     "com.apple.systempreferences" = {
       # Disable Resume system-wide
       NSQuitAlwaysKeepsWindows = false;
