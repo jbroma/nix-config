@@ -47,6 +47,7 @@ in
       google-chrome
       code-cursor
       raycast
+      minisim
       discord
       spotify
       _1password-gui

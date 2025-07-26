@@ -53,6 +53,7 @@
                   xcode = pkgs.darwin.xcode_16_4;
                   ghostty = pkgs.ghostty-bin;
                   android-studio = customPkgs.android-studio;
+                  minisim = customPkgs.minisim;
                 })
               ];
             }
