@@ -10,10 +10,15 @@
   home.packages = with pkgs; [
     # dev
     bat
+    delta
+    fd
     fzf
+    gh
     htop
+    karabiner-elements
     lsd
     mise
+    ripgrep
     tree
     watchman
     zellij
