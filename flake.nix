@@ -64,5 +64,7 @@
           type = "work";
         };
       };
+
+      formatter = inputs.nixpkgs.nixfmt-rfc-style;
     };
 }
