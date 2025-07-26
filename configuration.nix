@@ -83,6 +83,7 @@ in
   imports = [
     ./macos/desktop.nix
     ./macos/finder.nix
+    ./macos/system.nix
   ];
 
   system.primaryUser = username;
