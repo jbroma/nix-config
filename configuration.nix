@@ -38,20 +38,28 @@ in
   ];
 
   # List packages you want to install system-wide.
-  environment.systemPackages = with pkgs; [
-    xcode
-    google-chrome
-    code-cursor
-    raycast
-    _1password-gui
-    git
-    ghostty
-    oh-my-posh
-    nerd-fonts.fira-code
-    vim
-    # libs
-    libyaml
-  ];
+  environment = {
+    shellAliases = {
+      darwin-rebuild-switch = "sudo ~/.nix/rebuild-and-switch.sh";
+      darwin-cleanup = "sudo nix-collect-garbage --delete-older-than 7d";
+      flake-update = "(cd /Users/${username}/.nix && nix flake update)";
+    };
+
+    systemPackages = with pkgs; [
+      xcode
+      google-chrome
+      code-cursor
+      raycast
+      _1password-gui
+      git
+      ghostty
+      oh-my-posh
+      nerd-fonts.fira-code
+      vim
+      # libs
+      libyaml
+    ];
+  };
 
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
@@ -93,9 +101,4 @@ in
       xcode-select --install
     fi
   '';
-
-  # set xcode-select to the xcode app
-  # system.activationScripts.postActivation.text = ''
-  #   sudo xcode-select -s ${pkgs.xcode}
-  # '';
 }
