@@ -73,6 +73,7 @@ in
   imports = [
     ./macos/desktop.nix
     ./macos/finder.nix
+    ./macos/keyboard.nix
     ./macos/system.nix
   ];
 
