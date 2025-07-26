@@ -6,11 +6,6 @@
   };
 
   system.defaults.CustomUserPreferences = {
-    NSGlobalDomain = {
-      # Sequoia+: Double click window title bar to fill screen
-      AppleActionOnDoubleClick = "Fill";
-    };
-
     "com.apple.dock" = {
         # Set Dock orientation
         orientation = "left";
