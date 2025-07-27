@@ -21,7 +21,6 @@
     mise
     pnpm
     ripgrep
-    sketchybar
     tree
     watchman
     zellij

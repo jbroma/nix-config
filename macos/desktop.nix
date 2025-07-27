@@ -8,6 +8,8 @@
   system.defaults.NSGlobalDomain = {
     # Enable subpixel font rendering on non-Apple LCDs
     AppleFontSmoothing = 1;
+    # Hide menu bar
+    _HIHideMenuBar = true;
   };
 
   system.defaults.dock = {
