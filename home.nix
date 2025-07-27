@@ -9,6 +9,7 @@
   # List packages you want to install for your user only.
   home.packages = with pkgs; [
     # dev
+    aerospace
     bat
     bun
     delta
@@ -42,5 +43,6 @@
     ./home-manager/delta.nix
     ./home-manager/ripgrep.nix
     ./home-manager/cursor.nix
+    ./home-manager/aerospace.nix
   ];
 }
