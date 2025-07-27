@@ -6,24 +6,26 @@
   ...
 }:
 let
-  cursor = pkgs.cursor;
-  cursorUserDir = "Library/Application Support/Cursor/User";
-  cursorExtensionsPath = "../dotfiles/vscode/extensions.json";
-  cursorSettingsPath = "../dotfiles/vscode/settings.json";
+  cursorExtensionsPath = builtins.path { path = ../dotfiles/vscode/extensions.json; name = "source"; };
+  cursorSettingsPath = builtins.path { path = ../dotfiles/vscode/settings.json; name = "source"; };
 
   # Read extensions from JSON file
   extensionsJson = builtins.fromJSON (builtins.readFile cursorExtensionsPath);
+  userSettingsJson = builtins.fromJSON (builtins.readFile cursorSettingsPath);
 in
 {
-  home.activation.writableFile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    cp ${cursorSettingsPath} "${cursorUserDir}/settings.json"
-    chmod u+w "${cursorUserDir}/settings.json"
-  '';
-
-  programs.cursor = {
+  programs.vscode = {
     enable = true;
-    package = cursor;
+    package = pkgs.cursor;
     mutableExtensionsDir = false;
-    extensions = builtins.map (extId: pkgs.vscode-extensions.${extId}) extensionsJson;
+    profiles.default.userSettings = userSettingsJson;
+    profiles.default.extensions = builtins.map (extId: 
+      let
+        parts = builtins.split "\\." extId;
+        publisher = builtins.elemAt parts 0;
+        extensionName = builtins.elemAt parts 2;
+      in
+        pkgs.open-vsx.${publisher}.${extensionName}
+    ) extensionsJson;
   };
 }

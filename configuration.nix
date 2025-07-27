@@ -37,6 +37,8 @@ in
       "raycast"
       "discord"
       "spotify"
+      # vscode extensions
+      "vscode-extension-mhutchie-git-graph"
     ];
 
   environment = {
@@ -45,7 +47,7 @@ in
       xcode
       android-studio
       google-chrome
-      code-cursor
+      cursor
       raycast
       minisim
       discord

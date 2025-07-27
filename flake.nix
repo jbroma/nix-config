@@ -7,6 +7,7 @@
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
   outputs =
@@ -15,6 +16,7 @@
       darwin,
       nixpkgs,
       home-manager,
+      nix-vscode-extensions,
       ...
     }@inputs:
     let
@@ -35,6 +37,7 @@
               pkg:
               builtins.elem (nixpkgs.lib.getName pkg) [
                 "Xcode.app"
+                "cursor"
               ];
           };
           # automatically call all packages in ./pkgs
@@ -56,6 +59,7 @@
                   minisim = customPkgs.minisim;
                   cursor = pkgs.code-cursor;
                 })
+                nix-vscode-extensions.overlays.default
               ];
             }
           ];
