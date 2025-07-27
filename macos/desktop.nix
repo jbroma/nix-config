@@ -13,6 +13,10 @@
   system.defaults.dock = {
     autohide = true;
 
+    # workaround for aerospace mission control view
+    # https://nikitabobko.github.io/AeroSpace/guide#a-note-on-mission-control
+    expose-group-apps = true;
+
     persistent-apps = [
       "/System/Applications/Launchpad.app"
       "${pkgs.google-chrome}/Applications/Google Chrome.app"

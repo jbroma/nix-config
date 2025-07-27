@@ -23,6 +23,12 @@
     askForPasswordDelay = 0;
   };
 
+  # workaround for aerospace with multiple displays
+  # https://nikitabobko.github.io/AeroSpace/guide#a-note-on-displays-have-separate-spaces
+  system.defaults.spaces = {
+    spans-displays = true;
+  };
+
   system.defaults.LaunchServices = {
     # Disable the "Are you sure you want to open this application?" dialog
     LSQuarantine = false;
