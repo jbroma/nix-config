@@ -15,6 +15,8 @@
     # Expand save panel by default
     NSNavPanelExpandedStateForSaveMode = true;
     NSNavPanelExpandedStateForSaveMode2 = true;
+    # Disable window animations
+    NSAutomaticWindowAnimationsEnabled = false;
   };
 
   system.defaults.screensaver = {
