@@ -17,6 +17,22 @@
   programs.zsh = {
     enable = true;
 
+    history = {
+      expireDuplicatesFirst = true;
+      extended = true;
+      ignoreDups = true;
+      ignoreSpace = true;
+      path = "${config.xdg.dataHome}/zsh/history";
+      save = 99999;
+      size = 99999;
+      share = true;
+    };
+
+    initContent = ''
+      bindkey "^[[1;5C" forward-word       # Ctrl+Right Arrow
+      bindkey "^[[1;5D" backward-word      # Ctrl+Left Arrow
+    '';
+
     localVariables = {
       # enforce using aliases
       YSU_HARDCORE = 1;
