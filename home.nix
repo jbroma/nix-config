@@ -16,7 +16,6 @@
     fzf
     gh
     htop
-    karabiner-elements
     lsd
     mise
     pnpm
