@@ -1,5 +1,6 @@
 {
 	"$schema": "vscode://schemas/settings/user",
+	"biome.suggestInstallingGlobally": false,
 	"diffEditor.maxComputationTime": 0,
 	"diffEditor.ignoreTrimWhitespace": true,
 	"editor.accessibilitySupport": "off",
