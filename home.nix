@@ -42,5 +42,6 @@
     ./home-manager/mise.nix
     ./home-manager/delta.nix
     ./home-manager/ripgrep.nix
+    ./home-manager/vscode.nix
   ];
 }
