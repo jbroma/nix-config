@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   type,
@@ -84,6 +83,15 @@ in
     extraSpecialArgs = {
       inherit type;
     };
+  };
+
+  # launch raycast on login
+  launchd.user.agents.raycast.serviceConfig = {
+    Disabled = false;
+    ProgramArguments = [
+      "${pkgs.raycast}/Contents/Library/LoginItems/RaycastLauncher.app/Contents/MacOS/RaycastLauncher"
+    ];
+    RunAtLoad = true;
   };
 
   # enable touch id for sudo
