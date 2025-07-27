@@ -21,7 +21,6 @@
 	"git.autofetch": true,
 	"json.schemaDownload.enable": true,
 	"material-icon-theme.folders.theme": "classic",
-	"nix.enableLanguageServer": true,
 	"notebook.defaultFormatter": "esbenp.prettier-vscode",
 	"prettier.semi": true,
 	"prettier.singleQuote": true,
