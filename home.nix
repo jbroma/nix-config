@@ -21,6 +21,7 @@
     mise
     pnpm
     ripgrep
+    sketchybar
     tree
     watchman
     zellij
@@ -44,5 +45,6 @@
     ./home-manager/ripgrep.nix
     ./home-manager/cursor.nix
     ./home-manager/aerospace.nix
+    ./home-manager/sketchybar.nix
   ];
 }
