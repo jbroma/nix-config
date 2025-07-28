@@ -1,17 +1,21 @@
 {
+  pkgs,
   ...
 }:
 
 {
   programs.sketchybar = {
     enable = true;
+    package = pkgs.sketchybar;
     config = {
       source = ../dotfiles/sketchybar;
       recursive = true;
     };
-    configType = "bash";
+    extraPackages = [
+      pkgs.aerospace
+    ];
     service = {
-      enable = false;
+      enable = true;
     };
   };
 }

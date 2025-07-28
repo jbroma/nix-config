@@ -55,7 +55,6 @@ in
       git
       ghostty
       oh-my-posh
-      sketchybar
       nerd-fonts.fira-code
       nixfmt-rfc-style
       vim

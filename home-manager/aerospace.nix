@@ -1,10 +1,17 @@
 {
+  pkgs,
   ...
 }:
 
 {
   programs.aerospace = {
     enable = true;
+
+    # enable launchd agent for auto-start on login
+    launchd = {
+      enable = true;
+    };
+
     userSettings = {
       # You can use it to add commands that run after login to macOS user session.
       # 'start-at-login' needs to be 'true' for 'after-login-command' to work
@@ -15,14 +22,14 @@
       # 'after-startup-command' is run after 'after-login-command'
       # Available commands : https://nikitabobko.github.io/AeroSpace/commands
       after-startup-command = [
-        "exec-and-forget sketchybar"
+        "exec-and-forget ${pkgs.sketchybar}/bin/sketchybar --reload"
       ];
 
       # Notify Sketchybar about workspace change
       exec-on-workspace-change = [
         "/bin/bash"
         "-c"
-        "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
+        "${pkgs.sketchybar}/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
       ];
 
       # Start AeroSpace at login

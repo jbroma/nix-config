@@ -21,6 +21,7 @@
     mise
     pnpm
     ripgrep
+    # sketchybar # gets installed on it's own when using home-manager integration
     tree
     watchman
     zellij
@@ -43,7 +44,7 @@
     ./home-manager/delta.nix
     ./home-manager/ripgrep.nix
     ./home-manager/cursor.nix
-    ./home-manager/aerospace.nix
     ./home-manager/sketchybar.nix
+    ./home-manager/aerospace.nix
   ];
 }
