@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
-  sketchybar --set $NAME background.drawing=on
+  sketchybar --set $NAME label.color=0xffffffff
 else
-  sketchybar --set $NAME background.drawing=off
+  sketchybar --set $NAME label.color=0x779a9a9a
 fi

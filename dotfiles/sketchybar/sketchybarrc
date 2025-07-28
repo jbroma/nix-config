@@ -20,8 +20,6 @@ sketchybar --bar position=top height=35 color=0xff000000
 # https://felixkratz.github.io/SketchyBar/config/items
 
 default=(
-  padding_left=5
-  padding_right=5
   icon.font="FiraCode Nerd Font:Bold:17.0"
   label.font="FiraCode Nerd Font:Bold:14.0"
   icon.color=0xffffffff
@@ -44,27 +42,13 @@ for sid in $workspaces; do
 	sketchybar --add item space.$sid left \
 		--subscribe space.$sid aerospace_workspace_change \
 		--set space.$sid \
-      background.color="0xFFBB7744" \
-      background.corner_radius=2 \
-      background.height=20 \
-      background.drawing=off \
-      label.align=center \
-      label.width=20 \
-      label="$sid" \
-      click_script="aerospace workspace $sid" \
-      script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+		background.drawing=off \
+		label.align=center \
+		label.color=0xff9a9a9a \
+		label="$sid" \
+		click_script="aerospace workspace $sid" \
+		script="$CONFIG_DIR/plugins/aerospace.sh $sid"
 done
-
-sketchybar --set space.$first_workspace padding_left=2
-
-sketchybar --set space.$last_workspace padding_right=2
-
-sketchybar --add bracket spaces '/space\..*/' \
-	--set spaces background.color="0xBF222222" \
-		background.corner_radius=4 \
-		background.height=24 \
-		background.border_width=1 \
-		background.border_color="0xFFC9A554"
 
 ##### Adding Left Items #####
 # We add some regular items to the left side of the bar, where
