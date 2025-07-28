@@ -124,10 +124,10 @@
           vertical = 16;
         };
         outer = {
-          left = 16;
-          bottom = 16;
-          top = 16;
-          right = 16;
+          left = 0;
+          bottom = 0;
+          top = 0;
+          right = 0;
         };
       };
 
