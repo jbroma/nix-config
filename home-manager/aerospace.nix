@@ -119,7 +119,7 @@
         outer = {
           left = 16;
           bottom = 16;
-          top = 56;
+          top = 16;
           right = 16;
         };
       };
