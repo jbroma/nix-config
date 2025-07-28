@@ -46,6 +46,7 @@ in
       xcode
       android-studio
       google-chrome
+      cleanshot-x
       cursor
       raycast
       minisim

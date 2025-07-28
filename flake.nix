@@ -58,6 +58,7 @@
                   android-studio = customPkgs.android-studio;
                   minisim = customPkgs.minisim;
                   cursor = pkgs.code-cursor;
+                  cleanshot-x = customPkgs.cleanshot-x;
                 })
                 nix-vscode-extensions.overlays.default
               ];
