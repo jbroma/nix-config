@@ -15,7 +15,14 @@
       # 'after-startup-command' is run after 'after-login-command'
       # Available commands : https://nikitabobko.github.io/AeroSpace/commands
       after-startup-command = [
-        "exec-and-forget /usr/local/bin/borders active_color=0xFF00FF00 inactive_color=0xff494d64 width=5.0"
+        "exec-and-forget sketchybar"
+      ];
+
+      # Notify Sketchybar about workspace change
+      exec-on-workspace-change = [
+        "/bin/bash"
+        "-c"
+        "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
       ];
 
       # Start AeroSpace at login
