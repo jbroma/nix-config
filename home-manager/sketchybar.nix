@@ -5,10 +5,13 @@
 {
   programs.sketchybar = {
     enable = true;
-  };
-
-  home.file.".config/sketchybar" = {
-    source = ../dotfiles/sketchybar;
-    recursive = true;
+    config = {
+      source = ../dotfiles/sketchybar;
+      recursive = true;
+    };
+    configType = "bash";
+    service = {
+      enable = false;
+    };
   };
 }
