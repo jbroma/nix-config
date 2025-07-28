@@ -126,7 +126,10 @@
         outer = {
           left = 0;
           bottom = 0;
-          top = 0;
+          top = [
+            { monitor."^built-in retina display$" = 0; }
+            35
+          ];
           right = 0;
         };
       };
