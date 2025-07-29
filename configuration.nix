@@ -64,6 +64,9 @@ in
     ];
 
     systemPath = [
+      # local executables
+      "$PATH:$HOME/.local/bin"
+      # android studio
       "$PATH:$ANDROID_HOME/emulator"
       "$PATH:$ANDROID_HOME/platform-tools"
     ];
