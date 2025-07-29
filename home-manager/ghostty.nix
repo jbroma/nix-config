@@ -19,6 +19,9 @@
         "bold-italic"
       ];
       font-size = 14;
+      keybind = [
+        "shift+enter=text:'\\n'"
+      ];
       maximize = true;
       quit-after-last-window-closed = true;
       theme = "GitHub Dark";
