@@ -57,6 +57,7 @@ in
       ghostty
       oh-my-posh
       nerd-fonts.fira-code
+      nerd-fonts.hack
       nixfmt-rfc-style
       vim
       # libs
@@ -78,6 +79,7 @@ in
 
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
+    nerd-fonts.hack
   ];
 
   home-manager = {

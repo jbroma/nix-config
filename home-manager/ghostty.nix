@@ -12,8 +12,8 @@
     settings = {
       auto-update = "off";
       cursor-style = "underline";
-      font-family = "FiraCode Nerd Font Mono Reg";
-      font-family-bold = "FiraCode Nerd Font Mono Bold";
+      font-family = "Hack Nerd Font";
+      font-family-bold = "Hack Nerd Font";
       font-synthetic-style = [
         "italic"
         "bold-italic"
