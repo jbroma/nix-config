@@ -5,7 +5,7 @@
 	"diffEditor.ignoreTrimWhitespace": true,
 	"editor.accessibilitySupport": "off",
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"editor.fontFamily": "FiraCode Nerd Font",
+	"editor.fontFamily": "Hack Nerd Font",
 	"editor.fontLigatures": false,
 	"editor.fontSize": 12,
 	"editor.formatOnSave": true,
