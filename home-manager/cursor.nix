@@ -1,30 +1,20 @@
 {
-  config,
-  lib,
   pkgs,
-  type,
   ...
 }:
 let
-  cursorExtensionsPath = builtins.path {
-    path = ../dotfiles/vscode/extensions.json;
-    name = "source";
-  };
   cursorSettingsPath = builtins.path {
     path = ../dotfiles/vscode/settings.json;
     name = "source";
   };
-
-  # Read extensions from JSON file
-  extensionsJson = builtins.fromJSON (builtins.readFile cursorExtensionsPath);
-  userSettingsJson = builtins.fromJSON (builtins.readFile cursorSettingsPath);
+  cursorSettingsJson = builtins.fromJSON (builtins.readFile cursorSettingsPath);
 in
 {
   programs.vscode = {
     enable = true;
     package = pkgs.cursor;
     mutableExtensionsDir = false;
-    profiles.default.userSettings = userSettingsJson // {
+    profiles.default.userSettings = cursorSettingsJson // {
       "nix.serverPath" = "${pkgs.nil}/bin/nil";
       "nix.enableLanguageServer" = true;
       "nix.serverSettings" = {
@@ -38,14 +28,26 @@ in
         "editor.defaultFormatter" = "jnoortheen.nix-ide";
       };
     };
-    profiles.default.extensions = builtins.map (
-      extId:
-      let
-        parts = builtins.split "\\." extId;
-        publisher = builtins.elemAt parts 0;
-        extensionName = builtins.elemAt parts 2;
-      in
-      pkgs.open-vsx.${publisher}.${extensionName}
-    ) extensionsJson;
+    profiles.default.extensions =
+      (with pkgs.vscode-marketplace; [
+        biomejs.biome
+        dbaeumer.vscode-eslint
+        esbenp.prettier-vscode
+        jnoortheen.nix-ide
+        rust-lang.rust-analyzer
+        flowtype.flow-for-vscode
+        mhutchie.git-graph
+        waderyan.gitblame
+        github.github-vscode-theme
+        yoavbls.pretty-ts-errors
+        pkief.material-icon-theme
+        msjsdiag.vscode-react-native
+        redhat.vscode-yaml
+        redhat.vscode-xml
+      ])
+      ++ (with pkgs.vscode-extensions; [
+        vadimcn.vscode-lldb
+        unifiedjs.vscode-mdx
+      ]);
   };
 }
