@@ -1,5 +1,6 @@
 [
 	"biomejs.biome",
+	"vadimcn.vscode-lldb",
 	"dbaeumer.vscode-eslint",
 	"esbenp.prettier-vscode",
 	"jnoortheen.nix-ide",
