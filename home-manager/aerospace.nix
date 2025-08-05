@@ -128,7 +128,7 @@
           bottom = 0;
           top = [
             { monitor."^built-in retina display$" = 2; }
-            32
+            30
           ];
           right = 0;
         };
