@@ -59,6 +59,7 @@ in
       nerd-fonts.fira-code
       nerd-fonts.hack
       nixfmt-rfc-style
+      mkcert
       vim
       # libs
       libyaml
