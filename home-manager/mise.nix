@@ -5,8 +5,8 @@
 }:
 let
   configureOpts = builtins.concatStringsSep " " [
-    "--with-libyaml-include=${lib.getInclude pkgs.libyaml}"
-    "--with-libyaml-lib=${lib.getLib pkgs.libyaml}"
+    "--with-libyaml-include=${pkgs.libyaml.dev}/include"
+    "--with-libyaml-lib=${pkgs.libyaml.out}/lib"
     "--with-jemalloc-dir=${pkgs.jemalloc}"
     "--disable-install-doc"
     "--enable-yjit"
