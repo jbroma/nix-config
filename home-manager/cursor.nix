@@ -33,6 +33,7 @@ in
         biomejs.biome
         dbaeumer.vscode-eslint
         esbenp.prettier-vscode
+        expo.vscode-expo-tools
         jnoortheen.nix-ide
         rust-lang.rust-analyzer
         flowtype.flow-for-vscode
