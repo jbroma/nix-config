@@ -34,7 +34,10 @@ in
       };
 
       settings = {
-        idiomatic_version_file_enable_tools = [ "ruby" ];
+        idiomatic_version_file_enable_tools = [
+          "ruby"
+          "node"
+        ];
 
         ruby = {
           ruby_build_opts = configureOpts;
