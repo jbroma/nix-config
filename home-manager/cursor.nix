@@ -43,6 +43,9 @@ in
         yoavbls.pretty-ts-errors
         pkief.material-icon-theme
         msjsdiag.vscode-react-native
+        ms-azuretools.vscode-docker
+        ms-python.flake8
+        ms-python.python
         redhat.vscode-yaml
         redhat.vscode-xml
       ])
