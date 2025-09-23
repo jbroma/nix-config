@@ -30,6 +30,7 @@ in
         node = "lts";
         ruby = "3.3";
         java = "zulu-17";
+        python = "3.12";
         rust = "1.88";
       };
 
@@ -37,6 +38,7 @@ in
         idiomatic_version_file_enable_tools = [
           "ruby"
           "node"
+          "python"
         ];
 
         ruby = {
