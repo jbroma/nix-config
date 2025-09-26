@@ -13,7 +13,7 @@ in
   programs.vscode = {
     enable = true;
     package = pkgs.cursor;
-    mutableExtensionsDir = false;
+    mutableExtensionsDir = true;
     profiles.default.userSettings = cursorSettingsJson // {
       "nix.serverPath" = "${pkgs.nil}/bin/nil";
       "nix.enableLanguageServer" = true;
