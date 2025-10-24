@@ -53,7 +53,7 @@
             {
               nixpkgs.overlays = [
                 (self: super: {
-                  xcode = pkgs.darwin.xcode_16_4;
+                  xcode = pkgs.darwin.xcode_26;
                   ghostty = pkgs.ghostty-bin;
                   android-studio = customPkgs.android-studio;
                   minisim = customPkgs.minisim;
