@@ -61,6 +61,7 @@ in
       nixfmt-rfc-style
       mkcert
       vim
+      gnupg
       # libs
       libyaml
     ];
