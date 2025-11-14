@@ -62,6 +62,7 @@ in
       mkcert
       vim
       gnupg
+      dnsmasq
       # libs
       libyaml
     ];
