@@ -30,6 +30,7 @@ in
 
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
   };
 
   programs.git = {
@@ -38,7 +39,7 @@ in
       key = null;
       signer = signPath;
     };
-    extraConfig = {
+    settings = {
       gpg.format = "ssh";
       user.signingKey = signingKey;
     };
