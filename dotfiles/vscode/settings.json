@@ -43,6 +43,7 @@
 			"args": ["-l"]
 		}
 	},
+	"typescript.tsserver.maxTsServerMemory": 8192,
 	"update.mode": "none",
 	"window.customTitleBarVisibility": "never",
 	"window.nativeTabs": false,
