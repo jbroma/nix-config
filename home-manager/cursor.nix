@@ -30,7 +30,6 @@ in
     };
     profiles.default.extensions =
       (with pkgs.vscode-marketplace; [
-        biomejs.biome
         dbaeumer.vscode-eslint
         esbenp.prettier-vscode
         expo.vscode-expo-tools
@@ -47,8 +46,11 @@ in
         ms-python.python
         redhat.vscode-yaml
         redhat.vscode-xml
+        mk12.better-git-line-blame
+        typescriptteam.native-preview
       ])
       ++ (with pkgs.vscode-extensions; [
+        biomejs.biome
         vadimcn.vscode-lldb
         unifiedjs.vscode-mdx
       ]);
