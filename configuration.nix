@@ -135,6 +135,6 @@ in
   services.dnsmasq.enable = true;
   services.dnsmasq.bind = "127.0.0.1";
   services.dnsmasq.addresses = {
-    ".test" = "127.0.0.1";
+    "test" = "127.0.0.1";
   };
 }
