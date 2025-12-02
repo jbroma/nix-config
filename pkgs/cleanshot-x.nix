@@ -7,11 +7,11 @@
 
 stdenv.mkDerivation rec {
   name = "cleanshot-x";
-  version = "4.8.2";
+  version = "4.8.5";
 
   src = fetchurl {
     url = "https://updates.getcleanshot.com/v3/CleanShot-X-${version}.dmg";
-    sha256 = "c88819f112071ad7909ff5b7eb26d2c010eab33673ca0d47d117446bc3104526";
+    sha256 = "b734f910620d6a18e1f197fabbf22649247b38e17db482a46039233bf60a544e";
   };
 
   nativeBuildInputs = [ _7zz ];
