@@ -59,6 +59,16 @@
                   minisim = customPkgs.minisim;
                   cursor = pkgs.code-cursor;
                   cleanshot-x = customPkgs.cleanshot-x;
+                  spotify = super.spotify.overrideAttrs (oldAttrs: {
+                    src =
+                      if (super.stdenv.isDarwin && super.stdenv.isAarch64) then
+                        super.fetchurl {
+                          url = "https://web.archive.org/web/20251029235406/https://download.scdn.co/SpotifyARM64.dmg";
+                          hash = "sha256-0gwoptqLBJBM0qJQ+dGAZdCD6WXzDJEs0BfOxz7f2nQ=";
+                        }
+                      else
+                        oldAttrs.src;
+                  });
                 })
                 nix-vscode-extensions.overlays.default
               ];
