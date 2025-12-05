@@ -63,6 +63,7 @@ in
       vim
       gnupg
       dnsmasq
+      zstd
       # libs
       libyaml
     ];
