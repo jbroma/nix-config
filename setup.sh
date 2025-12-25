@@ -7,13 +7,17 @@ set -euo pipefail
 
 # Choose configuration variant
 CURRENT_CONFIG="personal"
-read -p "Configuration [personal/work]($CURRENT_CONFIG): " CONFIG
-CONFIG="${CONFIG:-$CURRENT_CONFIG}"
+read -p "Configuration [personal/work]($CURRENT_CONFIG): " SETUP_CONFIG
+SETUP_CONFIG="${CONFIG:-$CURRENT_CONFIG}"
 
 # Enter username
 CURRENT_USER=$(whoami)
-read -p "Username ($CURRENT_USER): " USERNAME
-USERNAME="${USERNAME:-$CURRENT_USER}"
+read -p "Username ($CURRENT_USER): " SETUP_USERNAME
+SETUP_USERNAME="${SETUP_USERNAME:-$CURRENT_USER}"
+
+# Enter name and email for git
+read -p "Name: " SETUP_NAME
+read -p "Email: " SETUP_EMAIL
 
 # -x: print commands before execution
 set -x
@@ -23,10 +27,12 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 
 /nix/var/nix/profiles/default/bin/nix --extra-experimental-features "nix-command flakes" run nixpkgs#git clone https://github.com/jbroma/nix-config.git ~/.nix
 
-# Create user.nix with the username
+# Create user.nix
 cat > ~/.nix/user.nix << EOF
 {
-  username = "$USERNAME";
+  name = "$SETUP_NAME";
+  email = "$SETUP_EMAIL";
+  username = "$SETUP_USERNAME";
 }
 EOF
 

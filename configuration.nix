@@ -2,7 +2,7 @@
   lib,
   pkgs,
   type,
-  username,
+  user,
   ...
 }:
 
@@ -14,7 +14,7 @@
     experimental-features = "nix-command flakes";
     trusted-users = [
       "root"
-      username
+      user.username
     ];
     keep-going = true;
     keep-failed = true;
@@ -87,9 +87,9 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.${username} = import ./home.nix;
+    users.${user.username} = import ./home.nix;
     extraSpecialArgs = {
-      inherit type;
+      inherit type user;
     };
   };
 
@@ -114,13 +114,13 @@
     ./macos/system.nix
   ];
 
-  system.primaryUser = username;
+  system.primaryUser = user.username;
 
   system.stateVersion = 4;
 
-  users.users.${username} = {
-    name = username;
-    home = "/Users/${username}";
+  users.users.${user.username} = {
+    name = user.username;
+    home = "/Users/${user.username}";
   };
 
   # install xcode command line tools if not installed

@@ -20,7 +20,7 @@
       ...
     }@inputs:
     let
-      userData = import ./user.nix;
+      user = import ./user.nix;
 
       darwinModules = [
         ./configuration.nix
@@ -51,8 +51,7 @@
         darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
-            inherit type;
-            inherit (userData) username;
+            inherit type user;
           };
           modules = darwinModules ++ [
             {
