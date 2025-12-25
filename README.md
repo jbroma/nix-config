@@ -26,10 +26,10 @@ The script will:
 3. Prompt for configuration details (name, email, system username)
 4. Apply the nix-darwin configuration
 
-## Rebuilding
+## Usage
 
-After making changes:
+The following shell commands are available after setup:
 
-```bash
-./rebuild-and-switch.sh
-```
+-   `darwin-rebuild-switch` — reload the configuration after making changes
+-   `flake-update` — update to newest package versions
+-   `darwin-cleanup` — prune the nix cache
