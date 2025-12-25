@@ -26,7 +26,7 @@
   nixpkgs.config.allowUnfreePredicate =
     pkg:
     builtins.elem (lib.getName pkg) [
-      "Xcode.app"
+      # "Xcode.app"
       "google-chrome"
       "cursor"
       "1password-gui"
@@ -41,7 +41,7 @@
   environment = {
     # List packages you want to install system-wide.
     systemPackages = with pkgs; [
-      xcode
+      # xcode
       android-studio
       google-chrome
       cleanshot-x

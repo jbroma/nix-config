@@ -38,7 +38,7 @@
             config.allowUnfreePredicate =
               pkg:
               builtins.elem (nixpkgs.lib.getName pkg) [
-                "Xcode.app"
+                # "Xcode.app"
                 "cursor"
               ];
           };
@@ -57,7 +57,7 @@
             {
               nixpkgs.overlays = [
                 (self: super: {
-                  xcode = pkgs.darwin.xcode_26;
+                  # xcode = pkgs.darwin.xcode_26;
                   ghostty = pkgs.ghostty-bin;
                   android-studio = customPkgs.android-studio;
                   minisim = customPkgs.minisim;

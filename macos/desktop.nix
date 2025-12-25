@@ -25,13 +25,13 @@
       "/System/Applications/Calendar.app"
       "/System/Applications/Mail.app"
       "/System/Applications/Notes.app"
-      "${pkgs.xcode}"
-      "${pkgs.xcode}/Contents/Developer/Applications/Simulator.app"
+      "/Applications/Xcode.app"
+      "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app"
       "${pkgs.ghostty}/Applications/Ghostty.app"
       "${pkgs.cursor}/Applications/Cursor.app"
-      "/Applications/Slack.app"
-      "${pkgs.discord}/Applications/Discord.app"
       "${pkgs.spotify}/Applications/Spotify.app"
+      "${pkgs.discord}/Applications/Discord.app"
+      "/Applications/Slack.app"
     ];
   };
 
