@@ -40,3 +40,4 @@ After the automated setup completes, the following manual steps are recommended:
 ## Spotify
 
 -   Log in within the app
+-   Go to Settings and disable "Open Spotify automatically after you log into the computer"
