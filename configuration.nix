@@ -28,6 +28,7 @@
     builtins.elem (lib.getName pkg) [
       # "Xcode.app"
       "google-chrome"
+      "claude-code"
       "cursor"
       "1password-gui"
       "1password"
@@ -45,6 +46,7 @@
       android-studio
       google-chrome
       cleanshot-x
+      claude-code
       cursor
       raycast
       minisim

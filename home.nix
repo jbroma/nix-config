@@ -12,7 +12,6 @@
     aerospace
     bat
     bun
-    claude-code
     delta
     fd
     fzf
