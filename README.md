@@ -26,6 +26,8 @@ The script will:
 3. Prompt for configuration details (name, email, system username)
 4. Apply the nix-darwin configuration
 
+See [SETUP_DETAILS.md](./SETUP_DETAILS.md) for post-installation manual setup steps.
+
 ## Usage
 
 The following shell commands are available after setup:
