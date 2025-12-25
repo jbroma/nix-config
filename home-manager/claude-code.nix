@@ -11,10 +11,10 @@
   programs.claude-code = {
     enable = true;
     package = pkgs.claude-code;
-    agentsDir = ~/.cc/agents;
-    commandsDir = ~/.cc/commands;
-    hooksDir = ~/.cc/hooks;
-    rulesDir = ~/.cc/rules;
-    skillsDir = ~/.cc/skills;
+    # agentsDir = ~/.cc/agents;
+    # commandsDir = ~/.cc/commands;
+    # hooksDir = ~/.cc/hooks;
+    # rulesDir = ~/.cc/rules;
+    # skillsDir = ~/.cc/skills;
   };
 }
