@@ -31,8 +31,15 @@
       "${pkgs.cursor}/Applications/Cursor.app"
       "${pkgs.spotify}/Applications/Spotify.app"
       "${pkgs.discord}/Applications/Discord.app"
-      "/Applications/Slack.app"
-    ];
+    ]
+    ++ (
+      if type == "work" then
+        [
+          "/Applications/Slack.app"
+        ]
+      else
+        [ ]
+    );
   };
 
   system.defaults.CustomUserPreferences = {
