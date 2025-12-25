@@ -7,17 +7,17 @@ set -euo pipefail
 
 # Choose configuration variant
 CURRENT_CONFIG="personal"
-read -p "Configuration [personal/work]($CURRENT_CONFIG): " SETUP_CONFIG
-SETUP_CONFIG="${CONFIG:-$CURRENT_CONFIG}"
+read -p "Configuration [personal/work]($CURRENT_CONFIG): " SETUP_CONFIG < /dev/tty
+SETUP_CONFIG="${SETUP_CONFIG:-$CURRENT_CONFIG}"
 
 # Enter username
 CURRENT_USER=$(whoami)
-read -p "Username ($CURRENT_USER): " SETUP_USERNAME
+read -p "Username ($CURRENT_USER): " SETUP_USERNAME < /dev/tty
 SETUP_USERNAME="${SETUP_USERNAME:-$CURRENT_USER}"
 
 # Enter name and email for git
-read -p "Name: " SETUP_NAME
-read -p "Email: " SETUP_EMAIL
+read -p "Name: " SETUP_NAME < /dev/tty
+read -p "Email: " SETUP_EMAIL < /dev/tty
 
 # -x: print commands before execution
 set -x
@@ -46,4 +46,4 @@ sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin
 sudo chflags hidden /nix
 
 # Apply configuration
-/nix/var/nix/profiles/default/bin/nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake ~/.nix#$CONFIG
+/nix/var/nix/profiles/default/bin/nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake ~/.nix#$SETUP_CONFIG
