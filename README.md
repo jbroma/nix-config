@@ -13,10 +13,10 @@ My personal macOS configuration using [Nix](https://nixos.org/), [nix-darwin](ht
 
 ## Quick Start
 
-Run the setup script directly:
+Download and run the setup script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jbroma/nix-config/main/scripts/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jbroma/nix-config/main/scripts/setup.sh -o /tmp/setup.sh && bash /tmp/setup.sh
 ```
 
 The script will:

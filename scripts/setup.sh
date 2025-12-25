@@ -7,17 +7,17 @@ set -euo pipefail
 
 # Choose configuration variant
 CURRENT_CONFIG="personal"
-read -p "Configuration [personal/work]($CURRENT_CONFIG): " SETUP_CONFIG < /dev/tty
+read -p "Configuration [personal/work]($CURRENT_CONFIG): " SETUP_CONFIG
 SETUP_CONFIG="${SETUP_CONFIG:-$CURRENT_CONFIG}"
 
 # Enter username
 CURRENT_USER=$(whoami)
-read -p "Username ($CURRENT_USER): " SETUP_USERNAME < /dev/tty
+read -p "Username ($CURRENT_USER): " SETUP_USERNAME
 SETUP_USERNAME="${SETUP_USERNAME:-$CURRENT_USER}"
 
 # Enter name and email for git
-read -p "Name: " SETUP_NAME < /dev/tty
-read -p "Email: " SETUP_EMAIL < /dev/tty
+read -p "Name: " SETUP_NAME
+read -p "Email: " SETUP_EMAIL
 
 # -x: print commands before execution
 set -x
