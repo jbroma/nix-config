@@ -20,6 +20,8 @@
       ...
     }@inputs:
     let
+      userData = import ./user.nix;
+
       darwinModules = [
         ./configuration.nix
         home-manager.darwinModules.home-manager
@@ -48,7 +50,10 @@
         in
         darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = { inherit type; };
+          specialArgs = {
+            inherit type;
+            inherit (userData) username;
+          };
           modules = darwinModules ++ [
             {
               nixpkgs.overlays = [

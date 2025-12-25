@@ -36,7 +36,13 @@
       push.default = "simple";
       url."ssh://git@github.com/".insteadof = "https://github.com/";
       url."https://".insteadof = "git://";
-      user.email = if type == "work" then "jakub.romanczyk@callstack.com" else "j.romanczyk@gmail.com";
+      user.email =
+        if type == "work" then
+          "jakub.romanczyk@callstack.com"
+        else if type == "personal" then
+          "j.romanczyk@gmail.com"
+        else
+          null;
       user.name = "Jakub Romanczyk";
     };
   };

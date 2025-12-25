@@ -2,12 +2,10 @@
   lib,
   pkgs,
   type,
+  username,
   ...
 }:
 
-let
-  username = "jbroma";
-in
 {
   # use Determinate Nix daemon
   nix.enable = false;
