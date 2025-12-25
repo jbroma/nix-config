@@ -16,7 +16,7 @@ My personal macOS configuration using [Nix](https://nixos.org/), [nix-darwin](ht
 Run the setup script directly:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jbroma/nix-config/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jbroma/nix-config/main/scripts/setup.sh | bash
 ```
 
 The script will:
