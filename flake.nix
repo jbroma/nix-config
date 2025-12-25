@@ -82,6 +82,10 @@
           system = "aarch64-darwin";
           type = "work";
         };
+        personal = configuration {
+          system = "aarch64-darwin";
+          type = "personal";
+        };
       };
 
       formatter = inputs.nixpkgs.nixfmt-rfc-style;

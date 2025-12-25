@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/run/current-system/sw/bin/darwin-rebuild switch --flake ~/.nix#work
+/run/current-system/sw/bin/darwin-rebuild switch --flake $1
