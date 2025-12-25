@@ -87,6 +87,10 @@
           run = "move-node-to-workspace 2";
         }
         {
+          "if".app-id = "com.apple.Safari";
+          run = "move-node-to-workspace 2";
+        }
+        {
           # Cursor
           "if".app-id = "com.todesktop.230313mzl4w4u92";
           run = "move-node-to-workspace 3";
