@@ -20,17 +20,18 @@
     expose-group-apps = true;
 
     persistent-apps = [
-      "/System/Applications/Launchpad.app"
-      "${pkgs.google-chrome}/Applications/Google Chrome.app"
+      "/System/Applications/Apps.app"
+      "/Applications/Safari.app"
+      "/Applications/Nix Apps/Google Chrome.app"
       "/System/Applications/Calendar.app"
       "/System/Applications/Mail.app"
       "/System/Applications/Notes.app"
       "/Applications/Xcode.app"
       "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app"
-      "${pkgs.ghostty}/Applications/Ghostty.app"
-      "${pkgs.cursor}/Applications/Cursor.app"
-      "${pkgs.spotify}/Applications/Spotify.app"
-      "${pkgs.discord}/Applications/Discord.app"
+      "/Applications/Nix Apps/Ghostty.app"
+      "/Applications/Nix Apps/Cursor.app"
+      "/Applications/Nix Apps/Spotify.app"
+      "/Applications/Nix Apps/Discord.app"
     ]
     ++ (
       if type == "work" then
