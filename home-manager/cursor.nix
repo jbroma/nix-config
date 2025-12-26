@@ -47,6 +47,7 @@ in
         redhat.vscode-yaml
         redhat.vscode-xml
         mk12.better-git-line-blame
+        tombi-toml.tombi
         typescriptteam.native-preview
       ])
       ++ (with pkgs.vscode-extensions; [
