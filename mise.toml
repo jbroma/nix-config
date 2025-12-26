@@ -1,0 +1,97 @@
+# Nix Configuration Tasks
+
+[tasks.switch]
+description = "Rebuild and switch darwin configuration"
+run = "darwin-rebuild switch --flake ."
+
+[tasks.check]
+description = "Check configuration without applying"
+run = "darwin-rebuild check --flake ."
+
+[tasks.update]
+description = "Update flake inputs"
+run = "nix flake update"
+
+# Evolution System
+
+[tasks.evolve]
+description = "Show health dashboard"
+dir = "{{config_root}}/ai/evolution"
+run = "bun run evolve.ts"
+
+[tasks.grade]
+description = "Run health grader"
+dir = "{{config_root}}/ai/evolution"
+run = "bun run grade.ts"
+
+[tasks.trends]
+description = "Analyze trends"
+dir = "{{config_root}}/ai/evolution"
+run = "bun run trend-alert.ts"
+
+[tasks.reflect]
+description = "Synthesize lessons into proposals"
+dir = "{{config_root}}/ai/evolution"
+run = "bun run reflect.ts"
+
+[tasks.consolidate]
+description = "Consolidate and deduplicate memory"
+dir = "{{config_root}}/ai/evolution"
+run = "bun run consolidate.ts"
+
+# Agent Setup
+
+[tasks.ai-setup]
+description = "Link AGENTS.md in current project"
+dir = "{{cwd}}"
+run = '''
+ln -sf ~/.nix/ai/AGENTS.md ./CLAUDE.md
+ln -sf ~/.nix/ai/AGENTS.md ./GEMINI.md
+ln -sf ~/.nix/ai/AGENTS.md ./.cursorrules
+echo "Linked AGENTS.md as CLAUDE.md, GEMINI.md, and .cursorrules"
+'''
+
+[tasks.ai-clean]
+description = "Remove agent links from current project"
+dir = "{{cwd}}"
+run = '''
+rm -f ./CLAUDE.md ./GEMINI.md ./.cursorrules
+echo "Removed agent links"
+'''
+
+[tasks.ai-status]
+description = "Show current agent configuration status"
+run = '''
+echo "=== Claude Code ==="
+ls -la ~/.claude/ 2>/dev/null || echo "Not configured"
+echo ""
+echo "=== Gemini CLI ==="
+ls -la ~/.gemini/ 2>/dev/null || echo "Not configured"
+echo ""
+echo "=== MCP Servers ==="
+head -20 ~/.config/claude/mcp-servers.json 2>/dev/null || echo "Not configured"
+'''
+
+[tasks.ai-validate]
+description = "Validate JSON configurations"
+run = '''
+echo "Validating MCP servers..."
+jq empty ~/.config/claude/mcp-servers.json && echo "MCP servers valid"
+'''
+
+[tasks.verify-paragon]
+description = "Run paragon verification"
+dir = "{{config_root}}/ai"
+run = '''
+echo "Running PARAGON guard checks..."
+ast-grep scan --config rules/ast-grep/ .
+'''
+
+[tasks.ai-install]
+description = "Install evolution dependencies"
+dir = "{{config_root}}/ai/evolution"
+run = "bun install"
+
+[tasks.ai-edit]
+description = "Edit AGENTS.md"
+run = "$EDITOR ~/.nix/ai/AGENTS.md"
