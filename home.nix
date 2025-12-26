@@ -28,6 +28,7 @@
   home.stateVersion = "25.11";
 
   imports = [
+    ./home-manager/ai-integration.nix
     ./home-manager/zsh.nix
     ./home-manager/git.nix
     ./home-manager/1password.nix
@@ -46,6 +47,5 @@
     ./home-manager/aerospace.nix
     ./home-manager/claude-code.nix
     ./home-manager/gemini.nix
-    ./ai/nix/integration.nix
   ];
 }
