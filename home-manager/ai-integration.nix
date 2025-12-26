@@ -11,7 +11,6 @@ in
   home.file.".claude/skills".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/skills";
   home.file.".claude/agents".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/agents";
   home.file.".claude/rules".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/rules";
-  home.file.".claude/memory".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/memory";
   home.file.".claude/hooks".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/hooks";
 
   # Gemini CLI symlinks
