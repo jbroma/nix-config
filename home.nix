@@ -47,5 +47,6 @@
     ./home-manager/sketchybar.nix
     ./home-manager/aerospace.nix
     ./home-manager/claude-code.nix
+    ./ai/nix/integration.nix
   ];
 }
