@@ -15,7 +15,7 @@
     fzf
     gh
     htop
-    lsd
+    eza
     mise
     pnpm
     ripgrep
@@ -37,7 +37,7 @@
     ./home-manager/fzf.nix
     ./home-manager/oh-my-posh.nix
     ./home-manager/zellij.nix
-    ./home-manager/lsd.nix
+    ./home-manager/eza.nix
     ./home-manager/vim.nix
     ./home-manager/mise.nix
     ./home-manager/delta.nix
