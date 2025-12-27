@@ -3,52 +3,56 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    darwin.url = "github:lnl7/nix-darwin";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+    darwin = {
+      url = "github:lnl7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    {
-      self,
-      darwin,
-      nixpkgs,
-      home-manager,
-      nix-vscode-extensions,
-      ...
-    }@inputs:
+    inputs:
     let
+      system = "aarch64-darwin";
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate =
+          pkg:
+          builtins.elem (inputs.nixpkgs.lib.getName pkg) [
+            # "Xcode.app"
+            "cursor"
+          ];
+      };
+
+      treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
+        projectRootFile = "flake.nix";
+        programs.nixfmt.enable = true;
+      };
+
       user = import ./user.nix;
+
+      # Automatically call all packages in ./pkgs
+      customPkgs = pkgs.lib.attrsets.mapAttrs' (name: _: {
+        name = pkgs.lib.strings.removeSuffix ".nix" name;
+        value = pkgs.callPackage (./pkgs + "/${name}") { };
+      }) (builtins.readDir ./pkgs);
 
       darwinModules = [
         ./configuration.nix
-        home-manager.darwinModules.home-manager
+        inputs.home-manager.darwinModules.home-manager
       ];
 
       configuration =
-        {
-          system,
-          type ? "personal",
-        }:
-        let
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-            config.allowUnfreePredicate =
-              pkg:
-              builtins.elem (nixpkgs.lib.getName pkg) [
-                # "Xcode.app"
-                "cursor"
-              ];
-          };
-          # automatically call all packages in ./pkgs
-          customPkgs = pkgs.lib.attrsets.mapAttrs' (name: value: {
-            name = pkgs.lib.strings.removeSuffix ".nix" name;
-            value = pkgs.callPackage (./pkgs + "/${name}") { };
-          }) (builtins.readDir ./pkgs);
-        in
-        darwin.lib.darwinSystem {
+        { type ? "personal" }:
+        inputs.darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
             inherit type user;
@@ -56,7 +60,7 @@
           modules = darwinModules ++ [
             {
               nixpkgs.overlays = [
-                (self: super: {
+                (_: super: {
                   # xcode = pkgs.darwin.xcode_26;
                   ghostty = pkgs.ghostty-bin;
                   android-studio = customPkgs.android-studio;
@@ -74,7 +78,7 @@
                         oldAttrs.src;
                   });
                 })
-                nix-vscode-extensions.overlays.default
+                inputs.nix-vscode-extensions.overlays.default
               ];
             }
           ];
@@ -82,16 +86,10 @@
     in
     {
       darwinConfigurations = {
-        work = configuration {
-          system = "aarch64-darwin";
-          type = "work";
-        };
-        personal = configuration {
-          system = "aarch64-darwin";
-          type = "personal";
-        };
+        work = configuration { type = "work"; };
+        personal = configuration { type = "personal"; };
       };
 
-      formatter = inputs.nixpkgs.nixfmt-rfc-style;
+      formatter.${system} = treefmtEval.config.build.wrapper;
     };
 }
