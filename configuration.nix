@@ -64,6 +64,7 @@
       gnupg
       dnsmasq
       zstd
+      ast-grep
       # libs
       libyaml
     ];
