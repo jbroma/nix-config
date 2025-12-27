@@ -19,6 +19,7 @@
         "bold-italic"
       ];
       font-size = 14;
+      link-url = true;
       keybind = [
         "shift+enter=text:\\n"
       ];
