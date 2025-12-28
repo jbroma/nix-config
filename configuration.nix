@@ -65,6 +65,7 @@
       dnsmasq
       zstd
       ast-grep
+      nmap
       # libs
       libyaml
     ];
