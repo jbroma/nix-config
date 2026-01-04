@@ -12,6 +12,7 @@
     settings = {
       auto-update = "off";
       cursor-style = "underline";
+      desktop-notifications = true;
       font-family = "Hack Nerd Font";
       font-family-bold = "Hack Nerd Font";
       font-synthetic-style = [
