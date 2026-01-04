@@ -29,7 +29,6 @@
   home.stateVersion = "25.11";
 
   imports = [
-    ./home-manager/ai-integration.nix
     ./home-manager/zsh.nix
     ./home-manager/git.nix
     ./home-manager/1password.nix
@@ -47,7 +46,7 @@
     ./home-manager/sketchybar.nix
     ./home-manager/aerospace.nix
     ./home-manager/claude-code.nix
-    ./home-manager/mcp-servers.nix
     ./home-manager/gemini.nix
+    ./home-manager/mcp-servers.nix
   ];
 }
