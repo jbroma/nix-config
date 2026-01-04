@@ -12,26 +12,6 @@ run = "darwin-rebuild check --flake ."
 description = "Update flake inputs"
 run = "nix flake update"
 
-# Agent Setup
-
-[tasks.ai-setup]
-description = "Link AGENTS.md in current project"
-dir = "{{cwd}}"
-run = '''
-ln -sf ~/.nix/ai/AGENTS.md ./CLAUDE.md
-ln -sf ~/.nix/ai/AGENTS.md ./GEMINI.md
-ln -sf ~/.nix/ai/AGENTS.md ./.cursorrules
-echo "Linked AGENTS.md as CLAUDE.md, GEMINI.md, and .cursorrules"
-'''
-
-[tasks.ai-clean]
-description = "Remove agent links from current project"
-dir = "{{cwd}}"
-run = '''
-rm -f ./CLAUDE.md ./GEMINI.md ./.cursorrules
-echo "Removed agent links"
-'''
-
 [tasks.ai-status]
 description = "Show current agent configuration status"
 run = '''
@@ -45,6 +25,10 @@ echo "=== MCP Servers ==="
 head -20 ~/.config/claude/mcp-servers.json 2>/dev/null || echo "Not configured"
 '''
 
+[tasks.ai-update]
+description = "Update ai git submodule to latest"
+run = "git submodule update --remote ai"
+
 [tasks.ai-validate]
 description = "Validate JSON configurations"
 run = '''
@@ -52,7 +36,4 @@ echo "Validating MCP servers..."
 jq empty ~/.config/claude/mcp-servers.json && echo "MCP servers valid"
 '''
 
-[tasks.ai-install]
-description = "Install evolution dependencies"
-dir = "{{config_root}}/ai/evolution"
-run = "bun install"
+
