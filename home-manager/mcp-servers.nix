@@ -1,6 +1,6 @@
 # MCP Server definitions - Single Source of Truth
 # Configure MCP servers for all AI tools here
-{ config, pkgs, ... }:
+{ ... }:
 
 let
   servers = {
@@ -16,6 +16,14 @@ let
       args = [
         "-y"
         "chrome-devtools-mcp@latest"
+      ];
+    };
+    shadcn = {
+      command = "npx";
+      args = [
+        "-y"
+        "shadcn@latest"
+        "mcp"
       ];
     };
   };
