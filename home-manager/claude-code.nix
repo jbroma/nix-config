@@ -11,6 +11,14 @@
     settings = {
       # disalbe all mcp servers by default
       enableAllProjectMcpServers = false;
+      sandbox = {
+        enabled = true;
+        excludedCommands = [ "git" ];
+        autoAllowBashIfSandboxed = true;
+        network = {
+          allowLocalBinding = true;
+        };
+      };
     };
   };
 }
