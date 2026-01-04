@@ -10,7 +10,10 @@ let
   mcpServerDefs = {
     filesystem = {
       command = "npx";
-      args = [ "-y" "@anthropic-ai/mcp-filesystem" ];
+      args = [
+        "-y"
+        "@anthropic-ai/mcp-filesystem"
+      ];
     };
     git = {
       command = "uvx";
@@ -18,27 +21,43 @@ let
     };
     context7 = {
       command = "npx";
-      args = [ "-y" "@upstash/context7-mcp" ];
+      args = [
+        "-y"
+        "@upstash/context7-mcp"
+      ];
     };
     github = {
       command = "npx";
-      args = [ "-y" "@modelcontextprotocol/server-github" ];
+      args = [
+        "-y"
+        "@modelcontextprotocol/server-github"
+      ];
     };
     playwright = {
       command = "npx";
-      args = [ "-y" "@anthropic-ai/mcp-playwright" ];
+      args = [
+        "-y"
+        "@anthropic-ai/mcp-playwright"
+      ];
     };
     "ast-grep" = {
       command = "npx";
-      args = [ "-y" "@anthropic-ai/mcp-ast-grep" ];
+      args = [
+        "-y"
+        "@anthropic-ai/mcp-ast-grep"
+      ];
     };
   };
 
   # Convert to CLI format
-  cliMcpServers = builtins.mapAttrs (name: def: {
-    command = def.command;
-    args = def.args;
-  } // (if def ? env then { env = def.env; } else {})) mcpServerDefs;
+  cliMcpServers = builtins.mapAttrs (
+    name: def:
+    {
+      command = def.command;
+      args = def.args;
+    }
+    // (if def ? env then { env = def.env; } else { })
+  ) mcpServerDefs;
 
   cliConfigJson = builtins.toJSON cliMcpServers;
 in
