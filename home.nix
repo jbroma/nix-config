@@ -47,6 +47,7 @@
     ./home-manager/sketchybar.nix
     ./home-manager/aerospace.nix
     ./home-manager/claude-code.nix
+    ./home-manager/mcp-servers.nix
     ./home-manager/gemini.nix
   ];
 }

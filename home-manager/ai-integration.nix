@@ -16,12 +16,6 @@ in
   # Gemini CLI symlinks
   home.file.".gemini/GEMINI.md".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/AGENTS.md";
   home.file.".gemini/rules".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/rules";
-  home.file.".gemini/mcp-servers.json".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/claude/mcp-servers.json";
-
-  # Antigravity symlinks
-  home.file.".gemini/antigravity/mcp_config.json".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/claude/mcp-servers.json";
 
   # Cursor symlink
   home.file.".cursorrules".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/AGENTS.md";

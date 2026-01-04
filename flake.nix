@@ -51,7 +51,9 @@
       ];
 
       configuration =
-        { type ? "personal" }:
+        {
+          type ? "personal",
+        }:
         inputs.darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
