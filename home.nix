@@ -14,6 +14,7 @@
     fd
     fzf
     gh
+    jq
     htop
     eza
     mise
