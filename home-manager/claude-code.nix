@@ -8,17 +8,6 @@
 let
   # MCP Server definitions - Single Source of Truth
   mcpServerDefs = {
-    filesystem = {
-      command = "npx";
-      args = [
-        "-y"
-        "@anthropic-ai/mcp-filesystem"
-      ];
-    };
-    git = {
-      command = "uvx";
-      args = [ "mcp-server-git" ];
-    };
     context7 = {
       command = "npx";
       args = [
@@ -26,25 +15,11 @@ let
         "@upstash/context7-mcp"
       ];
     };
-    github = {
+    chrome-devtools = {
       command = "npx";
       args = [
         "-y"
-        "@modelcontextprotocol/server-github"
-      ];
-    };
-    playwright = {
-      command = "npx";
-      args = [
-        "-y"
-        "@anthropic-ai/mcp-playwright"
-      ];
-    };
-    "ast-grep" = {
-      command = "npx";
-      args = [
-        "-y"
-        "@anthropic-ai/mcp-ast-grep"
+        "chrome-devtools-mcp@latest"
       ];
     };
   };
