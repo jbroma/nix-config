@@ -8,5 +8,9 @@
   programs.claude-code = {
     enable = true;
     package = pkgs.claude-code;
+    settings = {
+      # disalbe all mcp servers by default
+      enableAllProjectMcpServers = false;
+    };
   };
 }
