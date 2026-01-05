@@ -48,6 +48,7 @@
       cleanshot-x
       claude-code
       cursor
+      zed-editor
       raycast
       minisim
       discord
