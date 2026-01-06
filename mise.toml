@@ -26,8 +26,8 @@ head -20 ~/.config/claude/mcp-servers.json 2>/dev/null || echo "Not configured"
 '''
 
 [tasks.ai-update]
-description = "Update ai git submodule to latest"
-run = "git submodule update --remote ai"
+description = "Update ai flake input submodule to latest"
+run = "nix flake update ai"
 
 [tasks.ai-validate]
 description = "Validate JSON configurations"

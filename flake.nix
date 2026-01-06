@@ -16,6 +16,10 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ai = {
+      url = "git+ssh://git@github.com/jbroma/ai-sauce.git";
+      flake = false;
+    };
   };
 
   outputs =
@@ -58,6 +62,7 @@
           inherit system;
           specialArgs = {
             inherit type user;
+            ai = inputs.ai;
           };
           modules = darwinModules ++ [
             {

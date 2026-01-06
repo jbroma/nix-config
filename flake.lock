@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "ai": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767571652,
+        "narHash": "sha256-+jI3+5m+VtZz9U6JmGbJvKzyHzo64n6WDE9w06ZxC3w=",
+        "ref": "refs/heads/main",
+        "rev": "d1c41f54023da12fd6177f20e32075624e263b49",
+        "revCount": 45,
+        "type": "git",
+        "url": "ssh://git@github.com/jbroma/ai-sauce.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/jbroma/ai-sauce.git"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -92,6 +108,7 @@
     },
     "root": {
       "inputs": {
+        "ai": "ai",
         "darwin": "darwin",
         "home-manager": "home-manager",
         "nix-vscode-extensions": "nix-vscode-extensions",

@@ -1,12 +1,9 @@
 {
-  config,
   pkgs,
+  ai,
   ...
 }:
 let
-  # Use absolute path to avoid nix flake git tracking issues
-  aiDir = "${config.home.homeDirectory}/.nix/ai";
-
   cursorSettingsPath = builtins.path {
     path = ../dotfiles/vscode/settings.json;
     name = "source";
@@ -15,7 +12,7 @@ let
 in
 {
   # Cursor symlink
-  home.file.".cursorrules".source = config.lib.file.mkOutOfStoreSymlink "${aiDir}/AGENTS.md";
+  home.file.".cursorrules".source = "${ai}/AGENTS.md";
 
   programs.vscode = {
     enable = true;
