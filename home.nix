@@ -1,9 +1,12 @@
 {
   pkgs,
+  ai,
   ...
 }:
 
 {
+  # Symlink ai flake input to ~/.nix/ai for visibility
+  home.file.".nix/ai".source = ai;
   # List packages you want to install for your user only.
   home.packages = with pkgs; [
     # dev
