@@ -6,8 +6,8 @@
         "scope": "user",
         "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0",
         "version": "1.0.0",
-        "installedAt": "2025-12-25T21:33:58.689Z",
-        "lastUpdated": "2025-12-25T21:33:58.689Z"
+        "installedAt": "2026-01-11T20:19:00.201Z",
+        "lastUpdated": "2026-01-11T20:19:00.201Z"
       }
     ],
     "superpowers@superpowers-marketplace": [
@@ -25,26 +25,44 @@
         "scope": "user",
         "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-simplifier/1.0.0",
         "version": "1.0.0",
-        "installedAt": "2026-01-11T19:09:17.400Z",
-        "lastUpdated": "2026-01-11T19:09:17.400Z"
+        "installedAt": "2026-01-11T20:18:57.275Z",
+        "lastUpdated": "2026-01-11T20:18:57.275Z"
       }
     ],
     "security-guidance@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/security-guidance/1.0.0",
-        "version": "1.0.0",
-        "installedAt": "2026-01-11T20:31:00.000Z",
-        "lastUpdated": "2026-01-11T20:31:00.000Z"
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/security-guidance/unknown",
+        "version": "unknown",
+        "installedAt": "2026-01-11T20:18:59.042Z",
+        "lastUpdated": "2026-01-11T20:18:59.042Z"
       }
     ],
     "commit-commands@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/commit-commands/1.0.0",
-        "version": "1.0.0",
-        "installedAt": "2026-01-11T20:31:00.000Z",
-        "lastUpdated": "2026-01-11T20:31:00.000Z"
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/commit-commands/unknown",
+        "version": "unknown",
+        "installedAt": "2026-01-11T20:18:57.872Z",
+        "lastUpdated": "2026-01-11T20:18:57.872Z"
+      }
+    ],
+    "feature-dev@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/feature-dev/unknown",
+        "version": "unknown",
+        "installedAt": "2026-01-11T20:18:58.455Z",
+        "lastUpdated": "2026-01-11T20:18:58.455Z"
+      }
+    ],
+    "code-review@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-review/unknown",
+        "version": "unknown",
+        "installedAt": "2026-01-11T20:18:56.687Z",
+        "lastUpdated": "2026-01-11T20:18:56.687Z"
       }
     ]
   }
