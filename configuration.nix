@@ -60,7 +60,7 @@
       oh-my-posh
       nerd-fonts.fira-code
       nerd-fonts.hack
-      nixfmt-rfc-style
+      nixfmt
       mkcert
       vim
       gnupg
