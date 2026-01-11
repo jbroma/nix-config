@@ -1,81 +1,259 @@
-# This is a demo config to showcase some of the most important commands.
-# It is meant to be changed and configured, as it is intentionally kept sparse.
-# For a (much) more advanced configuration example see my dotfiles:
-# https://github.com/FelixKratz/dotfiles
+#!/bin/bash
 
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 
+##### Color Palette #####
+TRANSPARENT=0x00000000
+GLASS_BG=0x26ffffff
+GLASS_BORDER=0x33ffffff
+WHITE=0xffffffff
+WHITE_50=0x80ffffff
+
+# Colorful accents
+BLUE=0xff82aaff
+GREEN=0xffc3e88d
+YELLOW=0xffffcb6b
+ORANGE=0xfff78c6c
+PINK=0xffff79c6
+PURPLE=0xffc792ea
+CYAN=0xff89ddff
+RED=0xffff5370
+
+##### Nerd Font Material Design Icons (literal unicode) #####
+ICON_TERMINAL="󰆍"   # nf-md-console
+ICON_GLOBE="󰖟"      # nf-md-web
+ICON_CODE="󰅴"       # nf-md-code-tags
+ICON_SLACK="󰒱"      # nf-md-slack
+ICON_SPOTIFY="󰓇"    # nf-md-spotify
+ICON_CLOCK="󰥔"      # nf-md-clock
+ICON_CALENDAR="󰃭"   # nf-md-calendar
+ICON_VOLUME="󰕾"     # nf-md-volume-high
+ICON_APPS="󰀻"       # nf-md-apps
+ICON_NUMERIC="󰎤"    # nf-md-numeric (for generic workspaces)
+
 ##### Bar Appearance #####
-# Configuring the general appearance of the bar.
-# These are only some of the options available. For all options see:
-# https://felixkratz.github.io/SketchyBar/config/bar
-# If you are looking for other colors, see the color picker:
-# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+# Fully transparent bar - islands provide their own backgrounds
+sketchybar --bar \
+  position=top \
+  height=40 \
+  color=$TRANSPARENT \
+  shadow=off \
+  padding_left=10 \
+  padding_right=10 \
+  margin=10 \
+  y_offset=4 \
+  corner_radius=0 \
+  blur_radius=0
 
-sketchybar --bar position=top height=32 color=0xFF000000 blur_radius=30 padding_left=0 padding_right=10
-
-##### Changing Defaults #####
-# We now change some default values, which are applied to all further items.
-# For a full list of all available item properties see:
-# https://felixkratz.github.io/SketchyBar/config/items
-
+##### Defaults #####
 default=(
-  icon.font="Hack Nerd Font:Bold:15.0"
+  icon.font="Hack Nerd Font:Bold:14.0"
   label.font="Hack Nerd Font:Bold:12.0"
-  icon.color=0xffffffff
-  label.color=0xffffffff
-  icon.padding_left=4
-  icon.padding_right=4
-  label.padding_left=4
-  label.padding_right=4
+  icon.color=$WHITE
+  label.color=$WHITE
+  icon.padding_left=6
+  icon.padding_right=2
+  label.padding_left=2
+  label.padding_right=6
+  background.drawing=off
 )
 sketchybar --default "${default[@]}"
 
-# Workspaces
-workspaces=$(aerospace list-workspaces --all)
-first_workspace=$(echo "$workspaces" | head -n 1)
-last_workspace=$(echo "$workspaces" | tail -n 1)
+##### Left Island 1: Front App #####
+sketchybar --add item front_app left \
+  --set front_app \
+    icon="$ICON_APPS" \
+    icon.color=$CYAN \
+    icon.font="Hack Nerd Font:Bold:14.0" \
+    icon.padding_left=8 \
+    icon.padding_right=2 \
+    label.color=$WHITE \
+    label.font="Hack Nerd Font:Bold:12.0" \
+    label.padding_left=0 \
+    label.padding_right=8 \
+    label.max_chars=15 \
+    script="$PLUGIN_DIR/front_app.sh" \
+  --subscribe front_app front_app_switched
 
+# Front app island background
+sketchybar --add bracket front_app_island front_app \
+  --set front_app_island \
+    background.drawing=on \
+    background.color=$GLASS_BG \
+    background.border_color=$GLASS_BORDER \
+    background.border_width=1 \
+    background.corner_radius=14 \
+    background.height=28 \
+    background.blur_radius=30
+
+# Spacer between islands
+sketchybar --add item spacer_left left \
+  --set spacer_left \
+    icon.drawing=off \
+    label.drawing=off \
+    width=8
+
+##### Left Island 2: Workspaces #####
 sketchybar --add event aerospace_workspace_change
 
+# Workspace icons based on app assignments
+ICON_FOLDER="󰉋"    # nf-md-folder
+
+declare -A WORKSPACE_ICONS
+WORKSPACE_ICONS=(
+  [1]="$ICON_TERMINAL"  # Ghostty
+  [2]="$ICON_GLOBE"     # Chrome/Safari
+  [3]="$ICON_CODE"      # Cursor
+  [4]="$ICON_SLACK"     # Slack/Discord
+  [5]="$ICON_SPOTIFY"   # Spotify
+  [6]="$ICON_FOLDER"
+  [7]="$ICON_FOLDER"
+  [8]="$ICON_FOLDER"
+  [9]="$ICON_FOLDER"
+)
+
+declare -A WORKSPACE_COLORS
+WORKSPACE_COLORS=(
+  [1]=$CYAN
+  [2]=$BLUE
+  [3]=$PURPLE
+  [4]=$PINK
+  [5]=$GREEN
+  [6]=$WHITE
+  [7]=$WHITE
+  [8]=$WHITE
+  [9]=$WHITE
+)
+
+workspaces=$(aerospace list-workspaces --all)
+
 for sid in $workspaces; do
-	sketchybar --add item space.$sid left \
-		--subscribe space.$sid aerospace_workspace_change \
-		--set space.$sid \
-		background.drawing=off \
-		label.color=0xff9a9a9a \
-		label="$sid" \
-		click_script="aerospace workspace $sid" \
-		script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+  icon="${WORKSPACE_ICONS[$sid]:-$sid}"
+  color="${WORKSPACE_COLORS[$sid]:-$WHITE_50}"
+
+  # All workspaces use same layout: icon + number
+  sketchybar --add item space.$sid left \
+    --subscribe space.$sid aerospace_workspace_change \
+    --set space.$sid \
+      icon="$icon" \
+      icon.color=$WHITE_50 \
+      icon.font="Hack Nerd Font:Bold:14.0" \
+      icon.padding_left=6 \
+      icon.padding_right=2 \
+      label="$sid" \
+      label.color=$WHITE_50 \
+      label.font="Hack Nerd Font:Bold:11.0" \
+      label.padding_left=0 \
+      label.padding_right=6 \
+      click_script="aerospace workspace $sid" \
+      script="$PLUGIN_DIR/aerospace.sh $sid"
 done
 
-##### Adding Left Items #####
-# We add some regular items to the left side of the bar, where
-# only the properties deviating from the current defaults need to be set
+# Workspaces island background bracket
+sketchybar --add bracket workspaces_island '/space\..*/' \
+  --set workspaces_island \
+    background.drawing=on \
+    background.color=$GLASS_BG \
+    background.border_color=$GLASS_BORDER \
+    background.border_width=1 \
+    background.corner_radius=14 \
+    background.height=28 \
+    background.blur_radius=30
 
-sketchybar --add item front_app left \
-           --set front_app background.padding_left=10 icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
-           --subscribe front_app front_app_switched
+##### Right Island: Status Items #####
 
-##### Adding Right Items #####
-# In the same way as the left items we can add items to the right side.
-# Additional position (e.g. center) are available, see:
-# https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
+# Date (leftmost in right island)
+sketchybar --add item date right \
+  --set date \
+    update_freq=60 \
+    icon="$ICON_CALENDAR" \
+    icon.color=$PURPLE \
+    icon.font="Hack Nerd Font:Bold:14.0" \
+    icon.padding_left=8 \
+    icon.padding_right=4 \
+    label.padding_left=0 \
+    label.padding_right=8 \
+    script="$PLUGIN_DIR/date.sh"
 
-# Some items refresh on a fixed cycle, e.g. the clock runs its script once
-# every 10s. Other items respond to events they subscribe to, e.g. the
-# volume.sh script is only executed once an actual change in system audio
-# volume is registered. More info about the event system can be found here:
-# https://felixkratz.github.io/SketchyBar/config/events
+# Separator
+sketchybar --add item sep0 right \
+  --set sep0 \
+    icon.drawing=off \
+    label=│ \
+    label.color=$WHITE_50 \
+    label.font="Hack Nerd Font:Regular:12.0" \
+    label.padding_left=0 \
+    label.padding_right=0
 
+# Clock
 sketchybar --add item clock right \
-           --set clock update_freq=10 icon=󰥔 script="$PLUGIN_DIR/clock.sh" \
-           --add item volume right \
-           --set volume script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change \
-           --add item battery right \
-           --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
-           --subscribe battery system_woke power_source_change
+  --set clock \
+    update_freq=10 \
+    icon="$ICON_CLOCK" \
+    icon.color=$YELLOW \
+    icon.font="Hack Nerd Font:Bold:14.0" \
+    icon.padding_left=8 \
+    icon.padding_right=4 \
+    label.padding_left=0 \
+    label.padding_right=8 \
+    script="$PLUGIN_DIR/clock.sh"
 
-##### Force all scripts to run the first time (never do this in a script) #####
+# Separator
+sketchybar --add item sep1 right \
+  --set sep1 \
+    icon.drawing=off \
+    label=│ \
+    label.color=$WHITE_50 \
+    label.font="Hack Nerd Font:Regular:12.0" \
+    label.padding_left=0 \
+    label.padding_right=0
+
+# Battery
+sketchybar --add item battery right \
+  --set battery \
+    update_freq=120 \
+    icon.color=$GREEN \
+    icon.font="Hack Nerd Font:Bold:16.0" \
+    icon.padding_left=8 \
+    icon.padding_right=4 \
+    label.font="Hack Nerd Font:Bold:11.0" \
+    label.padding_left=0 \
+    label.padding_right=8 \
+    script="$PLUGIN_DIR/battery.sh" \
+  --subscribe battery system_woke power_source_change
+
+# Separator
+sketchybar --add item sep2 right \
+  --set sep2 \
+    icon.drawing=off \
+    label=│ \
+    label.color=$WHITE_50 \
+    label.font="Hack Nerd Font:Regular:12.0" \
+    label.padding_left=0 \
+    label.padding_right=0
+
+# Volume (rightmost in right island)
+sketchybar --add item volume right \
+  --set volume \
+    icon="$ICON_VOLUME" \
+    icon.color=$BLUE \
+    icon.font="Hack Nerd Font:Bold:14.0" \
+    icon.padding_left=8 \
+    icon.padding_right=8 \
+    label.drawing=off \
+    script="$PLUGIN_DIR/volume.sh" \
+  --subscribe volume volume_change
+
+# Right island background bracket
+sketchybar --add bracket right_island volume sep2 battery sep1 clock sep0 date \
+  --set right_island \
+    background.drawing=on \
+    background.color=$GLASS_BG \
+    background.border_color=$GLASS_BORDER \
+    background.border_width=1 \
+    background.corner_radius=14 \
+    background.height=28 \
+    background.blur_radius=30
+
+##### Initialize #####
 sketchybar --update

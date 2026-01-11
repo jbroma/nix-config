@@ -128,13 +128,13 @@
           vertical = 16;
         };
         outer = {
-          left = 0;
-          bottom = 0;
+          left = 10;
+          bottom = 10;
           top = [
-            { monitor."^built-in retina display$" = 2; }
-            30
+            { monitor."^built-in retina display$" = 16; }
+            44
           ];
-          right = 0;
+          right = 10;
         };
       };
 
