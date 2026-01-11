@@ -27,10 +27,7 @@ let
   enabledPlugins = lib.genAttrs plugins (_: true);
 
   claude = "${pkgs.claude-code}/bin/claude";
-
-  pluginInstallScript = lib.concatMapStringsSep "\n" (plugin: ''
-    run ${claude} plugin install ${plugin} --scope user 2>/dev/null || true
-  '') plugins;
+  setupScript = "${dotfilesDir}/claude/scripts/setup-plugins.sh";
 in
 {
   home.sessionVariables = {
@@ -44,16 +41,10 @@ in
   home.file.".claude/hooks".source = "${ai}/hooks";
   home.file.".claude/skills".source = "${ai}/skills";
 
-  # Plugin config: direct symlinks via activation (avoids nix store symlink chain)
-  # This works around Claude Code only resolving one level of symlinks
+  # Plugin setup: symlinks config files and installs missing plugins
+  # Uses direct symlinks (not nix store) since Claude Code only resolves one level
   home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    run mkdir -p "$HOME/.claude/plugins"
-
-    run ln -sf "${dotfilesDir}/claude/plugins/known_marketplaces.json" "$HOME/.claude/plugins/known_marketplaces.json"
-    run ln -sf "${dotfilesDir}/claude/plugins/installed_plugins.json" "$HOME/.claude/plugins/installed_plugins.json"
-
-    # Install plugins
-    ${pluginInstallScript}
+    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude
   '';
 
   programs.claude-code = {
