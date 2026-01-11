@@ -64,6 +64,15 @@
         "installedAt": "2026-01-11T20:33:29.041Z",
         "lastUpdated": "2026-01-11T20:33:29.041Z"
       }
+    ],
+    "claude-island@local-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/local-marketplace/claude-island/1.2.0",
+        "version": "1.2.0",
+        "installedAt": "2026-01-11T23:04:07.413Z",
+        "lastUpdated": "2026-01-11T23:04:07.413Z"
+      }
     ]
   }
 }

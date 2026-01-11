@@ -22,5 +22,13 @@
     },
     "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/anthropic-agent-skills",
     "lastUpdated": "2026-01-11T20:13:18.472Z"
+  },
+  "local-marketplace": {
+    "source": {
+      "source": "directory",
+      "path": "/nix/store/8lc5j69y66624drq0pyzz22yflrc722m-source/marketplace"
+    },
+    "installLocation": "/nix/store/8lc5j69y66624drq0pyzz22yflrc722m-source/marketplace",
+    "lastUpdated": "2026-01-11T23:43:49.492Z"
   }
 }

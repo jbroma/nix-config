@@ -24,7 +24,12 @@ let
   plugins = builtins.attrNames installedPluginsJson.plugins;
 
   # Convert plugin list to { "plugin@marketplace" = true; } format
-  enabledPlugins = lib.genAttrs plugins (_: true);
+  enabledPlugins = lib.genAttrs plugins (_: true) // {
+    "claude-island@local-marketplace" = true;
+  };
+
+  # Local marketplace for custom plugins (from ai submodule)
+  localMarketplacePath = "${ai}/marketplace";
 
   claude = "${pkgs.claude-code}/bin/claude";
   setupScript = "${dotfilesDir}/claude/scripts/setup-plugins.sh";
@@ -44,7 +49,7 @@ in
   # Plugin setup: symlinks config files and installs missing plugins
   # Uses direct symlinks (not nix store) since Claude Code only resolves one level
   home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude
+    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude ${localMarketplacePath}
   '';
 
   programs.claude-code = {
@@ -57,6 +62,15 @@ in
       enableAllProjectMcpServers = false;
       # Enable plugins from dotfile (single source of truth)
       enabledPlugins = enabledPlugins;
+      # Local marketplace for custom plugins (e.g., claude-island)
+      extraKnownMarketplaces = {
+        "local-marketplace" = {
+          source = {
+            source = "file";
+            path = "${localMarketplacePath}/.claude-plugin/marketplace.json";
+          };
+        };
+      };
       hooks = hookDefinitions;
       sandbox = {
         enabled = true;
