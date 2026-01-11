@@ -52,6 +52,7 @@
       # zed-editor
       raycast
       minisim
+      claude-island
       discord
       spotify
       _1password-gui

@@ -72,6 +72,7 @@
                   ghostty = pkgs.ghostty-bin;
                   android-studio = customPkgs.android-studio;
                   minisim = customPkgs.minisim;
+                  claude-island = customPkgs.claude-island;
                   cursor = pkgs.code-cursor;
                   cleanshot-x = customPkgs.cleanshot-x;
                   spotify = super.spotify.overrideAttrs (oldAttrs: {
