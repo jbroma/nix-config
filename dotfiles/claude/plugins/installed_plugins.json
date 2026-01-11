@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "plugins": {
+    "typescript-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2025-12-25T21:33:58.689Z",
+        "lastUpdated": "2025-12-25T21:33:58.689Z"
+      }
+    ],
+    "superpowers@superpowers-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/superpowers-marketplace/superpowers/4.0.2",
+        "version": "4.0.2",
+        "installedAt": "2025-12-26T12:20:07.003Z",
+        "lastUpdated": "2025-12-26T12:20:07.003Z",
+        "gitCommitSha": "131c1f189f75a14faad4227089841d1deee73e2a"
+      }
+    ],
+    "code-simplifier@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-simplifier/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-01-11T19:09:17.400Z",
+        "lastUpdated": "2026-01-11T19:09:17.400Z"
+      }
+    ],
+    "security-guidance@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/security-guidance/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-01-11T20:31:00.000Z",
+        "lastUpdated": "2026-01-11T20:31:00.000Z"
+      }
+    ],
+    "commit-commands@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/commit-commands/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-01-11T20:31:00.000Z",
+        "lastUpdated": "2026-01-11T20:31:00.000Z"
+      }
+    ]
+  }
+}

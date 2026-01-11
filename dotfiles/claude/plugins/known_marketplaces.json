@@ -1,0 +1,26 @@
+{
+	"claude-plugins-official": {
+		"source": {
+			"source": "github",
+			"repo": "anthropics/claude-plugins-official"
+		},
+		"installLocation": "/Users/jbroma/.claude/plugins/marketplaces/claude-plugins-official",
+		"lastUpdated": "2026-01-11T19:12:20.945Z"
+	},
+	"superpowers-marketplace": {
+		"source": {
+			"source": "github",
+			"repo": "obra/superpowers-marketplace"
+		},
+		"installLocation": "/Users/jbroma/.claude/plugins/marketplaces/superpowers-marketplace",
+		"lastUpdated": "2026-01-11T19:09:04.493Z"
+	},
+	"anthropic-agent-skills": {
+		"source": {
+			"source": "github",
+			"repo": "anthropics/skills"
+		},
+		"installLocation": "/Users/jbroma/.claude/plugins/marketplaces/anthropic-agent-skills",
+		"lastUpdated": "2026-01-11T19:09:00.610Z"
+	}
+}
