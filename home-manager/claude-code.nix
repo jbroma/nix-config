@@ -1,11 +1,17 @@
 {
   pkgs,
   ai,
+  config,
   ...
 }:
 
 let
-  hookDefinitions = builtins.fromJSON (builtins.readFile "${ai}/hooks/definitions.json");
+  hooksDir = "${config.home.homeDirectory}/.claude/hooks";
+  hookDefinitionsRaw = builtins.readFile "${ai}/hooks/definitions.json";
+  hookDefinitionsResolved =
+    builtins.replaceStrings [ "$USER_HOOKS_DIR" ] [ hooksDir ]
+      hookDefinitionsRaw;
+  hookDefinitions = builtins.fromJSON hookDefinitionsResolved;
 in
 {
   home.sessionVariables = {
