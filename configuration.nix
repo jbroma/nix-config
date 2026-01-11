@@ -49,7 +49,7 @@
       cleanshot-x
       claude-code
       cursor
-      zed-editor
+      # zed-editor
       raycast
       minisim
       discord

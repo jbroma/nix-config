@@ -51,6 +51,6 @@
     ./home-manager/claude-code.nix
     ./home-manager/gemini.nix
     ./home-manager/mcp-servers.nix
-    ./home-manager/zed.nix
+    # ./home-manager/zed.nix
   ];
 }
