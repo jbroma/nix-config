@@ -25,6 +25,7 @@
     ripgrep
     # sketchybar # gets installed on it's own when using home-manager integration
     tree
+    typescript-language-server
     watchman
     zellij
   ];
