@@ -17,10 +17,6 @@ in
     enable = true;
     enableZshIntegration = true;
 
-    settings = {
-      experimental = true;
-    };
-
     globalConfig = {
       hooks = {
         enter = "mise install";
