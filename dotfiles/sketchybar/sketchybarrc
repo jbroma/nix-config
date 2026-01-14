@@ -14,8 +14,8 @@ GLASS_BORDER=0x33ffffff
 WHITE=0xffffffff
 WHITE_50=0x80ffffff
 
-# Island shadow (for floating glass effect)
-ISLAND_SHADOW=0x30000000
+# Island shadow (for floating glass effect - subtle)
+ISLAND_SHADOW=0x20000000
 
 ##### Nerd Font Material Design Icons (literal unicode) #####
 ICON_TERMINAL="󰆍"   # nf-md-console
@@ -85,7 +85,7 @@ sketchybar --add bracket front_app_island front_app \
     background.blur_radius=50 \
     background.shadow.drawing=on \
     background.shadow.color=$ISLAND_SHADOW \
-    background.shadow.distance=6 \
+    background.shadow.distance=3 \
     background.shadow.angle=90
 
 # Spacer between islands
@@ -149,7 +149,7 @@ sketchybar --add bracket workspaces_island '/space\..*/' \
     background.blur_radius=50 \
     background.shadow.drawing=on \
     background.shadow.color=$ISLAND_SHADOW \
-    background.shadow.distance=6 \
+    background.shadow.distance=3 \
     background.shadow.angle=90
 
 ##### Right Island: Status Items #####
@@ -159,13 +159,14 @@ sketchybar --add item date right \
   --set date \
     update_freq=60 \
     icon="$ICON_CALENDAR" \
-    icon.color=$ACCENT \
+    icon.color=$ACCENT_LIGHTEST \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \
     label.padding_left=0 \
     label.padding_right=8 \
-    script="$PLUGIN_DIR/date.sh"
+    script="$PLUGIN_DIR/date.sh" \
+    click_script="$PLUGIN_DIR/click_calendar.sh"
 
 # Separator
 sketchybar --add item sep0 right \
@@ -182,13 +183,14 @@ sketchybar --add item clock right \
   --set clock \
     update_freq=10 \
     icon="$ICON_CLOCK" \
-    icon.color=$ACCENT \
+    icon.color=$ACCENT_LIGHTER \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \
     label.padding_left=0 \
     label.padding_right=8 \
-    script="$PLUGIN_DIR/clock.sh"
+    script="$PLUGIN_DIR/clock.sh" \
+    click_script="$PLUGIN_DIR/click_clock.sh"
 
 # Separator
 sketchybar --add item sep1 right \
@@ -204,7 +206,7 @@ sketchybar --add item sep1 right \
 sketchybar --add item battery right \
   --set battery \
     update_freq=120 \
-    icon.color=$ACCENT \
+    icon.color=$ACCENT_LIGHT \
     icon.font="Hack Nerd Font:Bold:16.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \
@@ -212,6 +214,7 @@ sketchybar --add item battery right \
     label.padding_left=0 \
     label.padding_right=8 \
     script="$PLUGIN_DIR/battery.sh" \
+    click_script="$PLUGIN_DIR/click_battery.sh" \
   --subscribe battery system_woke power_source_change
 
 # Separator
@@ -231,10 +234,16 @@ sketchybar --add item volume right \
     icon.color=$ACCENT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
-    icon.padding_right=8 \
-    label.drawing=off \
+    icon.padding_right=4 \
+    label.font="Hack Nerd Font:Bold:11.0" \
+    label.padding_left=0 \
+    label.padding_right=8 \
+    scroll_texts=off \
     script="$PLUGIN_DIR/volume.sh" \
-  --subscribe volume volume_change
+    click_script="$PLUGIN_DIR/click_sound.sh" \
+  --subscribe volume volume_change mouse.scrolled \
+  --set volume scroll_up_script="$PLUGIN_DIR/volume_up.sh" \
+               scroll_down_script="$PLUGIN_DIR/volume_down.sh"
 
 # Right island background bracket
 sketchybar --add bracket right_island volume sep2 battery sep1 clock sep0 date \
@@ -248,7 +257,7 @@ sketchybar --add bracket right_island volume sep2 battery sep1 clock sep0 date \
     background.blur_radius=50 \
     background.shadow.drawing=on \
     background.shadow.color=$ISLAND_SHADOW \
-    background.shadow.distance=6 \
+    background.shadow.distance=3 \
     background.shadow.angle=90
 
 ##### Initialize #####

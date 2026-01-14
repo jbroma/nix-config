@@ -1,6 +1,8 @@
 #!/bin/bash
 
-BLUE=0xff82aaff
+# Load system accent color
+source "$CONFIG_DIR/plugins/accent_color.sh"
+
 WHITE_50=0x80ffffff
 
 # Nerd Font Material Design volume icons (literal unicode)
@@ -17,10 +19,10 @@ else
 fi
 
 case "$VOLUME" in
-  [6-9][0-9]|100) ICON=$VOLUME_HIGH; COLOR=$BLUE ;;
-  [3-5][0-9]) ICON=$VOLUME_MED; COLOR=$BLUE ;;
-  [1-9]|[1-2][0-9]) ICON=$VOLUME_LOW; COLOR=$BLUE ;;
-  *) ICON=$VOLUME_MUTE; COLOR=$WHITE_50 ;;
+  [6-9][0-9]|100) ICON=$VOLUME_HIGH; COLOR=$ACCENT ;;
+  [3-5][0-9]) ICON=$VOLUME_MED; COLOR=$ACCENT ;;
+  [1-9]|[1-2][0-9]) ICON=$VOLUME_LOW; COLOR=$ACCENT ;;
+  *) ICON=$VOLUME_MUTE; COLOR=$WHITE_50; VOLUME=0 ;;
 esac
 
-sketchybar --set "$NAME" icon="$ICON" icon.color=$COLOR
+sketchybar --set "$NAME" icon="$ICON" icon.color=$COLOR label="${VOLUME}%"

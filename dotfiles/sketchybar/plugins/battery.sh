@@ -1,10 +1,7 @@
 #!/bin/bash
 
-GREEN=0xffc3e88d
-YELLOW=0xffffcb6b
-ORANGE=0xfff78c6c
-RED=0xffff5370
-BLUE=0xff82aaff
+# Load system accent color
+source "$CONFIG_DIR/plugins/accent_color.sh"
 
 # Nerd Font Material Design battery icons (literal unicode)
 BATTERY_100="󰁹"   # nf-md-battery
@@ -26,23 +23,24 @@ if [ "$PERCENTAGE" = "" ]; then
   exit 0
 fi
 
+# Use accent shades based on battery level
 case "${PERCENTAGE}" in
-  100) ICON=$BATTERY_100; COLOR=$GREEN ;;
-  9[0-9]) ICON=$BATTERY_90; COLOR=$GREEN ;;
-  8[0-9]) ICON=$BATTERY_80; COLOR=$GREEN ;;
-  7[0-9]) ICON=$BATTERY_70; COLOR=$GREEN ;;
-  6[0-9]) ICON=$BATTERY_60; COLOR=$GREEN ;;
-  5[0-9]) ICON=$BATTERY_50; COLOR=$YELLOW ;;
-  4[0-9]) ICON=$BATTERY_40; COLOR=$YELLOW ;;
-  3[0-9]) ICON=$BATTERY_30; COLOR=$ORANGE ;;
-  2[0-9]) ICON=$BATTERY_20; COLOR=$ORANGE ;;
-  1[0-9]) ICON=$BATTERY_10; COLOR=$RED ;;
-  *) ICON=$BATTERY_10; COLOR=$RED ;;
+  100) ICON=$BATTERY_100; COLOR=$ACCENT ;;
+  9[0-9]) ICON=$BATTERY_90; COLOR=$ACCENT ;;
+  8[0-9]) ICON=$BATTERY_80; COLOR=$ACCENT ;;
+  7[0-9]) ICON=$BATTERY_70; COLOR=$ACCENT ;;
+  6[0-9]) ICON=$BATTERY_60; COLOR=$ACCENT_LIGHT ;;
+  5[0-9]) ICON=$BATTERY_50; COLOR=$ACCENT_LIGHT ;;
+  4[0-9]) ICON=$BATTERY_40; COLOR=$ACCENT_LIGHTER ;;
+  3[0-9]) ICON=$BATTERY_30; COLOR=$ACCENT_LIGHTER ;;
+  2[0-9]) ICON=$BATTERY_20; COLOR=$ACCENT_LIGHTEST ;;
+  1[0-9]) ICON=$BATTERY_10; COLOR=$ACCENT_LIGHTEST ;;
+  *) ICON=$BATTERY_10; COLOR=$ACCENT_LIGHTEST ;;
 esac
 
 if [[ "$CHARGING" != "" ]]; then
   ICON=$BATTERY_CHARGING
-  COLOR=$BLUE
+  COLOR=$ACCENT
 fi
 
 sketchybar --set "$NAME" icon="$ICON" icon.color=$COLOR label="${PERCENTAGE}%"
