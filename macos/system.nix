@@ -39,7 +39,7 @@
   system.defaults.CustomUserPreferences = {
     "com.apple.universalaccess" = {
       # Reduce transparency in the menu bar and elsewhere
-      reduceTransparency = true;
+      reduceTransparency = false;
     };
 
     "com.apple.print.PrintingPrefs" = {
