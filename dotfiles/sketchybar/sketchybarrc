@@ -1,6 +1,11 @@
 #!/bin/bash
 
+# Fallback if CONFIG_DIR not set by sketchybar
+CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+# Load system accent color (reads macOS AppleAccentColor)
+source "$PLUGIN_DIR/accent_color.sh"
 
 ##### Color Palette #####
 TRANSPARENT=0x00000000
@@ -9,15 +14,8 @@ GLASS_BORDER=0x33ffffff
 WHITE=0xffffffff
 WHITE_50=0x80ffffff
 
-# Colorful accents
-BLUE=0xff82aaff
-GREEN=0xffc3e88d
-YELLOW=0xffffcb6b
-ORANGE=0xfff78c6c
-PINK=0xffff79c6
-PURPLE=0xffc792ea
-CYAN=0xff89ddff
-RED=0xffff5370
+# Island shadow (for floating glass effect)
+ISLAND_SHADOW=0x30000000
 
 ##### Nerd Font Material Design Icons (literal unicode) #####
 ICON_TERMINAL="󰆍"   # nf-md-console
@@ -63,7 +61,7 @@ sketchybar --default "${default[@]}"
 sketchybar --add item front_app left \
   --set front_app \
     icon="$ICON_APPS" \
-    icon.color=$CYAN \
+    icon.color=$ACCENT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=2 \
@@ -84,7 +82,11 @@ sketchybar --add bracket front_app_island front_app \
     background.border_width=1 \
     background.corner_radius=14 \
     background.height=28 \
-    background.blur_radius=30
+    background.blur_radius=50 \
+    background.shadow.drawing=on \
+    background.shadow.color=$ISLAND_SHADOW \
+    background.shadow.distance=6 \
+    background.shadow.angle=90
 
 # Spacer between islands
 sketchybar --add item spacer_left left \
@@ -112,24 +114,10 @@ WORKSPACE_ICONS=(
   [9]="$ICON_FOLDER"
 )
 
-declare -A WORKSPACE_COLORS
-WORKSPACE_COLORS=(
-  [1]=$CYAN
-  [2]=$BLUE
-  [3]=$PURPLE
-  [4]=$PINK
-  [5]=$GREEN
-  [6]=$WHITE
-  [7]=$WHITE
-  [8]=$WHITE
-  [9]=$WHITE
-)
-
 workspaces=$(aerospace list-workspaces --all)
 
 for sid in $workspaces; do
   icon="${WORKSPACE_ICONS[$sid]:-$sid}"
-  color="${WORKSPACE_COLORS[$sid]:-$WHITE_50}"
 
   # All workspaces use same layout: icon + number
   sketchybar --add item space.$sid left \
@@ -158,7 +146,11 @@ sketchybar --add bracket workspaces_island '/space\..*/' \
     background.border_width=1 \
     background.corner_radius=14 \
     background.height=28 \
-    background.blur_radius=30
+    background.blur_radius=50 \
+    background.shadow.drawing=on \
+    background.shadow.color=$ISLAND_SHADOW \
+    background.shadow.distance=6 \
+    background.shadow.angle=90
 
 ##### Right Island: Status Items #####
 
@@ -167,7 +159,7 @@ sketchybar --add item date right \
   --set date \
     update_freq=60 \
     icon="$ICON_CALENDAR" \
-    icon.color=$PURPLE \
+    icon.color=$ACCENT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \
@@ -190,7 +182,7 @@ sketchybar --add item clock right \
   --set clock \
     update_freq=10 \
     icon="$ICON_CLOCK" \
-    icon.color=$YELLOW \
+    icon.color=$ACCENT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \
@@ -212,7 +204,7 @@ sketchybar --add item sep1 right \
 sketchybar --add item battery right \
   --set battery \
     update_freq=120 \
-    icon.color=$GREEN \
+    icon.color=$ACCENT \
     icon.font="Hack Nerd Font:Bold:16.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \
@@ -236,7 +228,7 @@ sketchybar --add item sep2 right \
 sketchybar --add item volume right \
   --set volume \
     icon="$ICON_VOLUME" \
-    icon.color=$BLUE \
+    icon.color=$ACCENT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=8 \
@@ -253,7 +245,11 @@ sketchybar --add bracket right_island volume sep2 battery sep1 clock sep0 date \
     background.border_width=1 \
     background.corner_radius=14 \
     background.height=28 \
-    background.blur_radius=30
+    background.blur_radius=50 \
+    background.shadow.drawing=on \
+    background.shadow.color=$ISLAND_SHADOW \
+    background.shadow.distance=6 \
+    background.shadow.angle=90
 
 ##### Initialize #####
 sketchybar --update
