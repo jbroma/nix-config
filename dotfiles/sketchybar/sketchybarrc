@@ -61,7 +61,7 @@ sketchybar --default "${default[@]}"
 sketchybar --add item front_app left \
   --set front_app \
     icon="$ICON_APPS" \
-    icon.color=$ACCENT \
+    icon.color=$ACCENT_LIGHT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=2 \
@@ -159,7 +159,7 @@ sketchybar --add item date right \
   --set date \
     update_freq=60 \
     icon="$ICON_CALENDAR" \
-    icon.color=$ACCENT_LIGHTEST \
+    icon.color=$ACCENT_LIGHT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \
@@ -183,7 +183,7 @@ sketchybar --add item clock right \
   --set clock \
     update_freq=10 \
     icon="$ICON_CLOCK" \
-    icon.color=$ACCENT_LIGHTER \
+    icon.color=$ACCENT_LIGHT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \
@@ -231,7 +231,7 @@ sketchybar --add item sep2 right \
 sketchybar --add item volume right \
   --set volume \
     icon="$ICON_VOLUME" \
-    icon.color=$ACCENT \
+    icon.color=$ACCENT_LIGHT \
     icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=8 \
     icon.padding_right=4 \

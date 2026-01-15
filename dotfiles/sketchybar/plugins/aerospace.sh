@@ -9,7 +9,7 @@ WHITE_50=0x80ffffff
 FW="${FOCUSED_WORKSPACE:-$(aerospace list-workspaces --focused)}"
 
 if [ "$1" = "$FW" ]; then
-  sketchybar --set "$NAME" icon.color=$ACCENT label.color=$ACCENT
+  sketchybar --set "$NAME" icon.color=$ACCENT_LIGHT label.color=$ACCENT_LIGHT
 else
   sketchybar --set "$NAME" icon.color=$WHITE_50 label.color=$WHITE_50
 fi
