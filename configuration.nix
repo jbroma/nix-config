@@ -7,6 +7,15 @@
   ...
 }:
 
+let
+  mkLaunchAgent = path: {
+    serviceConfig = {
+      Disabled = false;
+      ProgramArguments = [ path ];
+      RunAtLoad = true;
+    };
+  };
+in
 {
   # use Determinate Nix daemon
   nix.enable = false;
@@ -100,13 +109,13 @@
     };
   };
 
-  # launch raycast on login
-  launchd.user.agents.raycast.serviceConfig = {
-    Disabled = false;
-    ProgramArguments = [
-      "${pkgs.raycast}/Contents/Library/LoginItems/RaycastLauncher.app/Contents/MacOS/RaycastLauncher"
-    ];
-    RunAtLoad = true;
+  # apps to launch on login
+  launchd.user.agents = {
+    raycast = mkLaunchAgent "${pkgs.raycast}/Contents/Library/LoginItems/RaycastLauncher.app/Contents/MacOS/RaycastLauncher";
+    claude-island = mkLaunchAgent "${pkgs.claude-island}/Applications/Claude Island.app/Contents/MacOS/Claude Island";
+    cleanshot-x = lib.mkIf (type == "work") (
+      mkLaunchAgent "${pkgs.cleanshot-x}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X"
+    );
   };
 
   # enable touch id for sudo
