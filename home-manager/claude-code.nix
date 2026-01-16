@@ -37,6 +37,7 @@ in
 {
   home.sessionVariables = {
     CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
+    ENABLE_TOOL_SEARCH = "auto:5";
   };
 
   # Claude Code symlinks (read-only, from ai submodule)
@@ -58,8 +59,6 @@ in
     settings = {
       # Default model - use Opus 4.5 for best quality
       model = "claude-opus-4-5";
-      # Disable all mcp servers by default
-      enableAllProjectMcpServers = false;
       # Enable plugins from dotfile (single source of truth)
       enabledPlugins = enabledPlugins;
       # Local marketplace for custom plugins (e.g., claude-island)
