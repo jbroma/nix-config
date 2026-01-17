@@ -1,7 +1,4 @@
 {
-  config,
-  lib,
-  pkgs,
   ...
 }:
 
@@ -29,4 +26,7 @@
       theme = "GitHub Dark";
     };
   };
+
+  # Screenshot-optimized ghostty config (liquid glass aesthetic)
+  xdg.configFile."ghostty/screenshot-config".source = ../dotfiles/ghostty/screenshot-config;
 }

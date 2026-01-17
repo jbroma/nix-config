@@ -45,6 +45,8 @@
       flake-update = "(cd ~/.nix && nix flake update)";
       cat = "bat";
       code = "cursor";
+      # Screenshot-optimized terminal for Twitter photos
+      ghostty-screenshot = "ghostty --config-file=~/.config/ghostty/screenshot-config";
     };
 
     plugins = [

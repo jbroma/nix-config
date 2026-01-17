@@ -1,0 +1,61 @@
+# Screenshot-optimized ghostty config for Twitter/social media photos
+# Liquid glass aesthetic inspired by Apple
+
+# Font
+font-family = Hack Nerd Font
+font-family-bold = Hack Nerd Font
+font-synthetic-style = italic
+font-synthetic-style = bold-italic
+font-size = 18
+
+# Padding - halved for tighter look
+window-padding-x = 50
+window-padding-y = 40
+window-padding-balance = true
+
+# Window buttons visible, no title text
+macos-titlebar-style = transparent
+macos-titlebar-proxy-icon = hidden
+title = " "
+resize-overlay = never
+window-save-state = never
+confirm-close-surface = false
+
+# Liquid glass - match sketchybar (0x26ffffff = ~15% white)
+background-opacity = 0.15
+background-blur-radius = 50
+macos-window-shadow = true
+
+# Dark glass with light text
+background = 1a1a2e
+foreground = e8e8f0
+selection-background = 4a4a6a
+selection-foreground = ffffff
+cursor-color = 88c0d0
+
+# Light syntax colors for dark glass background
+palette = 0=#2e2e4a
+palette = 1=#ff6b8a
+palette = 2=#7dd3a0
+palette = 3=#ffd080
+palette = 4=#88c0d0
+palette = 5=#c4a0ff
+palette = 6=#80d4d4
+palette = 7=#d0d0e0
+palette = 8=#4a4a6a
+palette = 9=#ff8fa8
+palette = 10=#98e8b8
+palette = 11=#ffe0a0
+palette = 12=#a8d8e8
+palette = 13=#d8b8ff
+palette = 14=#a0e8e8
+palette = 15=#f0f0ff
+
+# Hide UI clutter
+cursor-style = block
+cursor-style-blink = false
+mouse-hide-while-typing = true
+
+# Plain shell - no zellij
+command = /bin/zsh -l
+initial-command =
