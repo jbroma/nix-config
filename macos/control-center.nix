@@ -17,9 +17,5 @@
     "com.apple.controlcenter" = {
       BatteryShowPercentage = false;
     };
-
-    "com.apple.Spotlight" = {
-      MenuItemHidden = true;
-    };
   };
 }

@@ -127,6 +127,7 @@ in
     ./macos/desktop.nix
     ./macos/finder.nix
     ./macos/keyboard.nix
+    ./macos/spotlight.nix
     ./macos/system.nix
   ];
 
