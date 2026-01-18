@@ -47,6 +47,9 @@ in
   home.file.".claude/hooks".source = "${ai}/hooks";
   home.file.".claude/skills".source = "${ai}/skills";
 
+  # Binary symlink for ~/.local/bin (needed by claude code native install)
+  home.file.".local/bin/claude".source = "${pkgs.claude-code}/bin/claude";
+
   # Plugin setup: symlinks config files and installs missing plugins
   # Uses direct symlinks (not nix store) since Claude Code only resolves one level
   home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
