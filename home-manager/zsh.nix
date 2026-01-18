@@ -47,6 +47,8 @@
       code = "cursor";
       # Screenshot-optimized terminal for Twitter photos
       ghostty-screenshot = "ghostty --config-file=~/.config/ghostty/screenshot-config";
+      # Restart Claude Island app
+      island-restart = "killall 'Claude Island'; open -a 'Claude Island'";
     };
 
     plugins = [
