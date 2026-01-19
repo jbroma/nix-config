@@ -43,7 +43,6 @@
       darwin-rebuild-switch = "sudo ~/.nix/scripts/rebuild-and-switch.sh ~/.nix#${type}";
       darwin-cleanup = "sudo nix-collect-garbage --delete-older-than 7d";
       flake-update = "(cd ~/.nix && nix flake update)";
-      cat = "bat";
       code = "cursor";
       # Screenshot-optimized terminal for Twitter photos
       ghostty-screenshot = "ghostty --config-file=~/.config/ghostty/screenshot-config";
