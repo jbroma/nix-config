@@ -73,6 +73,16 @@
         "installedAt": "2026-01-11T23:04:07.413Z",
         "lastUpdated": "2026-01-11T23:04:07.413Z"
       }
+    ],
+    "swift-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/swift-lsp/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-01-20T20:31:50.800Z",
+        "lastUpdated": "2026-01-20T20:31:50.800Z",
+        "gitCommitSha": "96276205880a60fd66bbae981f5ab568e70c4cbf"
+      }
     ]
   }
 }
