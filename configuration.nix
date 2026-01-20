@@ -61,6 +61,7 @@ in
       # zed-editor
       raycast
       minisim
+      handy
       claude-island
       discord
       spotify

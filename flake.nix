@@ -77,6 +77,7 @@
                   claude-code = customPkgs.claude-code;
                   cursor = pkgs.code-cursor;
                   cleanshot-x = customPkgs.cleanshot-x;
+                  handy = customPkgs.handy;
                 })
                 inputs.nix-vscode-extensions.overlays.default
               ];
