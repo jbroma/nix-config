@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
   sourceRoot = ".";
   installPhase = ''
     mkdir -p "$out/Applications"
-    cp -r "Handy.app" "$out/Applications/Handy.app"
+    cp -r Handy/Handy.app "$out/Applications/Handy.app"
   '';
 
   meta = with lib; {
