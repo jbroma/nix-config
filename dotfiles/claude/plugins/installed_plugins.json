@@ -6,8 +6,8 @@
         "scope": "user",
         "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0",
         "version": "1.0.0",
-        "installedAt": "2026-01-11T20:33:32.685Z",
-        "lastUpdated": "2026-01-11T20:33:32.685Z"
+        "installedAt": "2026-01-22T14:21:31.418Z",
+        "lastUpdated": "2026-01-22T14:21:31.418Z"
       }
     ],
     "superpowers@superpowers-marketplace": [
@@ -25,44 +25,44 @@
         "scope": "user",
         "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-simplifier/1.0.0",
         "version": "1.0.0",
-        "installedAt": "2026-01-11T20:33:29.666Z",
-        "lastUpdated": "2026-01-11T20:33:29.666Z"
+        "installedAt": "2026-01-22T14:21:30.275Z",
+        "lastUpdated": "2026-01-22T14:21:30.275Z"
       }
     ],
     "security-guidance@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/security-guidance/96276205880a",
-        "version": "96276205880a",
-        "installedAt": "2026-01-11T20:33:31.501Z",
-        "lastUpdated": "2026-01-19T00:49:23.650Z"
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/security-guidance/e30768372b41",
+        "version": "e30768372b41",
+        "installedAt": "2026-01-22T14:21:30.867Z",
+        "lastUpdated": "2026-01-22T14:26:58.230Z"
       }
     ],
     "commit-commands@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/commit-commands/96276205880a",
-        "version": "96276205880a",
-        "installedAt": "2026-01-11T20:33:30.270Z",
-        "lastUpdated": "2026-01-19T00:49:08.549Z"
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/commit-commands/e30768372b41",
+        "version": "e30768372b41",
+        "installedAt": "2026-01-22T14:21:30.485Z",
+        "lastUpdated": "2026-01-22T14:26:57.824Z"
       }
     ],
     "feature-dev@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/feature-dev/96276205880a",
-        "version": "96276205880a",
-        "installedAt": "2026-01-11T20:33:30.872Z",
-        "lastUpdated": "2026-01-19T00:49:15.939Z"
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/feature-dev/e30768372b41",
+        "version": "e30768372b41",
+        "installedAt": "2026-01-22T14:21:30.678Z",
+        "lastUpdated": "2026-01-22T14:26:58.027Z"
       }
     ],
     "code-review@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-review/96276205880a",
-        "version": "96276205880a",
-        "installedAt": "2026-01-11T20:33:29.041Z",
-        "lastUpdated": "2026-01-19T00:48:46.969Z"
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-review/e30768372b41",
+        "version": "e30768372b41",
+        "installedAt": "2026-01-22T14:21:30.085Z",
+        "lastUpdated": "2026-01-22T14:26:57.433Z"
       }
     ],
     "claude-island@local-marketplace": [
@@ -70,8 +70,8 @@
         "scope": "user",
         "installPath": "/Users/jbroma/.claude/plugins/cache/local-marketplace/claude-island/1.2.0",
         "version": "1.2.0",
-        "installedAt": "2026-01-11T23:04:07.413Z",
-        "lastUpdated": "2026-01-11T23:04:07.413Z"
+        "installedAt": "2026-01-22T14:50:36.417Z",
+        "lastUpdated": "2026-01-22T14:50:36.417Z"
       }
     ],
     "swift-lsp@claude-plugins-official": [
@@ -79,9 +79,8 @@
         "scope": "user",
         "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/swift-lsp/1.0.0",
         "version": "1.0.0",
-        "installedAt": "2026-01-20T20:31:50.800Z",
-        "lastUpdated": "2026-01-20T20:31:50.800Z",
-        "gitCommitSha": "96276205880a60fd66bbae981f5ab568e70c4cbf"
+        "installedAt": "2026-01-22T14:21:31.235Z",
+        "lastUpdated": "2026-01-22T14:21:31.235Z"
       }
     ]
   }

@@ -28,8 +28,8 @@ let
     "claude-island@local-marketplace" = true;
   };
 
-  # Local marketplace for custom plugins (from ai submodule)
-  localMarketplacePath = "${ai}/marketplace";
+  # Local marketplace for custom plugins (symlinked to ~/.claude/plugins/local-marketplace)
+  localMarketplacePath = "${config.home.homeDirectory}/.claude/plugins/local-marketplace";
 
   claude = "${pkgs.claude-code}/bin/claude";
   setupScript = "${dotfilesDir}/claude/scripts/setup-plugins.sh";
@@ -45,6 +45,7 @@ in
   home.file.".claude/agents".source = "${ai}/agents";
   home.file.".claude/commands".source = "${ai}/commands";
   home.file.".claude/hooks".source = "${ai}/hooks";
+  home.file.".claude/plugins/local-marketplace".source = "${ai}/marketplace";
   home.file.".claude/skills".source = "${ai}/skills";
 
   # Binary symlink for ~/.local/bin (needed by claude code native install)
@@ -53,7 +54,7 @@ in
   # Plugin setup: symlinks config files and installs missing plugins
   # Uses direct symlinks (not nix store) since Claude Code only resolves one level
   home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude ${localMarketplacePath}
+    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${localMarketplacePath}"
   '';
 
   programs.claude-code = {

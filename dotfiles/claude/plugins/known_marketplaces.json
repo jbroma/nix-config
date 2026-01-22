@@ -5,7 +5,7 @@
       "repo": "anthropics/claude-plugins-official"
     },
     "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/claude-plugins-official",
-    "lastUpdated": "2026-01-19T00:47:44.187Z"
+    "lastUpdated": "2026-01-22T14:27:21.049Z"
   },
   "superpowers-marketplace": {
     "source": {
@@ -13,7 +13,7 @@
       "repo": "obra/superpowers-marketplace"
     },
     "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/superpowers-marketplace",
-    "lastUpdated": "2026-01-19T00:47:47.722Z"
+    "lastUpdated": "2026-01-22T14:27:24.669Z"
   },
   "anthropic-agent-skills": {
     "source": {
@@ -21,14 +21,14 @@
       "repo": "anthropics/skills"
     },
     "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/anthropic-agent-skills",
-    "lastUpdated": "2026-01-19T00:47:51.824Z"
+    "lastUpdated": "2026-01-22T14:27:29.050Z"
   },
   "local-marketplace": {
     "source": {
       "source": "directory",
-      "path": "/nix/store/8lc5j69y66624drq0pyzz22yflrc722m-source/marketplace"
+      "path": "/Users/jbroma/.claude/plugins/local-marketplace"
     },
-    "installLocation": "/nix/store/8lc5j69y66624drq0pyzz22yflrc722m-source/marketplace",
-    "lastUpdated": "2026-01-19T00:47:51.824Z"
+    "installLocation": "/Users/jbroma/.claude/plugins/local-marketplace",
+    "lastUpdated": "2026-01-22T14:50:36.230Z"
   }
 }
