@@ -13,10 +13,10 @@
     "superpowers@superpowers-marketplace": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/superpowers-marketplace/superpowers/4.0.3",
-        "version": "4.0.3",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/superpowers-marketplace/superpowers/4.1.1",
+        "version": "4.1.1",
         "installedAt": "2025-12-26T12:20:07.003Z",
-        "lastUpdated": "2026-01-19T00:49:32.658Z",
+        "lastUpdated": "2026-01-31T22:42:07.328Z",
         "gitCommitSha": "131c1f189f75a14faad4227089841d1deee73e2a"
       }
     ],
@@ -32,37 +32,37 @@
     "security-guidance@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/security-guidance/e30768372b41",
-        "version": "e30768372b41",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/security-guidance/27d2b86d72da",
+        "version": "27d2b86d72da",
         "installedAt": "2026-01-22T14:21:30.867Z",
-        "lastUpdated": "2026-01-22T14:26:58.230Z"
+        "lastUpdated": "2026-01-31T22:42:04.798Z"
       }
     ],
     "commit-commands@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/commit-commands/e30768372b41",
-        "version": "e30768372b41",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/commit-commands/27d2b86d72da",
+        "version": "27d2b86d72da",
         "installedAt": "2026-01-22T14:21:30.485Z",
-        "lastUpdated": "2026-01-22T14:26:57.824Z"
+        "lastUpdated": "2026-01-31T22:42:04.140Z"
       }
     ],
     "feature-dev@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/feature-dev/e30768372b41",
-        "version": "e30768372b41",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/feature-dev/27d2b86d72da",
+        "version": "27d2b86d72da",
         "installedAt": "2026-01-22T14:21:30.678Z",
-        "lastUpdated": "2026-01-22T14:26:58.027Z"
+        "lastUpdated": "2026-01-31T22:42:04.455Z"
       }
     ],
     "code-review@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-review/e30768372b41",
-        "version": "e30768372b41",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-review/27d2b86d72da",
+        "version": "27d2b86d72da",
         "installedAt": "2026-01-22T14:21:30.085Z",
-        "lastUpdated": "2026-01-22T14:26:57.433Z"
+        "lastUpdated": "2026-01-31T22:42:03.531Z"
       }
     ],
     "claude-island@local-marketplace": [
@@ -81,6 +81,16 @@
         "version": "1.0.0",
         "installedAt": "2026-01-22T14:21:31.235Z",
         "lastUpdated": "2026-01-22T14:21:31.235Z"
+      }
+    ],
+    "agent-island-claude-code@agent-island": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/agent-island/agent-island-claude-code/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-01-25T17:37:11.856Z",
+        "lastUpdated": "2026-01-25T17:37:11.856Z",
+        "gitCommitSha": "09bc52ae5c29503fe54dd6aff2942aee717bdb95"
       }
     ]
   }
