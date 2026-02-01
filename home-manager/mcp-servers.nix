@@ -31,6 +31,16 @@ let
         "mcp"
       ];
     };
+
+    # Hosted MCP servers (HTTP transport)
+    grep = {
+      type = "http";
+      url = "https://mcp.grep.app";
+    };
+    exa = {
+      type = "http";
+      url = "https://mcp.exa.ai/mcp";
+    };
   };
 
   # JSON to merge into ~/.claude.json
