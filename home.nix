@@ -23,8 +23,11 @@
     mise
     pnpm
     ripgrep
+    sd
     # sketchybar # gets installed on it's own when using home-manager integration
     tree
+    choose
+    curlie
     typescript-language-server
     watchman
     zellij
