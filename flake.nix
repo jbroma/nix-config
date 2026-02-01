@@ -81,6 +81,7 @@
                   handy = customPkgs.handy;
                   dcg = customPkgs.dcg;
                   zed-editor = customPkgs.zed-editor;
+                  worktrunk = customPkgs.worktrunk;
                 })
                 inputs.nix-vscode-extensions.overlays.default
               ];

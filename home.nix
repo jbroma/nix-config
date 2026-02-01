@@ -33,6 +33,7 @@
     watchman
     zellij
     dcg
+    worktrunk
   ];
 
   home.stateVersion = "25.11";
