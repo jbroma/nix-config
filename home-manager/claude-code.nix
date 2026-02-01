@@ -92,6 +92,10 @@ in
           allowLocalBinding = true;
         };
       };
+      statusLine = {
+        type = "command";
+        command = "${dotfilesDir}/claude/scripts/statusline.sh";
+      };
     };
   };
 }
