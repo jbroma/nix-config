@@ -48,6 +48,8 @@
       ghostty-screenshot = "ghostty --config-file=~/.config/ghostty/screenshot-config";
       # Restart Claude Island app
       island-restart = "killall 'Claude Island'; sleep 1; open -a 'Claude Island'";
+      # Worktrunk switch
+      wsc = "wt switch --create --execute=claude";
     };
 
     plugins = [

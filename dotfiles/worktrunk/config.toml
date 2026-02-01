@@ -1,0 +1,25 @@
+# Worktrunk user configuration
+# https://worktrunk.dev/config/
+
+# Central location for worktrees on the system
+worktree-path = "~/.worktrees/{{ repo }}/{{ branch | sanitize }}"
+
+# Commit message generation using dcg
+[commit.generation]
+command = "MAX_THINKING_TOKENS=0 claude -p --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"
+
+# Default commit behavior: stage all changes
+[commit]
+stage = "all"
+
+# Merge defaults
+[merge]
+squash = true      # Squash commits into one (--no-squash to preserve history)
+commit = true      # Commit uncommitted changes first (--no-commit to skip)
+rebase = true      # Rebase onto target before merge (--no-rebase to skip)
+remove = true      # Remove worktree after merge (--no-remove to keep)
+verify = true      # Run project hooks (--no-verify to skip)
+
+# Eliminate cold starts by copying gitignored files to new worktrees
+[post-start]
+copy = "wt step copy-ignored"
