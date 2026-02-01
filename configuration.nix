@@ -59,7 +59,7 @@ in
       cleanshot-x
       claude-code
       cursor
-      # zed-editor
+      zed-editor
       raycast
       minisim
       handy
@@ -107,7 +107,12 @@ in
     useUserPackages = true;
     users.${user.username} = import ./home.nix;
     extraSpecialArgs = {
-      inherit type user utils ai;
+      inherit
+        type
+        user
+        utils
+        ai
+        ;
     };
   };
 

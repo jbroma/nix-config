@@ -1,0 +1,101 @@
+{
+	"theme": {
+		"mode": "dark",
+		"dark": "GitHub Dark Default",
+		"light": "GitHub Light Default"
+	},
+	"buffer_font_family": "Hack Nerd Font",
+	"buffer_font_size": 12,
+	"buffer_font_features": {
+		"liga": false
+	},
+	"ui_font_family": "Hack Nerd Font",
+	"ui_font_size": 14,
+	"hard_tabs": true,
+	"tab_size": 4,
+	"format_on_save": "on",
+	"soft_wrap": "editor_width",
+	"show_whitespaces": "none",
+	"git": {
+		"inline_blame": {
+			"enabled": true
+		}
+	},
+	"terminal": {
+		"font_family": "Hack Nerd Font",
+		"font_size": 14,
+		"line_height": "standard",
+		"shell": {
+			"program": "zsh",
+			"args": ["-l"]
+		},
+		"working_directory": "current_project_directory"
+	},
+	"autosave": "off",
+	"languages": {
+		"JavaScript": {
+			"formatter": "prettier",
+			"format_on_save": "on"
+		},
+		"TypeScript": {
+			"formatter": "prettier",
+			"format_on_save": "on"
+		},
+		"TSX": {
+			"formatter": "prettier",
+			"format_on_save": "on"
+		},
+		"JSON": {
+			"formatter": "prettier",
+			"format_on_save": "on"
+		},
+		"JSONC": {
+			"formatter": "prettier",
+			"format_on_save": "on"
+		},
+		"Markdown": {
+			"formatter": "prettier",
+			"format_on_save": "on",
+			"soft_wrap": "editor_width"
+		},
+		"YAML": {
+			"formatter": "prettier",
+			"format_on_save": "on"
+		},
+		"Python": {
+			"tab_size": 4,
+			"hard_tabs": false
+		},
+		"Rust": {
+			"formatter": "language_server",
+			"format_on_save": "on"
+		}
+	},
+	"lsp": {
+		"rust-analyzer": {
+			"initialization_options": {
+				"checkOnSave": true,
+				"check": {
+					"command": "clippy"
+				}
+			}
+		}
+	},
+	"prettier": {
+		"semi": true,
+		"singleQuote": true,
+		"tabWidth": 4,
+		"trailingComma": "all",
+		"useTabs": true
+	},
+	"agent": {
+		"default_model": {
+			"provider": "zed.dev",
+			"model": "claude-sonnet-4"
+		}
+	},
+	"edit_predictions": {
+		"mode": "eager"
+	},
+	"show_edit_predictions": true
+}
