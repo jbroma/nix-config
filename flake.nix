@@ -80,6 +80,7 @@
                   cleanshot-x = customPkgs.cleanshot-x;
                   handy = customPkgs.handy;
                   dcg = customPkgs.dcg;
+                  zed-editor = customPkgs.zed-editor;
                 })
                 inputs.nix-vscode-extensions.overlays.default
               ];
