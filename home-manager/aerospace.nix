@@ -96,6 +96,11 @@
           run = "move-node-to-workspace 3";
         }
         {
+          # Zed
+          "if".app-id = "dev.zed.Zed";
+          run = "move-node-to-workspace 3";
+        }
+        {
           "if".app-id = "com.tinyspeck.slackmacgap";
           run = "move-node-to-workspace 4";
         }

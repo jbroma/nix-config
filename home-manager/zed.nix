@@ -60,8 +60,10 @@ in
           path = "${pkgs.nil}/bin/nil";
         };
         settings = {
-          formatting = {
-            command = [ "${pkgs.nixfmt}/bin/nixfmt" ];
+          nil = {
+            formatting = {
+              command = [ "${pkgs.nixfmt}/bin/nixfmt" ];
+            };
           };
         };
       };

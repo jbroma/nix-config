@@ -1,16 +1,14 @@
 {
-	"theme": {
-		"mode": "dark",
-		"dark": "GitHub Dark Default",
-		"light": "GitHub Light Default"
-	},
+	"base_keymap": "VSCode",
+	"theme": "GitHub Dark",
 	"buffer_font_family": "Hack Nerd Font",
 	"buffer_font_size": 12,
 	"buffer_font_features": {
 		"liga": false
 	},
-	"ui_font_family": "Hack Nerd Font",
-	"ui_font_size": 14,
+	"ui_font_family": ".SystemUIFont",
+	"ui_font_size": 15,
+	"icon_theme": "Material Icon Theme",
 	"hard_tabs": true,
 	"tab_size": 4,
 	"format_on_save": "on",
@@ -26,8 +24,10 @@
 		"font_size": 14,
 		"line_height": "standard",
 		"shell": {
-			"program": "zsh",
-			"args": ["-l"]
+			"with_arguments": {
+				"program": "zsh",
+				"args": ["-l"]
+			}
 		},
 		"working_directory": "current_project_directory"
 	},
@@ -72,6 +72,20 @@
 		}
 	},
 	"lsp": {
+		"nil": {
+			"initialization_options": {
+				"diagnostics": {
+					"ignored": ["unused_binding", "unused_with"],
+					"excludedFiles": []
+				},
+				"nix": {
+					"flake": {
+						"autoEvalInputs": false,
+						"autoArchive": true
+					}
+				}
+			}
+		},
 		"rust-analyzer": {
 			"initialization_options": {
 				"checkOnSave": true,
@@ -92,6 +106,14 @@
 		"default_model": {
 			"provider": "zed.dev",
 			"model": "claude-sonnet-4"
+		},
+		"always_allow_tool_actions": true
+	},
+	"agent_servers": {
+		"claude": {
+			"env": {
+				"ANTHROPIC_MODEL": "opus"
+			}
 		}
 	},
 	"edit_predictions": {

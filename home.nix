@@ -28,6 +28,7 @@
     tree
     choose
     curlie
+    nil
     typescript-language-server
     watchman
     zellij
@@ -56,6 +57,6 @@
     ./home-manager/claude-code.nix
     ./home-manager/gemini.nix
     ./home-manager/mcp-servers.nix
-    # ./home-manager/zed.nix
+    ./home-manager/zed.nix
   ];
 }

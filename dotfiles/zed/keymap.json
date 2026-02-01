@@ -1,7 +1,7 @@
 [
 	{
 		"bindings": {
-			"cmd-alt-c": ["agent::NewExternalAgentThread", { "agent": "claude_code" }]
+			"cmd-alt-c": ["agent::NewExternalAgentThread", { "agent": { "claude_code": null } }]
 		}
 	}
 ]
