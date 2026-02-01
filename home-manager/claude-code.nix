@@ -68,8 +68,8 @@ in
     enable = true;
     package = pkgs.claude-code;
     settings = {
-      # Default model - use Opus 4.5 for best quality
-      model = "claude-opus-4-5";
+      # Default model - use Opus for best quality
+      model = "opus";
       # Default permissions from ai submodule + allowEdits mode
       permissions = permissions;
       # Enable plugins from dotfile (single source of truth)
