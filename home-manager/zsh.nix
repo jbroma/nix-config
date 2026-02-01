@@ -36,7 +36,7 @@
 
     localVariables = {
       # enforce using aliases
-      YSU_HARDCORE = 1;
+      YSU_HARDCORE = 0;
     };
 
     shellAliases = {
