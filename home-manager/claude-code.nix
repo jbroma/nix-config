@@ -18,7 +18,7 @@ let
   # Read and parse permissions from ai submodule + add defaultMode for file edits
   permissionsJsonc = builtins.readFile "${ai}/permissions.jsonc";
   permissions = utils.fromJSONC permissionsJsonc // {
-    defaultMode = "allowEdits";
+    defaultMode = "acceptEdits";
   };
 
   # Path to dotfiles in this repo (for mutable symlinks)
