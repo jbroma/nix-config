@@ -2,6 +2,7 @@
   pkgs,
   lib,
   ai,
+  utils,
   config,
   ...
 }:
@@ -13,6 +14,12 @@ let
     builtins.replaceStrings [ "$USER_HOOKS_DIR" ] [ hooksDir ]
       hookDefinitionsRaw;
   hookDefinitions = builtins.fromJSON hookDefinitionsResolved;
+
+  # Read and parse permissions from ai submodule + add defaultMode for file edits
+  permissionsJsonc = builtins.readFile "${ai}/permissions.jsonc";
+  permissions = utils.fromJSONC permissionsJsonc // {
+    defaultMode = "allowEdits";
+  };
 
   # Path to dotfiles in this repo (for mutable symlinks)
   dotfilesDir = "${config.home.homeDirectory}/.nix/dotfiles";
@@ -63,6 +70,8 @@ in
     settings = {
       # Default model - use Opus 4.5 for best quality
       model = "claude-opus-4-5";
+      # Default permissions from ai submodule + allowEdits mode
+      permissions = permissions;
       # Enable plugins from dotfile (single source of truth)
       enabledPlugins = enabledPlugins;
       # Local marketplace for custom plugins (e.g., claude-island)

@@ -36,7 +36,7 @@ flake.nix                    # Entry point - two configs: work, personal
 ├── macos/                   # macOS system preferences modules
 ├── pkgs/                    # Custom package derivations (auto-loaded by flake)
 ├── dotfiles/                # Non-Nix config files (sketchybar, oh-my-posh, vscode)
-└── ai/                      # Git submodule (ai-sauce) - skills, agents, rules
+└── ai/                      # Nix flake input (ai-sauce) - skills, agents, rules
 ```
 
 **Key patterns:**
@@ -47,7 +47,7 @@ flake.nix                    # Entry point - two configs: work, personal
 
 ## AI Integration
 
-The `ai/` directory is a git submodule providing unified configuration for AI coding tools (Claude Code, Gemini CLI, Cursor). It contains:
+The `ai/` directory is a Nix flake input (not a git submodule) providing unified configuration for AI coding tools (Claude Code, Gemini CLI, Cursor). It contains:
 
 -   **Skills**: Reusable pattern libraries invoked by name
 -   **Agents**: Specialized personas for specific tasks

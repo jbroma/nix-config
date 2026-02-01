@@ -43,6 +43,7 @@
       };
 
       user = import ./user.nix;
+      utils = import ./lib.nix;
 
       # Automatically call all packages in ./pkgs
       customPkgs = pkgs.lib.attrsets.mapAttrs' (name: _: {
@@ -62,7 +63,7 @@
         inputs.darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
-            inherit type user;
+            inherit type user utils;
             ai = inputs.ai;
           };
           modules = darwinModules ++ [
