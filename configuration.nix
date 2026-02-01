@@ -3,6 +3,7 @@
   pkgs,
   type,
   user,
+  utils,
   ai,
   ...
 }:
@@ -106,7 +107,7 @@ in
     useUserPackages = true;
     users.${user.username} = import ./home.nix;
     extraSpecialArgs = {
-      inherit type user ai;
+      inherit type user utils ai;
     };
   };
 
