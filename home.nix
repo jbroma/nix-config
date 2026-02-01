@@ -31,6 +31,7 @@
     typescript-language-server
     watchman
     zellij
+    dcg
   ];
 
   home.stateVersion = "25.11";

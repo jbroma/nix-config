@@ -78,6 +78,7 @@
                   cursor = pkgs.code-cursor;
                   cleanshot-x = customPkgs.cleanshot-x;
                   handy = customPkgs.handy;
+                  dcg = customPkgs.dcg;
                 })
                 inputs.nix-vscode-extensions.overlays.default
               ];
