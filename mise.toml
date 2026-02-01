@@ -16,10 +16,6 @@ run = "nix flake update"
 description = "Update ai flake input submodule to latest"
 run = "nix flake update ai"
 
-[tasks.ai-validate]
-description = "Validate JSON configurations"
-run = "jq empty ~/.config/claude/mcp-servers.json && echo 'MCP servers valid'"
-
 [tasks.ai-plugins-update]
 description = "Update all Claude Code marketplaces and plugins"
 run = "./scripts/ai-plugins-update.sh"
