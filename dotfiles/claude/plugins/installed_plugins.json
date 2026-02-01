@@ -92,6 +92,16 @@
         "lastUpdated": "2026-01-31T23:32:41.935Z",
         "gitCommitSha": "a7ce3561b89e9e0e2d4d39fa8b309e0f198bbbbc"
       }
+    ],
+    "ast-grep@ast-grep-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/ast-grep-marketplace/ast-grep/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-02-01T15:19:40.606Z",
+        "lastUpdated": "2026-02-01T15:19:40.606Z",
+        "gitCommitSha": "577f4d4507678f2c8cee150fae25e6ce309f70b1"
+      }
     ]
   }
 }

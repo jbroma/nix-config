@@ -38,5 +38,13 @@
     },
     "installLocation": "/Users/jbroma/Developer/agent-island-cc-plugin",
     "lastUpdated": "2026-01-31T23:32:41.612Z"
+  },
+  "ast-grep-marketplace": {
+    "source": {
+      "source": "github",
+      "repo": "ast-grep/agent-skill"
+    },
+    "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/ast-grep-marketplace",
+    "lastUpdated": "2026-02-01T15:19:31.111Z"
   }
 }
