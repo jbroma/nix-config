@@ -94,7 +94,7 @@ in
       };
       statusLine = {
         type = "command";
-        command = "${dotfilesDir}/claude/scripts/statusline.sh";
+        command = "wt list statusline --format=claude-code";
       };
     };
   };

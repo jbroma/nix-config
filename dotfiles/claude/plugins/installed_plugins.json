@@ -102,6 +102,16 @@
         "lastUpdated": "2026-02-01T15:19:40.606Z",
         "gitCommitSha": "577f4d4507678f2c8cee150fae25e6ce309f70b1"
       }
+    ],
+    "worktrunk@worktrunk": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/worktrunk/worktrunk/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-02-01T17:26:54.454Z",
+        "lastUpdated": "2026-02-01T17:26:54.454Z",
+        "gitCommitSha": "ee54aa6102c92e1e4853e3d1ba0219c538e527f9"
+      }
     ]
   }
 }
