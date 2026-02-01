@@ -88,9 +88,9 @@
         "scope": "user",
         "installPath": "/Users/jbroma/.claude/plugins/cache/agent-island/agent-island-claude-code/1.0.0",
         "version": "1.0.0",
-        "installedAt": "2026-01-25T17:37:11.856Z",
-        "lastUpdated": "2026-01-25T17:37:11.856Z",
-        "gitCommitSha": "09bc52ae5c29503fe54dd6aff2942aee717bdb95"
+        "installedAt": "2026-01-31T23:32:41.935Z",
+        "lastUpdated": "2026-01-31T23:32:41.935Z",
+        "gitCommitSha": "a7ce3561b89e9e0e2d4d39fa8b309e0f198bbbbc"
       }
     ]
   }
