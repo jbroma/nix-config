@@ -64,3 +64,4 @@ For Nix work in this repo, use the `nix-patterns` skill (dotfiles scope only).
 -   Two configurations: `personal` and `work` (selected via hostname or explicit `--flake .#work`)
 -   `user.nix` is git skip-worktree'd - edit locally for identity changes
 -   Unfree packages must be allowlisted in `flake.nix` `allowUnfreePredicate`
+-   Never run `nix build` without `--no-link` - avoids creating `result` symlinks that clutter the repo
