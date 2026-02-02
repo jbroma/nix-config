@@ -84,16 +84,10 @@ in
       libyaml
     ];
 
-    systemPath = [
-      # local executables
-      "$PATH:$HOME/.local/bin"
-      # android studio
-      "$PATH:$ANDROID_HOME/emulator"
-      "$PATH:$ANDROID_HOME/platform-tools"
-    ];
-
     variables = {
       ANDROID_HOME = "$HOME/Library/Android/sdk";
+      # Add Android SDK tools to PATH (appended so Nix tools take precedence)
+      PATH = "$PATH:$HOME/.local/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin";
     };
   };
 
