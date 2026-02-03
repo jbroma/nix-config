@@ -4,7 +4,6 @@
 # Central location for worktrees on the system
 worktree-path = "~/.worktrees/{{ repo }}/{{ branch | sanitize }}"
 
-# Commit message generation using dcg
 [commit.generation]
 command = "MAX_THINKING_TOKENS=0 claude -p --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"
 
