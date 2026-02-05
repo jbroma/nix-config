@@ -7,6 +7,10 @@
 }:
 
 let
+  # MCP servers: wrap in mcpServers key for Claude Code format
+  mcpServersConfig = { mcpServers = config.mcp.servers; };
+  mcpServersJson = builtins.toJSON mcpServersConfig;
+
   hooksDir = "${config.home.homeDirectory}/.claude/hooks";
   hookDefinitionsRaw = builtins.readFile "${ai}/hooks/definitions.json";
   hookDefinitionsResolved =
@@ -58,6 +62,14 @@ in
   # Uses direct symlinks (not nix store) since Claude Code only resolves one level
   home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${localMarketplacePath}"
+  '';
+
+  # MCP servers: merge into ~/.claude.json (preserves OAuth, preferences, stats)
+  home.activation.setupMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run ${../scripts/merge-mcp-servers.sh} \
+      "${config.home.homeDirectory}/.claude.json" \
+      '${mcpServersJson}' \
+      "${pkgs.jq}/bin/jq"
   '';
 
   programs.claude-code = {
