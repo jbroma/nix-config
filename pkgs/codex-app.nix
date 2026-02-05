@@ -13,7 +13,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg";
-    hash = "sha256-xV0eQhiusgZU1Mv3XGH3C9merdaXelHXMwe6g8sYq0U=";
+    hash = "sha256-iqzYWJ9wan7Gg18d4y3lUpWFJymMwcV438D1jrBRaS0=";
   };
 
   nativeBuildInputs = [ undmg ];
