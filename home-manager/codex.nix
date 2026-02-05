@@ -11,17 +11,40 @@ let
   tomlFormat = pkgs.formats.toml { };
   codexMcpServers = lib.mapAttrs (_: server: lib.filterAttrs (k: _: k != "type") server) config.mcp.servers;
   codexSettings = {
-    model = "o3";
+    model = "gpt-5.2-codex";
     approval_policy = "on-failure";
     sandbox_mode = "workspace-write";
-    model_reasoning_effort = "medium";
+    model_reasoning_effort = "high";
+    model_reasoning_summary = "concise";
+    model_verbosity = "medium";
+    web_search = "cached";
+    file_opener = "cursor";
 
-    history = {
-      persistence = "save-all";
+    features = {
+      shell_tool = true;
+      shell_snapshot = true;
+      unified_exec = true;
+      request_rule = true;
+      undo = true;
     };
+
+    profiles = {
+      fast = {
+        model_reasoning_effort = "low";
+        model_verbosity = "low";
+      };
+      thorough = {
+        model_reasoning_effort = "xhigh";
+        web_search = "live";
+      };
+    };
+
+    history.persistence = "save-all";
 
     tui = {
       animations = true;
+      show_tooltips = false;
+      notifications = true;
     };
 
     mcp_servers = codexMcpServers;
