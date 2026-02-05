@@ -9,16 +9,18 @@
 let
   # Codex: TOML format, mcp_servers key, strip "type" field for HTTP servers
   tomlFormat = pkgs.formats.toml { };
-  codexMcpServers = lib.mapAttrs (_: server: lib.filterAttrs (k: _: k != "type") server) config.mcp.servers;
+  codexMcpServers = lib.mapAttrs (
+    _: server: lib.filterAttrs (k: _: k != "type") server
+  ) config.mcp.servers;
   codexSettings = {
-    model = "gpt-5.2-codex";
+    model = "gpt-5.3-codex";
     approval_policy = "on-failure";
     sandbox_mode = "workspace-write";
-    model_reasoning_effort = "high";
+    model_reasoning_effort = "medium";
     model_reasoning_summary = "concise";
     model_verbosity = "medium";
     web_search = "cached";
-    file_opener = "cursor";
+    file_opener = "zed";
 
     features = {
       shell_tool = true;
