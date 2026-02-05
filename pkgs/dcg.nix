@@ -7,12 +7,12 @@
   xz,
 }:
 let
-  version = "0.2.15";
+  version = "0.3.0";
 
   sources = {
     "aarch64-darwin" = {
       url = "https://github.com/Dicklesworthstone/destructive_command_guard/releases/download/v${version}/dcg-aarch64-apple-darwin.tar.xz";
-      hash = "sha256-4gWpCQ3Q3vpbk69ODJ9VViPadgsH2jC2qkYZBWkiJR4=";
+      hash = "sha256-M9M0/vC/nzqUD9BUEK4xLnerugc3O4tt3tKbsG7cYVc=";
     };
   };
 
