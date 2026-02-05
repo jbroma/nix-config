@@ -50,6 +50,11 @@ in
       "vscode-extension-mhutchie-git-graph"
     ];
 
+  # https://github.com/NixOS/nixpkgs/pull/486721 - Darwin updater broken
+  nixpkgs.config.permittedInsecurePackages = [
+    "google-chrome-144.0.7559.97"
+  ];
+
   environment = {
     # List packages you want to install system-wide.
     systemPackages = with pkgs; [
