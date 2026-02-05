@@ -2,7 +2,6 @@
   pkgs,
   lib,
   ai,
-  utils,
   config,
   ...
 }:
@@ -15,9 +14,8 @@ let
       hookDefinitionsRaw;
   hookDefinitions = builtins.fromJSON hookDefinitionsResolved;
 
-  # Read and parse permissions from ai submodule + add defaultMode for file edits
-  permissionsJsonc = builtins.readFile "${ai}/permissions.jsonc";
-  permissions = utils.fromJSONC permissionsJsonc // {
+  # Read permissions from ai submodule + add defaultMode for file edits
+  permissions = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json") // {
     defaultMode = "acceptEdits";
   };
 
@@ -49,8 +47,6 @@ in
 
   # Claude Code symlinks (read-only, from ai submodule)
   home.file.".claude/CLAUDE.md".source = "${ai}/AGENTS.md";
-  home.file.".claude/agents".source = "${ai}/agents";
-  home.file.".claude/commands".source = "${ai}/commands";
   home.file.".claude/hooks".source = "${ai}/hooks";
   home.file.".claude/plugins/local-marketplace".source = "${ai}/marketplace";
   home.file.".claude/skills".source = "${ai}/skills";
