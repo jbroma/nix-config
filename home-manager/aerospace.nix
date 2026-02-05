@@ -101,6 +101,11 @@
           run = "move-node-to-workspace 3";
         }
         {
+          # Codex
+          "if".app-id = "com.openai.codex";
+          run = "move-node-to-workspace 3";
+        }
+        {
           "if".app-id = "com.tinyspeck.slackmacgap";
           run = "move-node-to-workspace 4";
         }
