@@ -57,6 +57,7 @@
     ./home-manager/aerospace.nix
     ./home-manager/claude-code.nix
     ./home-manager/gemini.nix
+    ./home-manager/codex.nix
     ./home-manager/mcp-servers.nix
     ./home-manager/zed.nix
     ./home-manager/worktrunk.nix

@@ -40,6 +40,8 @@ in
       # "Xcode.app"
       "google-chrome"
       "claude-code"
+      "codex-app"
+      "codex-cli"
       "cursor"
       "1password-gui"
       "1password"
@@ -63,6 +65,8 @@ in
       google-chrome
       cleanshot-x
       claude-code
+      codex-app
+      codex-cli
       cursor
       zed-editor
       raycast

@@ -1,5 +1,5 @@
-# MCP Server definitions - Single Source of Truth
-# Configure MCP servers for all AI tools here
+# MCP Server configuration - Single Source of Truth
+# Configures MCP servers for: Claude Code, Gemini, Codex
 {
   config,
   lib,
@@ -43,22 +43,42 @@ let
     };
   };
 
-  # JSON to merge into ~/.claude.json
-  mcpConfig = {
+  # Claude Code: JSON format with mcpServers wrapper
+  claudeConfig = {
     mcpServers = servers;
   };
-  mcpConfigJson = builtins.toJSON mcpConfig;
+  claudeConfigJson = builtins.toJSON claudeConfig;
 
-  # Gemini uses flat server structure
+  # Gemini: flat server structure
   geminiConfig = servers;
+
+  # Codex: TOML format, mcp_servers key, no "type" field for HTTP servers
+  tomlFormat = pkgs.formats.toml { };
+  codexMcpServers = lib.mapAttrs (_: server: lib.filterAttrs (k: _: k != "type") server) servers;
+  codexSettings = {
+    model = "o3";
+    approval_policy = "on-failure";
+    sandbox_mode = "workspace-write";
+    model_reasoning_effort = "medium";
+
+    history = {
+      persistence = "save-all";
+    };
+
+    tui = {
+      animations = true;
+    };
+
+    mcp_servers = codexMcpServers;
+  };
 in
 {
-  # Activation script: merge mcpServers into existing ~/.claude.json
-  # This preserves Claude Code's application state (OAuth, preferences, stats)
+  # Claude Code: merge mcpServers into existing ~/.claude.json
+  # Preserves Claude Code's application state (OAuth, preferences, stats)
   home.activation.setupMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run ${../scripts/merge-mcp-servers.sh} \
       "${config.home.homeDirectory}/.claude.json" \
-      '${mcpConfigJson}' \
+      '${claudeConfigJson}' \
       "${pkgs.jq}/bin/jq"
   '';
 
@@ -67,4 +87,7 @@ in
 
   # Antigravity MCP config
   home.file.".gemini/antigravity/mcp_config.json".text = builtins.toJSON geminiConfig;
+
+  # Codex config (includes MCP servers)
+  home.file.".codex/config.toml".source = tomlFormat.generate "config.toml" codexSettings;
 }
