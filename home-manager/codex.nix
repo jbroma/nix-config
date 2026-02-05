@@ -14,13 +14,14 @@ let
   ) config.mcp.servers;
   codexSettings = {
     model = "gpt-5.3-codex";
+    model_personality = "pragmatic";
     approval_policy = "on-failure";
     sandbox_mode = "workspace-write";
-    model_reasoning_effort = "medium";
+    model_reasoning_effort = "xhigh";
     model_reasoning_summary = "concise";
     model_verbosity = "medium";
     web_search = "cached";
-    file_opener = "zed";
+    file_opener = "cursor";
 
     features = {
       shell_tool = true;
