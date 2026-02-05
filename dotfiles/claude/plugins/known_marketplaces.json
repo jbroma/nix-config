@@ -1,58 +1,26 @@
 {
-  "claude-plugins-official": {
-    "source": {
-      "source": "github",
-      "repo": "anthropics/claude-plugins-official"
-    },
-    "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/claude-plugins-official",
-    "lastUpdated": "2026-01-31T23:31:23.572Z"
-  },
-  "superpowers-marketplace": {
-    "source": {
-      "source": "github",
-      "repo": "obra/superpowers-marketplace"
-    },
-    "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/superpowers-marketplace",
-    "lastUpdated": "2026-01-31T23:31:27.182Z"
-  },
-  "anthropic-agent-skills": {
-    "source": {
-      "source": "github",
-      "repo": "anthropics/skills"
-    },
-    "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/anthropic-agent-skills",
-    "lastUpdated": "2026-01-31T23:31:31.531Z"
-  },
-  "local-marketplace": {
-    "source": {
-      "source": "directory",
-      "path": "/Users/jbroma/.claude/plugins/local-marketplace"
-    },
-    "installLocation": "/Users/jbroma/.claude/plugins/local-marketplace",
-    "lastUpdated": "2026-01-31T23:31:31.531Z"
-  },
-  "agent-island": {
-    "source": {
-      "source": "directory",
-      "path": "/Users/jbroma/Developer/agent-island-cc-plugin"
-    },
-    "installLocation": "/Users/jbroma/Developer/agent-island-cc-plugin",
-    "lastUpdated": "2026-01-31T23:32:41.612Z"
-  },
-  "ast-grep-marketplace": {
-    "source": {
-      "source": "github",
-      "repo": "ast-grep/agent-skill"
-    },
-    "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/ast-grep-marketplace",
-    "lastUpdated": "2026-02-01T15:19:31.111Z"
-  },
-  "worktrunk": {
-    "source": {
-      "source": "github",
-      "repo": "max-sixty/worktrunk"
-    },
-    "installLocation": "/Users/jbroma/.claude/plugins/marketplaces/worktrunk",
-    "lastUpdated": "2026-02-01T17:26:49.127Z"
-  }
+	"claude-plugins-official": {
+		"source": {
+			"source": "github",
+			"repo": "anthropics/claude-plugins-official"
+		},
+		"installLocation": "/Users/jbroma/.claude/plugins/marketplaces/claude-plugins-official",
+		"lastUpdated": "2026-01-31T23:31:23.572Z"
+	},
+	"local-marketplace": {
+		"source": {
+			"source": "directory",
+			"path": "/Users/jbroma/.claude/plugins/local-marketplace"
+		},
+		"installLocation": "/Users/jbroma/.claude/plugins/local-marketplace",
+		"lastUpdated": "2026-01-31T23:31:31.531Z"
+	},
+	"agent-island": {
+		"source": {
+			"source": "directory",
+			"path": "/Users/jbroma/Developer/agent-island-cc-plugin"
+		},
+		"installLocation": "/Users/jbroma/Developer/agent-island-cc-plugin",
+		"lastUpdated": "2026-01-31T23:32:41.612Z"
+	}
 }

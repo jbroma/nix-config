@@ -1,6 +1,15 @@
 {
   "version": 2,
   "plugins": {
+    "swift-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/swift-lsp/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-01-22T14:21:31.235Z",
+        "lastUpdated": "2026-01-22T14:21:31.235Z"
+      }
+    ],
     "typescript-lsp@claude-plugins-official": [
       {
         "scope": "user",
@@ -8,61 +17,6 @@
         "version": "1.0.0",
         "installedAt": "2026-01-22T14:21:31.418Z",
         "lastUpdated": "2026-01-22T14:21:31.418Z"
-      }
-    ],
-    "superpowers@superpowers-marketplace": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/superpowers-marketplace/superpowers/4.1.1",
-        "version": "4.1.1",
-        "installedAt": "2025-12-26T12:20:07.003Z",
-        "lastUpdated": "2026-01-31T22:42:07.328Z",
-        "gitCommitSha": "131c1f189f75a14faad4227089841d1deee73e2a"
-      }
-    ],
-    "code-simplifier@claude-plugins-official": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-simplifier/1.0.0",
-        "version": "1.0.0",
-        "installedAt": "2026-01-22T14:21:30.275Z",
-        "lastUpdated": "2026-01-22T14:21:30.275Z"
-      }
-    ],
-    "security-guidance@claude-plugins-official": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/security-guidance/27d2b86d72da",
-        "version": "27d2b86d72da",
-        "installedAt": "2026-01-22T14:21:30.867Z",
-        "lastUpdated": "2026-01-31T22:42:04.798Z"
-      }
-    ],
-    "commit-commands@claude-plugins-official": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/commit-commands/27d2b86d72da",
-        "version": "27d2b86d72da",
-        "installedAt": "2026-01-22T14:21:30.485Z",
-        "lastUpdated": "2026-01-31T22:42:04.140Z"
-      }
-    ],
-    "feature-dev@claude-plugins-official": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/feature-dev/27d2b86d72da",
-        "version": "27d2b86d72da",
-        "installedAt": "2026-01-22T14:21:30.678Z",
-        "lastUpdated": "2026-01-31T22:42:04.455Z"
-      }
-    ],
-    "code-review@claude-plugins-official": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/code-review/27d2b86d72da",
-        "version": "27d2b86d72da",
-        "installedAt": "2026-01-22T14:21:30.085Z",
-        "lastUpdated": "2026-01-31T22:42:03.531Z"
       }
     ],
     "claude-island@local-marketplace": [
@@ -74,15 +28,6 @@
         "lastUpdated": "2026-01-22T14:50:36.417Z"
       }
     ],
-    "swift-lsp@claude-plugins-official": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/claude-plugins-official/swift-lsp/1.0.0",
-        "version": "1.0.0",
-        "installedAt": "2026-01-22T14:21:31.235Z",
-        "lastUpdated": "2026-01-22T14:21:31.235Z"
-      }
-    ],
     "agent-island-claude-code@agent-island": [
       {
         "scope": "user",
@@ -91,26 +36,6 @@
         "installedAt": "2026-01-31T23:32:41.935Z",
         "lastUpdated": "2026-01-31T23:32:41.935Z",
         "gitCommitSha": "a7ce3561b89e9e0e2d4d39fa8b309e0f198bbbbc"
-      }
-    ],
-    "ast-grep@ast-grep-marketplace": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/ast-grep-marketplace/ast-grep/1.0.0",
-        "version": "1.0.0",
-        "installedAt": "2026-02-01T15:19:40.606Z",
-        "lastUpdated": "2026-02-01T15:19:40.606Z",
-        "gitCommitSha": "577f4d4507678f2c8cee150fae25e6ce309f70b1"
-      }
-    ],
-    "worktrunk@worktrunk": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/worktrunk/worktrunk/1.0.0",
-        "version": "1.0.0",
-        "installedAt": "2026-02-01T17:26:54.454Z",
-        "lastUpdated": "2026-02-01T17:26:54.454Z",
-        "gitCommitSha": "ee54aa6102c92e1e4853e3d1ba0219c538e527f9"
       }
     ]
   }
