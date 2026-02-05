@@ -80,6 +80,7 @@ in
       zstd
       ast-grep
       nmap
+      yq
       # libs
       libyaml
     ];
