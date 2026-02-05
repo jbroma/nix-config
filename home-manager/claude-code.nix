@@ -42,7 +42,7 @@ in
 {
   home.sessionVariables = {
     CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
-    ENABLE_TOOL_SEARCH = "auto:5";
+    ENABLE_TOOL_SEARCH = "auto";
   };
 
   # Claude Code symlinks (read-only, from ai submodule)
