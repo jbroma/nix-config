@@ -29,7 +29,9 @@ flake.nix                    # Entry point - two configs: work, personal
 ├── user.nix                 # User identity (git skip-worktree, not committed)
 │
 ├── home-manager/            # Home-manager modules
-│   ├── ai-integration.nix   # Symlinks ~/.claude, ~/.gemini, ~/.cursorrules → ~/.nix/ai
+│   ├── claude-code.nix      # Claude Code: settings, hooks, skills, plugins
+│   ├── gemini.nix           # Gemini CLI: rules symlinks
+│   ├── cursor.nix           # Cursor: settings, extensions, .cursorrules
 │   ├── zsh.nix              # Shell config with modern CLI aliases
 │   └── [tool].nix           # Per-tool configurations
 │
@@ -47,16 +49,13 @@ flake.nix                    # Entry point - two configs: work, personal
 
 ## AI Integration
 
-The `ai/` directory is a Nix flake input (not a git submodule) providing unified configuration for AI coding tools (Claude Code, Gemini CLI, Cursor). It contains:
+The `ai/` directory is a Nix flake input providing shared configuration for AI coding tools. Each tool has its own home-manager module that symlinks relevant parts:
 
--   **Skills**: Reusable pattern libraries invoked by name
--   **Agents**: Specialized personas for specific tasks
--   **Commands**: CLI commands exposed via mise
--   **Rules**: Static analysis rules for code enforcement
+-   `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks`, `~/.claude/CLAUDE.md`
+-   `gemini.nix`: `~/.gemini/rules`, `~/.gemini/GEMINI.md`
+-   `cursor.nix`: `~/.cursorrules`
 
-The `ai-integration.nix` module symlinks this directory to tool-specific locations (~/.claude, ~/.gemini, ~/.cursorrules).
-
-For Nix work in this repo, use the `nix-patterns` skill (dotfiles scope only).
+The `ai` input is also symlinked to `~/.nix/ai` for visibility (in `home.nix`).
 
 ## Nix-Specific Notes
 
