@@ -20,6 +20,7 @@ Updates local packages in `~/.nix/pkgs/`.
 | handy | GitHub releases | `gh api repos/cjpais/Handy/releases/latest --jq '.tag_name'` |
 | cleanshot-x | Direct URL | WebFetch `https://cleanshot.com/changelog` |
 | android-studio | Google redirector | WebFetch `https://developer.android.com/studio/releases` + verify |
+| codex-app | Static URL | `nix-prefetch-url` the URL, compare hash. Version extracted from `Info.plist` post-build (build fails on mismatch) |
 
 ## Workflow
 
