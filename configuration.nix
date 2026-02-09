@@ -47,6 +47,7 @@ in
       "1password"
       "raycast"
       "discord"
+      "ngrok"
       "spotify"
       # vscode extensions
       "vscode-extension-mhutchie-git-graph"
@@ -59,40 +60,43 @@ in
 
   environment = {
     # List packages you want to install system-wide.
-    systemPackages = with pkgs; [
-      # xcode
-      android-studio
-      google-chrome
-      cleanshot-x
-      claude-code
-      codex-app
-      codex-cli
-      cursor
-      zed-editor
-      raycast
-      minisim
-      handy
-      claude-island
-      discord
-      spotify
-      _1password-gui
-      git
-      ghostty
-      oh-my-posh
-      nerd-fonts.fira-code
-      nerd-fonts.hack
-      nixfmt
-      mkcert
-      vim
-      gnupg
-      dnsmasq
-      zstd
-      ast-grep
-      nmap
-      yq-go
-      # libs
-      libyaml
-    ];
+    systemPackages =
+      with pkgs;
+      [
+        # xcode
+        android-studio
+        google-chrome
+        cleanshot-x
+        claude-code
+        codex-app
+        codex-cli
+        cursor
+        zed-editor
+        raycast
+        minisim
+        handy
+        claude-island
+        discord
+        spotify
+        _1password-gui
+        git
+        ghostty
+        oh-my-posh
+        nerd-fonts.fira-code
+        nerd-fonts.hack
+        nixfmt
+        mkcert
+        vim
+        gnupg
+        dnsmasq
+        zstd
+        ast-grep
+        nmap
+        yq-go
+        # libs
+        libyaml
+      ]
+      ++ lib.optionals (type == "work") [ ngrok ];
 
     variables = {
       ANDROID_HOME = "$HOME/Library/Android/sdk";

@@ -36,6 +36,7 @@
             "claude-code"
             "codex-app"
             "codex-cli"
+            "ngrok"
           ];
       };
 
