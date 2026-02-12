@@ -10,7 +10,7 @@ Update local packages in `~/.nix/pkgs/`.
 ## Guardrails
 
 - Never run `mise run switch` during package updates.
-- Verify with `mise run check` before finishing.
+- Verify with `nix build ... --no-link` before finishing (`mise run check` can fail when `darwin-rebuild check` requires root).
 - For full overlay validation, build with `--no-link` only.
 - Edit only relevant files in `pkgs/`.
 
@@ -25,7 +25,7 @@ Update local packages in `~/.nix/pkgs/`.
    - nix32: `nix hash convert --from sri --to nix32 "$sri"`
    - hex: `nix hash convert --from sri --to base16 "$sri"`
 5. Verify:
-   - `mise run check`
+   - Skip `mise run check` for package updates; use darwin `nix build` targets directly.
    - `nix build .#darwinConfigurations.personal.system --no-link`
    - `nix build .#darwinConfigurations.work.system --no-link` (if touching shared packages)
 
