@@ -63,7 +63,7 @@ in
   # Symlinks from ai submodule
   home.file.".codex/AGENTS.md".source = "${ai}/AGENTS.md";
   home.file.".codex/skills".source = "${ai}/skills";
-  home.file.".codex/rules/default.rules".source = "${ai}/rules/rules.toml";
+  home.file.".codex/rules/default.rules".source = "${ai}/rules/codex.rules";
 
   # Build ~/.codex/config.toml at activation time so trusted projects can be discovered dynamically.
   home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
