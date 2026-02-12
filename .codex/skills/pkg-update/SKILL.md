@@ -37,7 +37,7 @@ Update local packages in `~/.nix/pkgs/`.
 | `claude-code` | `v=$(curl -fsSL "https://registry.npmjs.org/@anthropic-ai/claude-code/latest" \| jq -r '.version')` then `curl -fsI "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/${v}/darwin-arm64/claude"` | SRI (`hash`) | Package is native binary (not npm install). Treat npm version as candidate and validate binary URL exists. |
 | `claude-island` | `gh api repos/farouqaldori/claude-island/releases/latest --jq '.tag_name' \| sed 's/^v//'` | nix32 (`sha256`) | DMG filename uses `ClaudeIsland-${version}.dmg`. |
 | `cleanshot-x` | `https://cleanshot.com/changelog` (manual) | hex (`sha256`) | Download URL pattern: `.../CleanShot-X-${version}.dmg`. |
-| `codex-app` | Static URL only: `https://persistent.oaistatic.com/codex-app-prod/Codex.dmg` | SRI (`hash`) | Prefetch hash, then build. Derivation validates `CFBundleShortVersionString` and fails with expected version to set. |
+| `codex-app` | Static URL only. Use cache-busting for checks/prefetch: `u="https://persistent.oaistatic.com/codex-app-prod/Codex.dmg?ts=$(date +%s)"` then `nix store prefetch-file --json --refresh "$u"` | SRI (`hash`) | CDN can serve stale blob at the bare URL. Keep derivation URL static, but use cache-busting URL for version/hash discovery. Derivation validates `CFBundleShortVersionString` and fails with expected version to set. |
 | `codex-cli` | `gh api repos/openai/codex/releases/latest --jq '.tag_name' \| sed 's/^rust-v//'` | SRI (`hash`) | URL tag prefix is `rust-v${version}`. |
 | `dcg` | `gh api repos/Dicklesworthstone/destructive_command_guard/releases/latest --jq '.tag_name' \| sed 's/^v//'` | SRI (`hash`) | Tarball URL uses `v${version}` tag. |
 | `handy` | `gh api repos/cjpais/Handy/releases/latest --jq '.tag_name' \| sed 's/^v//'` | nix32 (`sha256`) | DMG filename: `Handy_${version}_aarch64.dmg`. |
@@ -50,4 +50,5 @@ Update local packages in `~/.nix/pkgs/`.
 - Build targets are overlays. Do not use `.#<package>`; validate via darwin config checks/builds.
 - Match existing hash format in each file (`hash` SRI vs `sha256` nix32/hex).
 - `curlie` defaults to POST and can break API checks; use `curl` for release/version lookups.
+- For `codex-app`, always discover hash/version from a cache-busted URL (`?ts=...`) to avoid stale CDN edge cache.
 - After touching many packages, re-list package files with `rg --files pkgs` and ensure all changed files were intentionally updated.
