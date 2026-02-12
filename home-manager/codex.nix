@@ -52,6 +52,8 @@ let
 
     mcp_servers = codexMcpServers;
   };
+  codexBaseConfig = tomlFormat.generate "config.toml" codexSettings;
+  codexConfigScript = ../scripts/generate-codex-config.sh;
 in
 {
   home.sessionVariables = {
@@ -63,6 +65,8 @@ in
   home.file.".codex/skills".source = "${ai}/skills";
   home.file.".codex/rules/default.rules".source = "${ai}/rules/rules.toml";
 
-  # Codex config (includes MCP servers)
-  home.file.".codex/config.toml".source = tomlFormat.generate "config.toml" codexSettings;
+  # Build ~/.codex/config.toml at activation time so trusted projects can be discovered dynamically.
+  home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${pkgs.bash}/bin/bash "${codexConfigScript}" "${codexBaseConfig}"
+  '';
 }
