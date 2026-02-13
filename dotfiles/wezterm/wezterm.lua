@@ -9,7 +9,8 @@ end)
 return {
   color_scheme = "GitHub Dark",
   default_cursor_style = "SteadyUnderline",
-  default_prog = { "zsh", "-l", "-c", "zellij -l welcome" },
+  -- default_prog = { "zsh", "-l", "-c", "zellij -l welcome" },
+  default_prog = { "zsh", "-l" },
   font = wezterm.font("Hack Nerd Font"),
   font_size = 14.0,
   hide_tab_bar_if_only_one_tab = true,
