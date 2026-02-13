@@ -9,6 +9,8 @@
 let
   # Codex: TOML format, mcp_servers key, strip "type" field for HTTP servers
   tomlFormat = pkgs.formats.toml { };
+  codexHooksDir = "${config.home.homeDirectory}/.codex/hooks";
+  codexNotifyScript = "${codexHooksDir}/on-codex-notify.sh";
   codexMcpServers = lib.mapAttrs (
     _: server: lib.filterAttrs (k: _: k != "type") server
   ) config.mcp.servers;
@@ -43,6 +45,7 @@ let
     };
 
     history.persistence = "save-all";
+    notify = [ codexNotifyScript ];
 
     tui = {
       animations = true;
@@ -62,6 +65,7 @@ in
 
   # Symlinks from ai submodule
   home.file.".codex/AGENTS.md".source = "${ai}/AGENTS.md";
+  home.file.".codex/hooks".source = "${ai}/hooks";
   home.file.".codex/skills".source = "${ai}/skills";
   home.file.".codex/rules/default.rules".source = "${ai}/rules/codex.rules";
 
