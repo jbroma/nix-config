@@ -2,6 +2,9 @@ local wezterm = require("wezterm")
 local mux = wezterm.mux
 local act = wezterm.action
 
+local spawn_tab
+local pane_id
+
 local function has_action(name)
   return type(wezterm.has_action) == "function" and wezterm.has_action(name)
 end
@@ -41,7 +44,7 @@ local function break_pane_to_tab()
     return act.PaneSelect { mode = "MoveToNewTab" }
   end
 
-  return act.SpawnTab("CurrentPaneDomain")
+  return spawn_tab
 end
 
 local function swap_with_active_pane()
@@ -58,79 +61,383 @@ end
 
 local split_down = act.SplitVertical { domain = "CurrentPaneDomain" }
 local split_right = act.SplitHorizontal { domain = "CurrentPaneDomain" }
+spawn_tab = act.SpawnTab("CurrentPaneDomain")
+local function defer(seconds, fn)
+  if wezterm.time and wezterm.time.call_after then
+    wezterm.time.call_after(seconds, fn)
+    return
+  end
+
+  fn()
+end
+
+local function tab_panes_with_info(tab)
+  if not tab or not tab.panes_with_info then
+    return nil
+  end
+
+  local ok_panes, panes = pcall(function()
+    return tab:panes_with_info()
+  end)
+  if not ok_panes then
+    return nil
+  end
+
+  return panes
+end
+
+pane_id = function(pane)
+  if not pane or not pane.pane_id then
+    return nil
+  end
+
+  local ok_id, id = pcall(function()
+    return pane:pane_id()
+  end)
+  if ok_id then
+    return id
+  end
+
+  return nil
+end
+
+local function panes_on_split_side(tab, anchor_pane)
+  local panes = tab_panes_with_info(tab)
+  if not panes or #panes < 2 then
+    return nil
+  end
+
+  local anchor_id = pane_id(anchor_pane)
+  local anchor = nil
+
+  for _, info in ipairs(panes) do
+    if anchor_id and pane_id(info.pane) == anchor_id then
+      anchor = info
+      break
+    end
+
+    if not anchor and info.is_active then
+      anchor = info
+    end
+  end
+
+  if not anchor then
+    return nil
+  end
+
+  local tolerance = 1
+  local side = {}
+  for _, info in ipairs(panes) do
+    if math.abs(info.top - anchor.top) <= tolerance and math.abs(info.height - anchor.height) <= tolerance then
+      side[#side + 1] = info
+    end
+  end
+
+  if #side < 2 then
+    return nil
+  end
+
+  table.sort(side, function(a, b)
+    if a.left == b.left then
+      return (a.index or 0) < (b.index or 0)
+    end
+    return a.left < b.left
+  end)
+
+  return side
+end
+
+local function rebalance_vertical_side(window, tab, anchor_pane)
+  local initial = panes_on_split_side(tab, anchor_pane)
+  if not initial then
+    return
+  end
+
+  local count = #initial
+  local left = initial[1].left
+  local right = initial[count].left + initial[count].width
+  local total_width = right - left
+  if total_width <= 0 then
+    return
+  end
+
+  for boundary = 1, count - 1 do
+    local current = panes_on_split_side(tab, anchor_pane)
+    if not current or #current ~= count then
+      return
+    end
+
+    local current_boundary = current[boundary + 1].left
+    local desired_boundary = left + math.floor((total_width * boundary) / count)
+    local delta = current_boundary - desired_boundary
+    if delta ~= 0 then
+      local amount = math.abs(delta)
+      local target_pane = nil
+      local direction = nil
+
+      if delta > 0 then
+        -- Boundary is too far right; move it left by expanding the pane on the right to the left.
+        target_pane = current[boundary + 1].pane
+        direction = "Left"
+      else
+        -- Boundary is too far left; move it right by expanding the pane on the left to the right.
+        target_pane = current[boundary].pane
+        direction = "Right"
+      end
+
+      if target_pane and direction then
+        window:perform_action(act.AdjustPaneSize { direction, amount }, target_pane)
+      end
+    end
+  end
+end
+
+local split_adaptive = wezterm.action_callback(function(window, pane)
+  local action = split_down
+  local rebalance_after = false
+  local ok_tab, tab = pcall(function()
+    return pane:tab()
+  end)
+
+  if ok_tab and tab and tab.panes_with_info then
+    local ok_panes, panes = pcall(function()
+      return tab:panes_with_info()
+    end)
+    if ok_panes and panes and #panes <= 1 then
+      action = split_right
+    else
+      rebalance_after = true
+    end
+  end
+
+  window:perform_action(action, pane)
+
+  if rebalance_after and ok_tab and tab then
+    defer(0.01, function()
+      rebalance_vertical_side(window, tab, pane)
+    end)
+  end
+end)
+
+local glass = {
+  base_bg = "#101216",
+  title_bg = "#101216",
+  title_inactive_bg = "#101216",
+  panel_fg = "#DCE7FF",
+  muted_fg = "#90A4CA",
+  normal_bg = "#1A253A",
+  tab_bar_bg = "#101216",
+  tab_active_bg = "#2A3B5E",
+  tab_active_fg = "#E8EFFF",
+  tab_inactive_bg = "#151F31",
+  tab_inactive_fg = "#8FA4CC",
+  tab_hover_bg = "#22314F",
+  leader_bg = "#79AEFF",
+  pane_border = "#2A3448",
+}
 
 local mode_hud = {
   zellij_pane = {
     label = "PANE",
-    hint = "h/j/k/l focus  n,d,r split  x close  f zoom",
-    color = "#0EA5E9",
+    hint = "h/j/k/l focus  p next  n auto-split  d/r split",
+    color = "#7AA2F7",
   },
   zellij_resize = {
     label = "RESIZE",
     hint = "h/j/k/l adjust  HJKL reverse  -/+ global",
-    color = "#10B981",
+    color = "#73DACA",
   },
   zellij_tab = {
     label = "TAB",
     hint = "h/l prev-next  n new  x close  1-9 jump",
-    color = "#A78BFA",
+    color = "#E0AF68",
   },
   zellij_move = {
     label = "MOVE",
     hint = "n/p rotate  h/j/k/l swap",
-    color = "#F59E0B",
+    color = "#F7768E",
   },
   zellij_scroll = {
     label = "SCROLL",
     hint = "j/k line  f/b page  d/u half  s search",
-    color = "#F97316",
-  },
-  zellij_tmux = {
-    label = "TMUX",
-    hint = "% and \" split  c tab  n/p tab nav",
-    color = "#EC4899",
+    color = "#7DCFFF",
   },
 }
 
-local function append_status_segment(cells, bg, fg, text)
-  cells[#cells + 1] = { Background = { Color = bg } }
-  cells[#cells + 1] = { Foreground = { Color = fg } }
-  cells[#cells + 1] = { Text = " " .. text .. " " }
+local rounded = {
+  left = "",
+  right = "",
+}
+
+if wezterm.nerdfonts then
+  rounded.left = wezterm.nerdfonts.ple_left_half_circle_thick or rounded.left
+  rounded.right = wezterm.nerdfonts.ple_right_half_circle_thick or rounded.right
 end
+
+local function append_pill(cells, surface_bg, pill_bg, pill_fg, text, opts)
+  opts = opts or {}
+  local left_cap = opts.left_cap ~= false
+  local right_cap = opts.right_cap ~= false
+  local spacer = opts.spacer
+  local fixed_width = opts.fixed_width
+  local align = opts.align or "left"
+  local center_bias = opts.center_bias or 0
+  if spacer == nil then
+    spacer = " "
+  end
+
+  if fixed_width and #text < fixed_width then
+    local padding = fixed_width - #text
+    if align == "center" then
+      local left_padding = math.floor(padding / 2) + center_bias
+      if left_padding < 0 then
+        left_padding = 0
+      elseif left_padding > padding then
+        left_padding = padding
+      end
+      local right_padding = padding - left_padding
+      text = string.rep(" ", left_padding) .. text .. string.rep(" ", right_padding)
+    else
+      text = text .. string.rep(" ", padding)
+    end
+  end
+
+  cells[#cells + 1] = { Background = { Color = surface_bg } }
+  if left_cap then
+    cells[#cells + 1] = { Foreground = { Color = pill_bg } }
+    cells[#cells + 1] = { Text = rounded.left }
+  end
+
+  cells[#cells + 1] = { Background = { Color = pill_bg } }
+  cells[#cells + 1] = { Foreground = { Color = pill_fg } }
+  cells[#cells + 1] = { Text = " " .. text .. " " }
+
+  if right_cap then
+    cells[#cells + 1] = { Background = { Color = surface_bg } }
+    cells[#cells + 1] = { Foreground = { Color = pill_bg } }
+    cells[#cells + 1] = { Text = rounded.right }
+  end
+
+  cells[#cells + 1] = { Background = { Color = surface_bg } }
+  cells[#cells + 1] = { Foreground = { Color = surface_bg } }
+  cells[#cells + 1] = { Text = spacer }
+end
+
+local function trim(text)
+  if not text then
+    return nil
+  end
+
+  return (text:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+local function basename(path)
+  if not path then
+    return nil
+  end
+
+  return path:gsub(".*[/\\]", "")
+end
+
+local function simplify_pane_title(title)
+  local value = trim(title)
+  if not value or value == "" then
+    return nil
+  end
+
+  if value:find("|", 1, true) then
+    value = trim(value:match("([^|]+)$"))
+  end
+
+  return value
+end
+
+local function active_app_name(pane)
+  if pane then
+    local ok_name, process_path = pcall(function()
+      return pane:get_foreground_process_name()
+    end)
+    if ok_name and process_path and process_path ~= "" then
+      local name = basename(process_path)
+      if name and name ~= "" then
+        return name:gsub("%.exe$", "")
+      end
+    end
+
+    local ok_title, pane_title = pcall(function()
+      return pane:get_title()
+    end)
+    if ok_title then
+      local title = simplify_pane_title(pane_title)
+      if title and title ~= "" then
+        return title
+      end
+    end
+  end
+
+  return "wezterm"
+end
+
+wezterm.on("format-window-title", function(_, pane, _, _, _)
+  return active_app_name(pane)
+end)
+
+wezterm.on("format-tab-title", function(tab, _, _, _, hover, max_width)
+  local tab_bg = glass.tab_inactive_bg
+  local tab_fg = glass.tab_inactive_fg
+
+  if tab.is_active then
+    tab_bg = glass.tab_active_bg
+    tab_fg = glass.tab_active_fg
+  elseif hover then
+    tab_bg = glass.tab_hover_bg
+    tab_fg = glass.panel_fg
+  end
+
+  local tab_index = tab and tab.tab_index or 0
+  local label = "Tab " .. tostring(tab_index + 1)
+  local text = wezterm.truncate_right(label, math.max((max_width or 24) - 4, 1))
+  local cells = {}
+  append_pill(cells, glass.tab_bar_bg, tab_bg, tab_fg, text)
+  return cells
+end)
 
 wezterm.on("update-right-status", function(window)
   local leader_active = window:leader_is_active()
   local active_mode = window:active_key_table()
   local mode = mode_hud[active_mode]
   local left_label = "NORMAL"
-  local left_bg = "#1F2937"
-  local left_fg = "#E5E7EB"
+  local left_bg = glass.normal_bg
+  local left_fg = glass.panel_fg
 
   if leader_active then
     left_label = "LEADER"
-    left_bg = "#EAB308"
-    left_fg = "#111827"
+    left_bg = glass.leader_bg
+    left_fg = "#08111F"
   end
 
   if mode then
     left_label = mode.label
     left_bg = mode.color
-    left_fg = "#111827"
+    left_fg = "#08111F"
   end
 
-  window:set_left_status(wezterm.format {
-    { Background = { Color = left_bg } },
-    { Foreground = { Color = left_fg } },
-    { Text = " " .. left_label .. " " },
+  local left_cells = {}
+  append_pill(left_cells, glass.tab_bar_bg, left_bg, left_fg, left_label, {
+    left_cap = false,
+    fixed_width = 8,
+    align = "center",
+    center_bias = 1,
   })
+  window:set_left_status(wezterm.format(left_cells))
 
   local cells = {}
   if mode then
-    append_status_segment(cells, "#1F2937", "#CBD5E1", mode.hint)
+    append_pill(cells, glass.tab_bar_bg, mode.color, "#08111F", mode.hint, { right_cap = false, spacer = "" })
   elseif leader_active then
-    append_status_segment(cells, "#1F2937", "#CBD5E1", "p pane  n resize  t tab  h move  s scroll  b tmux  g cancel")
+    append_pill(cells, glass.tab_bar_bg, glass.leader_bg, "#08111F", "p pane  n resize  t tab  h move  s scroll  g cancel", { right_cap = false, spacer = "" })
   else
-    append_status_segment(cells, "#1F2937", "#94A3B8", "Ctrl+b for Zellij-style modes")
+    append_pill(cells, glass.tab_bar_bg, glass.normal_bg, glass.muted_fg, "p pane  n resize  t tab  h move  s scroll", { right_cap = false, spacer = "" })
   end
 
   window:set_right_status(wezterm.format(cells))
@@ -138,19 +445,107 @@ end)
 
 wezterm.on("gui-startup", function(cmd)
   local _, _, window = mux.spawn_window(cmd or {})
-  window:gui_window():maximize()
+  local gui_window = window:gui_window()
+  if not gui_window then
+    return
+  end
+
+  local screen = nil
+  if wezterm.gui and wezterm.gui.screens then
+    local ok_screens, screens = pcall(function()
+      return wezterm.gui.screens()
+    end)
+    if ok_screens and screens and screens.active then
+      screen = screens.active
+    end
+  end
+
+  if screen and screen.width and screen.height then
+    local ok_resize = pcall(function()
+      gui_window:set_position(screen.x or 0, screen.y or 0)
+      gui_window:set_inner_size(screen.width, screen.height)
+    end)
+    if not ok_resize then
+      gui_window:maximize()
+    end
+  else
+    gui_window:maximize()
+  end
 end)
 
 return {
   color_scheme = "GitHub Dark",
+  colors = {
+    background = glass.base_bg,
+    split = glass.pane_border,
+    tab_bar = {
+      background = glass.tab_bar_bg,
+      active_tab = {
+        bg_color = glass.tab_active_bg,
+        fg_color = glass.tab_active_fg,
+        intensity = "Bold",
+      },
+      inactive_tab = {
+        bg_color = glass.tab_inactive_bg,
+        fg_color = glass.tab_inactive_fg,
+      },
+      inactive_tab_hover = {
+        bg_color = glass.tab_hover_bg,
+        fg_color = glass.tab_inactive_fg,
+        italic = false,
+      },
+      new_tab = {
+        bg_color = glass.tab_bar_bg,
+        fg_color = glass.muted_fg,
+      },
+      new_tab_hover = {
+        bg_color = glass.normal_bg,
+        fg_color = glass.panel_fg,
+        italic = false,
+      },
+    },
+  },
+  window_background_opacity = 1.0,
+  text_background_opacity = 1.0,
+  macos_window_background_blur = 0,
+  inactive_pane_hsb = {
+    saturation = 0.9,
+    brightness = 0.78,
+  },
   default_cursor_style = "SteadyUnderline",
   -- default_prog = { "zsh", "-l", "-c", "zellij -l welcome" },
   default_prog = { "zsh", "-l" },
   font = wezterm.font("Hack Nerd Font"),
   font_size = 14.0,
+  window_padding = {
+    left = 8,
+    right = 8,
+    top = 6,
+    bottom = 4,
+  },
+  window_decorations = "TITLE|RESIZE|MACOS_USE_BACKGROUND_COLOR_AS_TITLEBAR_COLOR",
+  window_frame = {
+    font = wezterm.font_with_fallback {
+      { family = "SF Pro Display", weight = "Bold" },
+      { family = "SF Pro Text", weight = "Bold" },
+      { family = "Helvetica Neue", weight = "Bold" },
+      { family = "Arial", weight = "Bold" },
+      { family = "Hack Nerd Font", weight = "Bold" },
+    },
+    font_size = 12.0,
+    active_titlebar_bg = glass.title_bg,
+    inactive_titlebar_bg = glass.title_inactive_bg,
+    active_titlebar_border_bottom = glass.pane_border,
+    inactive_titlebar_border_bottom = glass.pane_border,
+  },
   hide_tab_bar_if_only_one_tab = false,
   tab_bar_at_bottom = false,
   use_fancy_tab_bar = false,
+  show_new_tab_button_in_tab_bar = false,
+  mouse_wheel_scrolls_tabs = false,
+  swallow_mouse_click_on_pane_focus = true,
+  swallow_mouse_click_on_window_focus = true,
+  tab_max_width = 56,
   hyperlink_rules = wezterm.default_hyperlink_rules(),
   leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1200 },
   keys = {
@@ -163,7 +558,6 @@ return {
     { key = "h", mods = "LEADER", action = act.ActivateKeyTable { name = "zellij_move", one_shot = false } },
     { key = "s", mods = "LEADER", action = act.ActivateKeyTable { name = "zellij_scroll", one_shot = false } },
     { key = "o", mods = "LEADER", action = act.ShowLauncher },
-    { key = "b", mods = "LEADER", action = act.ActivateKeyTable { name = "zellij_tmux", one_shot = false } },
     { key = "g", mods = "LEADER", action = act.ClearKeyTableStack },
     { key = "q", mods = "LEADER", action = act.QuitApplication },
 
@@ -196,7 +590,7 @@ return {
       { key = "RightArrow", mods = "NONE", action = act.ActivatePaneDirection("Right") },
       { key = "p", mods = "NONE", action = act.ActivatePaneDirection("Next") },
 
-      { key = "n", mods = "NONE", action = then_normal(split_right) },
+      { key = "n", mods = "NONE", action = then_normal(split_adaptive) },
       { key = "d", mods = "NONE", action = then_normal(split_down) },
       { key = "r", mods = "NONE", action = then_normal(split_right) },
       { key = "x", mods = "NONE", action = then_normal(act.CloseCurrentPane { confirm = true }) },
@@ -243,7 +637,7 @@ return {
       { key = "DownArrow", mods = "NONE", action = act.ActivateTabRelative(1) },
       { key = "j", mods = "NONE", action = act.ActivateTabRelative(1) },
 
-      { key = "n", mods = "NONE", action = then_normal(act.SpawnTab("CurrentPaneDomain")) },
+      { key = "n", mods = "NONE", action = then_normal(spawn_tab) },
       { key = "x", mods = "NONE", action = then_normal(act.CloseCurrentTab { confirm = true }) },
       { key = "b", mods = "NONE", action = then_normal(break_pane_to_tab()) },
       { key = "[", mods = "NONE", action = then_normal(act.MoveTabRelative(-1)) },
@@ -303,31 +697,6 @@ return {
       { key = "u", mods = "NONE", action = act.ScrollByLine(-10) },
     },
 
-    zellij_tmux = {
-      { key = "Enter", mods = "NONE", action = act.PopKeyTable },
-      { key = "Escape", mods = "NONE", action = act.PopKeyTable },
-      { key = "[", mods = "NONE", action = then_normal(act.ActivateCopyMode) },
-      { key = "b", mods = "CTRL", action = then_normal(act.SendKey { key = "b", mods = "CTRL" }) },
-      { key = "\"", mods = "NONE", action = then_normal(split_down) },
-      { key = "%", mods = "NONE", action = then_normal(split_right) },
-      { key = "z", mods = "NONE", action = then_normal(act.TogglePaneZoomState) },
-      { key = "c", mods = "NONE", action = then_normal(act.SpawnTab("CurrentPaneDomain")) },
-      { key = ",", mods = "NONE", action = then_normal(prompt_rename_tab()) },
-      { key = "p", mods = "NONE", action = then_normal(act.ActivateTabRelative(-1)) },
-      { key = "n", mods = "NONE", action = then_normal(act.ActivateTabRelative(1)) },
-      { key = "LeftArrow", mods = "NONE", action = then_normal(act.ActivatePaneDirection("Left")) },
-      { key = "RightArrow", mods = "NONE", action = then_normal(act.ActivatePaneDirection("Right")) },
-      { key = "DownArrow", mods = "NONE", action = then_normal(act.ActivatePaneDirection("Down")) },
-      { key = "UpArrow", mods = "NONE", action = then_normal(act.ActivatePaneDirection("Up")) },
-      { key = "h", mods = "NONE", action = then_normal(act.ActivatePaneDirection("Left")) },
-      { key = "l", mods = "NONE", action = then_normal(act.ActivatePaneDirection("Right")) },
-      { key = "j", mods = "NONE", action = then_normal(act.ActivatePaneDirection("Down")) },
-      { key = "k", mods = "NONE", action = then_normal(act.ActivatePaneDirection("Up")) },
-      { key = "o", mods = "NONE", action = act.ActivatePaneDirection("Next") },
-      { key = "d", mods = "NONE", action = then_normal(act.Hide) },
-      { key = "Space", mods = "NONE", action = act.RotatePanes("Clockwise") },
-      { key = "x", mods = "NONE", action = then_normal(act.CloseCurrentPane { confirm = true }) },
-    },
   },
   quit_when_all_windows_are_closed = true,
   window_close_confirmation = "NeverPrompt",
