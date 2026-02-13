@@ -83,6 +83,10 @@
           run = "move-node-to-workspace 1";
         }
         {
+          "if".app-id = "com.github.wez.wezterm";
+          run = "move-node-to-workspace 1";
+        }
+        {
           "if".app-id = "com.google.Chrome";
           run = "move-node-to-workspace 2";
         }
