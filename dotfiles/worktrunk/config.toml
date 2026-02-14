@@ -1,8 +1,8 @@
 # Worktrunk user configuration
 # https://worktrunk.dev/config/
 
-# Central location for worktrees on the system
-worktree-path = "~/.worktrees/{{ repo }}/{{ branch | sanitize }}"
+# Bare repository layout: <repo>/.git (bare) with worktrees as <repo>/<branch>
+worktree-path = "../{{ branch | sanitize }}"
 
 [commit.generation]
 command = "MAX_THINKING_TOKENS=0 claude -p --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"

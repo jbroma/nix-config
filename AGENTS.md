@@ -18,6 +18,10 @@ mise run update              # Update flake inputs
 darwin-rebuild-switch        # Same as mise run switch
 darwin-cleanup               # Prune generations older than 7 days
 flake-update                 # Same as mise run update
+
+# Clone workflow (bare repo layout for worktrunk)
+git clone <repo> [dir]       # Creates <dir>/.git bare repo + bootstraps first wt worktree
+gh clone <repo> [dir]        # Same behavior for GitHub clones (also supports gh repo clone)
 ```
 
 ## Architecture

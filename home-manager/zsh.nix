@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   type,
   ...
@@ -14,6 +13,8 @@
     zsh-fast-syntax-highlighting
     zsh-you-should-use
   ];
+
+  home.file.".zsh/worktrunk-clone.zsh".source = ../dotfiles/zsh/worktrunk-clone.zsh;
 
   programs.zsh = {
     enable = true;
@@ -32,6 +33,8 @@
     initContent = ''
       bindkey "^[[1;5C" forward-word       # Ctrl+Right Arrow
       bindkey "^[[1;5D" backward-word      # Ctrl+Left Arrow
+
+      source "${config.home.homeDirectory}/.zsh/worktrunk-clone.zsh"
     '';
 
     localVariables = {
