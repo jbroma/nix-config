@@ -22,7 +22,9 @@ _wt_bootstrap_first_worktree() {
   fi
 
   # Create the default-branch worktree for bare-repo layout.
-  if ! command wt -C "$repo_dir" switch '^' --no-cd; then
+  # Worktrunk may prompt to install shell integration on first run.
+  # Auto-confirm to keep clone bootstrap non-interactive.
+  if ! printf 'y\n' | command wt -C "$repo_dir" switch '^' --no-cd; then
     echo "warning: clone succeeded but worktree bootstrap failed; run: cd $repo_dir && wt switch ^" >&2
   fi
 }
