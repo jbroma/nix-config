@@ -53,6 +53,8 @@
       island-restart = "killall 'Claude Island'; sleep 1; open -a 'Claude Island'";
       # Worktrunk switch
       wsc = "wt switch --create";
+      # Worktrunk remove worktree
+      wrm = "wt remove --foreground --force";
     };
 
     plugins = [
