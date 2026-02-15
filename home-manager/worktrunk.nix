@@ -20,7 +20,7 @@ in
     run ${pkgs.bash}/bin/bash ${mergeWorktrunkConfigScript} \
       "${worktrunkDotfile}" \
       "${worktrunkConfigPath}" \
-      "${pkgs.yq-go}/bin/yq" \
+      "${pkgs.remarshal}/bin/remarshal" \
       "${pkgs.jq}/bin/jq"
   '';
 

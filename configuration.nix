@@ -93,6 +93,7 @@ in
         ast-grep
         nmap
         yq-go
+        remarshal
         # libs
         libyaml
       ]

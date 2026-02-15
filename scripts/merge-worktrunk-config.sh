@@ -3,13 +3,13 @@
 set -euo pipefail
 
 if [ "$#" -ne 4 ]; then
-  echo "usage: $0 <managed-config-path> <target-config-path> <yq-bin> <jq-bin>" >&2
+  echo "usage: $0 <managed-config-path> <target-config-path> <remarshal-bin> <jq-bin>" >&2
   exit 1
 fi
 
 managed_config="$1"
 target_config="$2"
-yq_bin="$3"
+remarshal_bin="$3"
 jq_bin="$4"
 target_dir="$(dirname "$target_config")"
 
@@ -36,8 +36,8 @@ trap cleanup EXIT
 # - Any top-level key present in managed config is replaced wholesale.
 # - Top-level keys absent from managed config are preserved from existing config.
 # This keeps managed sections deterministic while preserving unrelated user state.
-existing_json="$("$yq_bin" eval -p toml -o json '.' "$target_config")"
-managed_json="$("$yq_bin" eval -p toml -o json '.' "$managed_config")"
+existing_json="$("$remarshal_bin" -if toml -of json < "$target_config")"
+managed_json="$("$remarshal_bin" -if toml -of json < "$managed_config")"
 
 "$jq_bin" -n \
   --argjson existing "$existing_json" \
@@ -47,7 +47,7 @@ managed_json="$("$yq_bin" eval -p toml -o json '.' "$managed_config")"
   ($managed // {}) as $managed_obj |
   reduce ($managed_obj | keys_unsorted[]) as $key ($existing_obj; .[$key] = $managed_obj[$key])
   ' \
-  | "$yq_bin" eval -p json -o toml '.' - > "$tmp_file"
+  | "$remarshal_bin" -if json -of toml > "$tmp_file"
 
 mv "$tmp_file" "$target_config"
 trap - EXIT
