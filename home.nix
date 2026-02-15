@@ -21,6 +21,7 @@
     htop
     eza
     mise
+    maestro
     pnpm
     ripgrep
     sd
