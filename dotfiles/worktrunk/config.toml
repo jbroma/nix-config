@@ -21,4 +21,4 @@ verify = true      # Run project hooks (--no-verify to skip)
 
 # Eliminate cold starts by copying gitignored files to new worktrees
 [post-start]
-copy = "wt step copy-ignored"
+copy = "wt step copy-ignored --force"
