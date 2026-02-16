@@ -547,6 +547,24 @@ return {
   swallow_mouse_click_on_window_focus = true,
   tab_max_width = 56,
   hyperlink_rules = wezterm.default_hyperlink_rules(),
+  mouse_bindings = {
+    -- Prevent accidental link opens on plain click.
+    {
+      event = { Up = { streak = 1, button = "Left" } },
+      mods = "NONE",
+      action = act.CompleteSelection("ClipboardAndPrimarySelection"),
+    },
+    {
+      event = { Up = { streak = 1, button = "Left" } },
+      mods = "CMD",
+      action = act.OpenLinkAtMouseCursor,
+    },
+    {
+      event = { Down = { streak = 1, button = "Left" } },
+      mods = "CMD",
+      action = act.Nop,
+    },
+  },
   leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1200 },
   keys = {
     { key = "Enter", mods = "SHIFT", action = wezterm.action.SendString("\n") },
