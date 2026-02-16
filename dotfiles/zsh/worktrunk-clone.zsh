@@ -43,6 +43,18 @@ _wt_clone_target_guard() {
   fi
 }
 
+_wt_clone_ensure_origin_fetch_refspec() {
+  local repo_dir="$1"
+  local git_dir="$repo_dir/.git"
+  local fetch_refspec="+refs/heads/*:refs/remotes/origin/*"
+
+  if [ -n "$(command git --git-dir "$git_dir" config --get-all remote.origin.fetch 2>/dev/null)" ]; then
+    return 0
+  fi
+
+  command git --git-dir "$git_dir" config remote.origin.fetch "$fetch_refspec"
+}
+
 _wt_clone_passthrough() {
   local clone_backend="$1"
   shift
@@ -56,16 +68,16 @@ _wt_clone_passthrough() {
 }
 
 _wt_clone_bare_layout() {
-  local clone_backend="$1"
+  local clone_backend="${1-}"
   local repo_ref=""
   local repo_dir=""
   shift
 
-  repo_ref="$1"
-  repo_dir="$2"
+  repo_ref="${1-}"
+  repo_dir="${2-}"
 
   # Keep native behavior for anything beyond simple: clone <repo> [dir]
-  if [ -z "$repo_ref" ] || [ -n "$3" ]; then
+  if [ -z "$repo_ref" ] || [ -n "${3-}" ]; then
     _wt_clone_passthrough "$clone_backend" "$@"
     return $?
   fi
@@ -89,7 +101,6 @@ _wt_clone_bare_layout() {
   fi
 
   _wt_clone_target_guard "$repo_dir" || return 1
-  mkdir -p "$repo_dir" || return 1
 
   if [ "$clone_backend" = "gh" ]; then
     command gh repo clone "$repo_ref" "$repo_dir/.git" -- --bare || return $?
@@ -97,11 +108,15 @@ _wt_clone_bare_layout() {
     command git clone --bare "$repo_ref" "$repo_dir/.git" || return $?
   fi
 
+  if ! _wt_clone_ensure_origin_fetch_refspec "$repo_dir"; then
+    echo "warning: clone succeeded but failed to set remote.origin.fetch" >&2
+  fi
+
   _wt_bootstrap_first_worktree "$repo_dir"
 }
 
 git() {
-  if [ "$1" = "clone" ]; then
+  if [ "${1-}" = "clone" ]; then
     shift
     _wt_clone_bare_layout git "$@"
     return $?
@@ -111,13 +126,13 @@ git() {
 }
 
 gh() {
-  if [ "$1" = "clone" ]; then
+  if [ "${1-}" = "clone" ]; then
     shift
     _wt_clone_bare_layout gh "$@"
     return $?
   fi
 
-  if [ "$1" = "repo" ] && [ "$2" = "clone" ]; then
+  if [ "${1-}" = "repo" ] && [ "${2-}" = "clone" ]; then
     shift
     shift
     _wt_clone_bare_layout gh "$@"
