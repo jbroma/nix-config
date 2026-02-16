@@ -19,7 +19,7 @@ in
 
     globalConfig = {
       hooks = {
-        enter = "mise install";
+        enter = "mise i -q";
       };
 
       tools = {
@@ -31,6 +31,8 @@ in
       };
 
       settings = {
+        experimental = true;
+
         idiomatic_version_file_enable_tools = [
           "ruby"
           "node"
