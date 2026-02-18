@@ -17,7 +17,7 @@ let
   codexSettings = {
     model = "gpt-5.3-codex";
     model_personality = "pragmatic";
-    approval_policy = "on-failure";
+    approval_policy = "on-request";
     sandbox_mode = "workspace-write";
     model_reasoning_effort = "xhigh";
     model_reasoning_summary = "concise";
