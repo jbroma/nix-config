@@ -29,8 +29,13 @@ let
       shell_tool = true;
       shell_snapshot = true;
       unified_exec = true;
+      multi_agent = true;
       request_rule = true;
       undo = true;
+    };
+
+    agents = {
+      max_threads = 8;
     };
 
     profiles = {
