@@ -12,7 +12,7 @@ let
 in
 {
   # Cursor symlink
-  home.file.".cursorrules".source = "${ai}/AGENTS.md";
+  home.file.".cursorrules".source = "${ai}/CORE.md";
 
   programs.vscode = {
     enable = true;

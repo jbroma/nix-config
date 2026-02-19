@@ -8,7 +8,9 @@
 
 let
   # MCP servers: wrap in mcpServers key for Claude Code format
-  mcpServersConfig = { mcpServers = config.mcp.servers; };
+  mcpServersConfig = {
+    mcpServers = config.mcp.servers;
+  };
   mcpServersJson = builtins.toJSON mcpServersConfig;
 
   hooksDir = "${config.home.homeDirectory}/.claude/hooks";
@@ -50,7 +52,7 @@ in
   };
 
   # Claude Code symlinks (read-only, from ai submodule)
-  home.file.".claude/CLAUDE.md".source = "${ai}/AGENTS.md";
+  home.file.".claude/CLAUDE.md".source = "${ai}/CORE.md";
   home.file.".claude/hooks".source = "${ai}/hooks";
   home.file.".claude/plugins/local-marketplace".source = "${ai}/marketplace";
   home.file.".claude/skills".source = "${ai}/skills";

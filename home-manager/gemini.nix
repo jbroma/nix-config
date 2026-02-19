@@ -10,7 +10,7 @@ let
 in
 {
   # Gemini CLI symlinks
-  home.file.".gemini/GEMINI.md".source = "${ai}/AGENTS.md";
+  home.file.".gemini/GEMINI.md".source = "${ai}/CORE.md";
   home.file.".gemini/rules".source = "${ai}/rules";
 
   # MCP server configs
