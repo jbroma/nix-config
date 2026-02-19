@@ -65,20 +65,16 @@ in
       [
         # xcode
         android-studio
-        google-chrome
         cleanshot-x
         claude-code
         codex-app
         codex-cli
-        cursor
         zed-editor
         raycast
         minisim
         handy
         claude-island
-        discord
         spotify
-        _1password-gui
         git
         ghostty
         oh-my-posh
@@ -96,6 +92,13 @@ in
         remarshal
         # libs
         libyaml
+      ]
+      # These apps are installed outside Nix in the work profile.
+      ++ lib.optionals (type == "personal") [
+        google-chrome
+        cursor
+        discord
+        _1password-gui
       ]
       ++ lib.optionals (type == "work") [ ngrok ];
 
