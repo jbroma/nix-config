@@ -26,7 +26,9 @@ let
     };
   };
 
-  managedCursorSettingsJson = builtins.toJSON managedCursorSettings;
+  managedCursorSettingsFile = pkgs.writeText "cursor-managed-settings.json" (
+    builtins.toJSON managedCursorSettings
+  );
 
   cursorExtensions =
     (with pkgs.vscode-marketplace; [
@@ -85,33 +87,9 @@ in
 
   # Keep Cursor settings mutable while applying Nix-managed settings on switch.
   home.activation.cursorSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    cursor_settings_file="$HOME/Library/Application Support/Cursor/User/settings.json"
-    cursor_settings_dir="$(dirname "$cursor_settings_file")"
-    managed_settings_json=${lib.escapeShellArg managedCursorSettingsJson}
-
-    mkdir -p "$cursor_settings_dir"
-
-    if [ -L "$cursor_settings_file" ]; then
-      rm -f "$cursor_settings_file"
-    fi
-
-    if [ ! -f "$cursor_settings_file" ]; then
-      printf '%s\n' "$managed_settings_json" > "$cursor_settings_file"
-      exit 0
-    fi
-
-    if existing_settings_json="$(${pkgs.jq}/bin/jq -c '.' "$cursor_settings_file" 2>/dev/null)"; then
-      :
-    else
-      existing_settings_json='{}'
-    fi
-
-    tmp_file="$(mktemp "''${cursor_settings_file}.tmp.XXXXXX")"
-    ${pkgs.jq}/bin/jq -n \
-      --argjson existing "$existing_settings_json" \
-      --argjson managed "$managed_settings_json" \
-      '($existing // {}) * ($managed // {})' > "$tmp_file"
-
-    mv "$tmp_file" "$cursor_settings_file"
+    run ${pkgs.bash}/bin/bash ${../scripts/merge-cursor-settings.sh} \
+      "$HOME/Library/Application Support/Cursor/User/settings.json" \
+      "${managedCursorSettingsFile}" \
+      "${pkgs.jq}/bin/jq"
   '';
 }
