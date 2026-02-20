@@ -31,6 +31,7 @@
     curlie
     nil
     typescript-language-server
+    uv
     watchman
     zellij
     dcg
