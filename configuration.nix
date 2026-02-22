@@ -69,6 +69,7 @@ in
         claude-code
         codex-app
         codex-cli
+        codex-monitor
         zed-editor
         raycast
         minisim
