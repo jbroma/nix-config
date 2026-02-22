@@ -1,6 +1,6 @@
 {
+  config,
   pkgs,
-  lib,
   ...
 }:
 let
@@ -32,6 +32,7 @@ in
 
       settings = {
         experimental = true;
+        trusted_config_paths = [ "${config.xdg.configHome}/mise/projects" ];
 
         idiomatic_version_file_enable_tools = [
           "ruby"

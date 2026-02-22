@@ -15,6 +15,7 @@
   ];
 
   home.file.".zsh/worktrunk-clone.zsh".source = ../dotfiles/zsh/worktrunk-clone.zsh;
+  home.file.".zsh/mise-project-config.zsh".source = ../dotfiles/zsh/mise-project-config.zsh;
 
   programs.zsh = {
     enable = true;
@@ -34,6 +35,7 @@
       bindkey "^[[1;5C" forward-word       # Ctrl+Right Arrow
       bindkey "^[[1;5D" backward-word      # Ctrl+Left Arrow
 
+      source "${config.home.homeDirectory}/.zsh/mise-project-config.zsh"
       source "${config.home.homeDirectory}/.zsh/worktrunk-clone.zsh"
     '';
 
