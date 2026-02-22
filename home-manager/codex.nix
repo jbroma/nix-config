@@ -21,8 +21,8 @@ let
     sandbox_mode = "workspace-write";
     model_reasoning_effort = "xhigh";
     model_reasoning_summary = "concise";
-    model_verbosity = "medium";
-    web_search = "cached";
+    model_verbosity = "high";
+    web_search = "live";
     file_opener = "cursor";
 
     features = {
@@ -36,17 +36,6 @@ let
 
     agents = {
       max_threads = 8;
-    };
-
-    profiles = {
-      fast = {
-        model_reasoning_effort = "low";
-        model_verbosity = "low";
-      };
-      thorough = {
-        model_reasoning_effort = "xhigh";
-        web_search = "live";
-      };
     };
 
     history.persistence = "save-all";
