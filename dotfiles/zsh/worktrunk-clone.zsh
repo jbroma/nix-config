@@ -2,7 +2,19 @@
 # Converts simple clone commands into:
 #   <repo>/.git   (bare)
 #   <repo>/<default-branch> (first worktree via wt switch ^)
-# Set WT_CLONE_NATIVE=1 to bypass this behavior and use native clone commands.
+# Native clone behavior is the default.
+# Set WT_CLONE_WORKTRUNK=1 to enable this bare-repo bootstrap behavior.
+# Set WT_CLONE_NATIVE=1 to force native behavior (compatibility escape hatch).
+
+_wt_clone_worktrunk_enabled() {
+  case "${WT_CLONE_WORKTRUNK-}" in
+    1|true|TRUE|yes|YES|on|ON)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
 
 _wt_clone_bypass_enabled() {
   case "${WT_CLONE_NATIVE-}" in
@@ -84,7 +96,7 @@ _wt_clone_bare_layout() {
   local repo_dir=""
   shift
 
-  if _wt_clone_bypass_enabled; then
+  if ! _wt_clone_worktrunk_enabled || _wt_clone_bypass_enabled; then
     _wt_clone_passthrough "$clone_backend" "$@"
     return $?
   fi

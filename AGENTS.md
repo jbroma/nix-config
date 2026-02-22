@@ -19,9 +19,6 @@ darwin-rebuild-switch        # Same as mise run switch
 darwin-cleanup               # Prune generations older than 7 days
 flake-update                 # Same as mise run update
 
-# Clone workflow (bare repo layout for worktrunk)
-git clone <repo> [dir]       # Creates <dir>/.git bare repo + bootstraps first wt worktree
-gh clone <repo> [dir]        # Same behavior for GitHub clones (also supports gh repo clone)
 ```
 
 ## Architecture
@@ -47,24 +44,24 @@ flake.nix                    # Entry point - two configs: work, personal
 
 **Key patterns:**
 
--   `specialArgs = { inherit type user; }` passes profile type (work/personal) and user info to all modules
--   Custom packages in `./pkgs/` are auto-loaded via `mapAttrs'` over the directory
--   Overlays substitute: `ghostty-bin`, `code-cursor`, archived Spotify ARM64 build
+- `specialArgs = { inherit type user; }` passes profile type (work/personal) and user info to all modules
+- Custom packages in `./pkgs/` are auto-loaded via `mapAttrs'` over the directory
+- Overlays substitute: `ghostty-bin`, `code-cursor`, archived Spotify ARM64 build
 
 ## AI Integration
 
 The `ai/` directory is a Nix flake input providing shared configuration for AI coding tools. Each tool has its own home-manager module that symlinks relevant parts:
 
--   `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks`, `~/.claude/CLAUDE.md`
--   `gemini.nix`: `~/.gemini/rules`, `~/.gemini/GEMINI.md`
--   `cursor.nix`: `~/.cursorrules`
+- `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks`, `~/.claude/CLAUDE.md`
+- `gemini.nix`: `~/.gemini/rules`, `~/.gemini/GEMINI.md`
+- `cursor.nix`: `~/.cursorrules`
 
 The `ai` input is also symlinked to `~/.nix/ai` for visibility (in `home.nix`).
 
 ## Nix-Specific Notes
 
--   Format with `nix fmt` (uses treefmt-nix with nixfmt)
--   Two configurations: `personal` and `work` (selected via hostname or explicit `--flake .#work`)
--   `user.nix` is git skip-worktree'd - edit locally for identity changes
--   Unfree packages must be allowlisted in `flake.nix` `allowUnfreePredicate`
--   Never run `nix build` without `--no-link` - avoids creating `result` symlinks that clutter the repo
+- Format with `nix fmt` (uses treefmt-nix with nixfmt)
+- Two configurations: `personal` and `work` (selected via hostname or explicit `--flake .#work`)
+- `user.nix` is git skip-worktree'd - edit locally for identity changes
+- Unfree packages must be allowlisted in `flake.nix` `allowUnfreePredicate`
+- Never run `nix build` without `--no-link` - avoids creating `result` symlinks that clutter the repo
