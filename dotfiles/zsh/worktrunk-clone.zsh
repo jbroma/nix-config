@@ -2,6 +2,17 @@
 # Converts simple clone commands into:
 #   <repo>/.git   (bare)
 #   <repo>/<default-branch> (first worktree via wt switch ^)
+# Set WT_CLONE_NATIVE=1 to bypass this behavior and use native clone commands.
+
+_wt_clone_bypass_enabled() {
+  case "${WT_CLONE_NATIVE-}" in
+    1|true|TRUE|yes|YES|on|ON)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
 
 _wt_clone_repo_name() {
   local clone_target="$1"
@@ -72,6 +83,11 @@ _wt_clone_bare_layout() {
   local repo_ref=""
   local repo_dir=""
   shift
+
+  if _wt_clone_bypass_enabled; then
+    _wt_clone_passthrough "$clone_backend" "$@"
+    return $?
+  fi
 
   repo_ref="${1-}"
   repo_dir="${2-}"
