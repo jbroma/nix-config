@@ -1,9 +1,24 @@
 # Keep project-specific mise config outside repos by deriving a stable
 # per-project filename under ~/.config/mise/projects.
 _mise_set_project_config() {
-  local project_root project_key project_dir
+  local project_root project_key project_dir relative_path
   project_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
-  project_key="$(printf '%s' "$project_root" | shasum -a 256 | cut -d' ' -f1)"
+
+  if [[ "$project_root" == "$HOME" ]]; then
+    relative_path="home"
+  elif [[ "$project_root" == "$HOME/"* ]]; then
+    relative_path="${project_root#$HOME/}"
+  else
+    # Keep non-home paths flat as well.
+    relative_path="${project_root#/}"
+  fi
+
+  project_key="${relative_path//\//-}"
+  project_key="${project_key// /-}"
+  if [[ -z "$project_key" ]]; then
+    project_key="root"
+  fi
+
   project_dir="$HOME/.config/mise/projects"
   mkdir -p "$project_dir"
 
