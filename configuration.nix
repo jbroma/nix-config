@@ -82,6 +82,8 @@ in
         nerd-fonts.fira-code
         nerd-fonts.hack
         nixfmt
+        cmake
+        ninja
         mkcert
         vim
         gnupg
