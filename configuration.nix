@@ -74,7 +74,6 @@ in
         raycast
         minisim
         handy
-        claude-island
         spotify
         git
         ghostty
@@ -134,7 +133,6 @@ in
   # apps to launch on login
   launchd.user.agents = {
     raycast = mkLaunchAgent "${pkgs.raycast}/Contents/Library/LoginItems/RaycastLauncher.app/Contents/MacOS/RaycastLauncher";
-    claude-island = mkLaunchAgent "${pkgs.claude-island}/Applications/Claude Island.app/Contents/MacOS/Claude Island";
     cleanshot-x = lib.mkIf (type == "work") (
       mkLaunchAgent "${pkgs.cleanshot-x}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X"
     );

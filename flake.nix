@@ -77,7 +77,6 @@
                   ghostty = pkgs.ghostty-bin;
                   android-studio = customPkgs.android-studio;
                   minisim = customPkgs.minisim;
-                  claude-island = customPkgs.claude-island;
                   claude-code = customPkgs.claude-code;
                   cursor = pkgs.code-cursor;
                   cleanshot-x = customPkgs.cleanshot-x;

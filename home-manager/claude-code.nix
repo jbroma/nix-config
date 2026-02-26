@@ -35,9 +35,7 @@ let
   plugins = builtins.attrNames installedPluginsJson.plugins;
 
   # Convert plugin list to { "plugin@marketplace" = true; } format
-  enabledPlugins = lib.genAttrs plugins (_: true) // {
-    "claude-island@local-marketplace" = true;
-  };
+  enabledPlugins = lib.genAttrs plugins (_: true);
 
   # Local marketplace for custom plugins (symlinked to ~/.claude/plugins/local-marketplace)
   localMarketplacePath = "${config.home.homeDirectory}/.claude/plugins/local-marketplace";
@@ -84,7 +82,7 @@ in
       permissions = permissions;
       # Enable plugins from dotfile (single source of truth)
       enabledPlugins = enabledPlugins;
-      # Local marketplace for custom plugins (e.g., claude-island)
+      # Local marketplace for custom plugins
       extraKnownMarketplaces = {
         "local-marketplace" = {
           source = {

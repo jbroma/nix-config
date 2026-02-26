@@ -15,7 +15,6 @@ Updates local packages in `~/.nix/pkgs/`.
 | Package | Source Type | Version Check |
 |---------|-------------|---------------|
 | claude-code | npm registry | `curl -s "https://registry.npmjs.org/@anthropic-ai/claude-code/latest" \| jq -r '.version'` |
-| claude-island | GitHub releases | `gh api repos/farouqaldori/claude-island/releases/latest --jq '.tag_name'` |
 | minisim | GitHub releases | `gh api repos/okwasniewski/MiniSim/releases/latest --jq '.tag_name'` |
 | handy | GitHub releases | `gh api repos/cjpais/Handy/releases/latest --jq '.tag_name'` |
 | cleanshot-x | Direct URL | WebFetch `https://cleanshot.com/changelog` |
