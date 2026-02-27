@@ -90,6 +90,7 @@ in
         zstd
         ast-grep
         nmap
+        podman
         yq-go
         remarshal
         # libs
