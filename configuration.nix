@@ -103,7 +103,10 @@ in
         discord
         _1password-gui
       ]
-      ++ lib.optionals (type == "work") [ ngrok ];
+      ++ lib.optionals (type == "work") [
+        ngrok
+        air
+      ];
 
     variables = {
       ANDROID_HOME = "$HOME/Library/Android/sdk";
