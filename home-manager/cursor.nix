@@ -36,6 +36,7 @@ let
       esbenp.prettier-vscode
       expo.vscode-expo-tools
       jnoortheen.nix-ide
+      oxc.oxc-vscode
       rust-lang.rust-analyzer
       flowtype.flow-for-vscode
       mhutchie.git-graph
