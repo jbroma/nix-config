@@ -23,3 +23,7 @@ run = "./scripts/ai-plugins-update.sh"
 [tasks.pkg-update]
 description = "Update all local packages in pkgs/ (interactive with Claude)"
 run = "claude 'Use the pkg-update skill to update all packages in pkgs/'"
+
+[tasks.pkg-update-script]
+description = "Update all local packages in pkgs/ with the repo script"
+run = "./scripts/pkg-update.sh"

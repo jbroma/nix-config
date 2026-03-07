@@ -13,18 +13,21 @@ Update local packages in `~/.nix/pkgs/`.
 - Verify with `nix build ... --no-link` before finishing (`mise run check` can fail when `darwin-rebuild check` requires root).
 - For full overlay validation, build with `--no-link` only.
 - Edit only relevant files in `pkgs/`.
+- Prefer the repo script first: `mise run pkg-update-script` or `./scripts/pkg-update.sh`.
 
 ## Workflow
 
-1. Inspect current package metadata:
+1. Run the repo updater:
+   - `mise run pkg-update-script`
+2. Inspect current package metadata when debugging or handling an edge case:
    - `rg -n "pname =|name =|version =|url =|hash =|sha256 =" pkgs/*.nix`
-2. Check latest upstream versions using the table below.
-3. Update `version` and any URL segments tied to version.
-4. Prefetch new hash:
+3. For manual fixes or script maintenance, check latest upstream versions using the table below.
+4. Update `version` and any URL segments tied to version.
+5. Prefetch new hash:
    - SRI: `sri=$(nix store prefetch-file --json "$url" | jq -r '.hash')`
    - nix32: `nix hash convert --from sri --to nix32 "$sri"`
    - hex: `nix hash convert --from sri --to base16 "$sri"`
-5. Verify:
+6. Verify:
    - Skip `mise run check` for package updates; use darwin `nix build` targets directly.
    - `nix build .#darwinConfigurations.personal.system --no-link`
    - `nix build .#darwinConfigurations.work.system --no-link` (if touching shared packages)
@@ -49,5 +52,7 @@ Update local packages in `~/.nix/pkgs/`.
 - Build targets are overlays. Do not use `.#<package>`; validate via darwin config checks/builds.
 - Match existing hash format in each file (`hash` SRI vs `sha256` nix32/hex).
 - `curlie` defaults to POST and can break API checks; use `curl` for release/version lookups.
+- The script checks the current pinned version and validates the upstream artifact URL before doing expensive prefetch/hash work.
 - For `codex-app`, always discover hash/version from a cache-busted URL (`?ts=...`) to avoid stale CDN edge cache.
+- `codex-app` is the exception to the cheap path: the version is hidden inside the app bundle, so the script still has to fetch the DMG after validating the URL exists.
 - After touching many packages, re-list package files with `rg --files pkgs` and ensure all changed files were intentionally updated.
