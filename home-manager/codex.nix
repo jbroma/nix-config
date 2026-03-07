@@ -15,11 +15,11 @@ let
     _: server: lib.filterAttrs (k: _: k != "type") server
   ) config.mcp.servers;
   codexSettings = {
-    model = "gpt-5.3-codex";
+    model = "gpt-5.4";
     model_personality = "pragmatic";
     approval_policy = "on-request";
     sandbox_mode = "workspace-write";
-    model_reasoning_effort = "xhigh";
+    model_reasoning_effort = "high";
     model_reasoning_summary = "concise";
     model_verbosity = "high";
     web_search = "live";
