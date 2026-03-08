@@ -116,8 +116,21 @@ in
   };
 
   fonts.packages = with pkgs; [
+    atkinson-hyperlegible
+    atkinson-hyperlegible-next
+    dm-sans
+    figtree
+    ibm-plex
+    inter
+    noto-fonts
     nerd-fonts.fira-code
     nerd-fonts.hack
+    nunito-sans
+    plus-jakarta-sans
+    public-sans
+    recursive
+    source-sans
+    work-sans
   ];
 
   home-manager = {
