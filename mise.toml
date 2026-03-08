@@ -1,12 +1,12 @@
 # Nix Configuration Tasks
 
-[tasks.switch]
-description = "Rebuild and switch darwin configuration"
-run = "darwin-rebuild switch --flake ."
+[tasks.check-personal]
+description = "Build the personal darwin configuration without applying"
+run = "nix build --no-link .#darwinConfigurations.personal.system"
 
-[tasks.check]
-description = "Check configuration without applying"
-run = "darwin-rebuild check --flake ."
+[tasks.check-work]
+description = "Build the work darwin configuration without applying"
+run = "nix build --no-link .#darwinConfigurations.work.system"
 
 [tasks.update]
 description = "Update flake inputs"

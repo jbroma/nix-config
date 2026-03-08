@@ -10,12 +10,12 @@ Personal macOS dotfiles configuration using Nix Flakes, nix-darwin, and home-man
 
 ```bash
 # Primary workflow
-mise run switch              # Rebuild and apply darwin configuration
-mise run check               # Check config without applying
+mise run check-personal      # Build the personal config without applying
+mise run check-work          # Build the work config without applying
 mise run update              # Update flake inputs
 
-# Shell aliases (after setup)
-darwin-rebuild-switch        # Same as mise run switch
+# Manual shell aliases (human use only; agents must not apply config)
+darwin-rebuild-switch        # Rebuild and apply darwin configuration
 darwin-cleanup               # Prune generations older than 7 days
 flake-update                 # Same as mise run update
 
@@ -62,6 +62,9 @@ The `ai` input is also symlinked to `~/.nix/ai` for visibility (in `home.nix`).
 
 - Format with `nix fmt` (uses treefmt-nix with nixfmt)
 - Two configurations: `personal` and `work` (selected via hostname or explicit `--flake .#work`)
+- Most of the module graph is shared across `personal` and `work`; even if a change looks profile-specific, run both build checks to protect repo integrity
+- Verification commands are `mise run check-personal` and `mise run check-work`
+- Build-only verification is the maximum allowed agent action; applying the configuration is human-only
 - `user.nix` is git skip-worktree'd - edit locally for identity changes
 - Unfree packages must be allowlisted in `flake.nix` `allowUnfreePredicate`
 - Never run `nix build` without `--no-link` - avoids creating `result` symlinks that clutter the repo
