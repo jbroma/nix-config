@@ -104,6 +104,7 @@ in
         _1password-gui
       ]
       ++ lib.optionals (type == "work") [
+        caddy
         ngrok
         air
       ];
