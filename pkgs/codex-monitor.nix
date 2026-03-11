@@ -4,7 +4,7 @@
   fetchurl,
 }:
 let
-  version = "0.7.61";
+  version = "0.7.62";
 in
 stdenv.mkDerivation {
   pname = "codex-monitor";
@@ -12,7 +12,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/Dimillian/CodexMonitor/releases/download/v${version}/CodexMonitor.app.tar.gz";
-    hash = "sha256-tnu9Br2HLUaXnkKnd1nCIKJONZxsWxl87vCISeg2QmI=";
+    hash = "sha256-0yDXwRF7/oRILWsXIVXLjFkCWkDZBzV+3LyEvApuAGg=";
   };
 
   sourceRoot = ".";
