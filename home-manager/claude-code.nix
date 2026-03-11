@@ -44,11 +44,6 @@ let
   setupScript = "${dotfilesDir}/claude/scripts/setup-plugins.sh";
 in
 {
-  home.sessionVariables = {
-    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
-    ENABLE_TOOL_SEARCH = "auto";
-  };
-
   # Claude Code symlinks (read-only, from ai submodule)
   home.file.".claude/CLAUDE.md".source = "${ai}/CORE.md";
   home.file.".claude/hooks".source = "${ai}/hooks";
@@ -76,8 +71,22 @@ in
     enable = true;
     package = pkgs.claude-code;
     settings = {
+      "$schema" = "https://json.schemastore.org/claude-code-settings.json";
       # Default model - use Opus for best quality
       model = "opus";
+      # Keep reasoning enabled and bias supported models toward deeper analysis.
+      alwaysThinkingEnabled = true;
+      effortLevel = "high";
+      # Claude-specific environment configuration belongs in settings.json.
+      env = {
+        CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
+        ENABLE_TOOL_SEARCH = "auto";
+        CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
+      };
+      attribution = {
+        commit = "";
+        pr = "";
+      };
       # Default permissions from ai submodule + allowEdits mode
       permissions = permissions;
       # Enable plugins from dotfile (single source of truth)
