@@ -7,11 +7,11 @@
 
 stdenv.mkDerivation rec {
   name = "handy";
-  version = "0.7.10";
+  version = "0.7.11";
 
   src = fetchurl {
     url = "https://github.com/cjpais/Handy/releases/download/v${version}/Handy_${version}_aarch64.dmg";
-    sha256 = "1r130b2prcm6ag42m1wx24mr77ldzkri8m778p9kcafn15k4flyj";
+    sha256 = "132fsyxh2n12x8rlgrfp3r7gcfmhhcylgk9m8h1rkmcb50zrr4kz";
   };
 
   nativeBuildInputs = [ _7zz ];
