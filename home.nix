@@ -62,6 +62,7 @@
     ./home-manager/gemini.nix
     ./home-manager/codex.nix
     ./home-manager/mcp-servers.nix
+    ./home-manager/vite-plus.nix
     ./home-manager/zed.nix
     ./home-manager/worktrunk.nix
   ];

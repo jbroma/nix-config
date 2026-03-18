@@ -87,6 +87,7 @@
                   codex-monitor = customPkgs.codex-monitor;
                   zed-editor = customPkgs.zed-editor;
                   worktrunk = customPkgs.worktrunk;
+                  vite-plus = customPkgs.vite-plus;
                 })
                 inputs.nix-vscode-extensions.overlays.default
               ];

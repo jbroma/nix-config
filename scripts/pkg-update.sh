@@ -16,6 +16,7 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - dcg
   - handy
   - minisim
+  - vite-plus
   - worktrunk
   - zed-editor
 
@@ -292,6 +293,15 @@ update_minisim() {
   update_simple_hex "minisim" "$file" "$latest" "$url"
 }
 
+update_vite_plus() {
+  local file="pkgs/vite-plus.nix"
+  local latest url
+
+  latest=$(curl -fsSL "https://registry.npmjs.org/@voidzero-dev%2Fvite-plus-cli-darwin-arm64/latest" | jq -r '.version')
+  url="https://registry.npmjs.org/@voidzero-dev/vite-plus-cli-darwin-arm64/-/vite-plus-cli-darwin-arm64-${latest}.tgz"
+  update_simple_sri "vite-plus" "$file" "$latest" "$url"
+}
+
 update_worktrunk() {
   local file="pkgs/worktrunk.nix"
   local latest url
@@ -375,6 +385,7 @@ update_codex_monitor
 update_dcg
 update_handy
 update_minisim
+update_vite_plus
 update_worktrunk
 update_zed_editor
 
