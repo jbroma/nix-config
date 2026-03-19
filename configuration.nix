@@ -48,6 +48,7 @@ in
       "raycast"
       "discord"
       "ngrok"
+      "orbstack"
       "spotify"
       # vscode extensions
       "vscode-extension-mhutchie-git-graph"
@@ -91,6 +92,7 @@ in
         ast-grep
         nmap
         podman
+        orbstack
         yq-go
         remarshal
         # libs
