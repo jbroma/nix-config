@@ -6,12 +6,12 @@
   fetchurl,
 }:
 let
-  version = "0.115.0";
+  version = "0.116.0";
 
   sources = {
     "aarch64-darwin" = {
       url = "https://github.com/openai/codex/releases/download/rust-v${version}/codex-aarch64-apple-darwin.tar.gz";
-      hash = "sha256-FiGb3SHJgoPBSP0CFgkrCZpl+TcrTSHEEmwAJUm179w=";
+      hash = "sha256-FIc19fIgmy9qMb18o2icYowubFJo/7oL6T93IPz4kvU=";
     };
   };
 
