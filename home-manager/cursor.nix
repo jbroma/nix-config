@@ -52,6 +52,7 @@ let
       mk12.better-git-line-blame
       tombi-toml.tombi
       typescriptteam.native-preview
+      vitest.explorer
     ])
     ++ (with pkgs.vscode-extensions; [
       biomejs.biome
