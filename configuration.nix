@@ -190,6 +190,20 @@ in
     fi
   '';
 
+  system.activationScripts.postActivation.text = lib.mkAfter ''
+    cursorNixApp="/Applications/Nix Apps/Cursor.app"
+    cursorAppLink="/Applications/Cursor.app"
+
+    if [ -e "$cursorNixApp" ]; then
+      if [ -L "$cursorAppLink" ]; then
+        rm -f "$cursorAppLink"
+        ln -s "$cursorNixApp" "$cursorAppLink"
+      elif [ ! -e "$cursorAppLink" ]; then
+        ln -s "$cursorNixApp" "$cursorAppLink"
+      fi
+    fi
+  '';
+
   # dnsmasq config
   services.dnsmasq.enable = true;
   services.dnsmasq.bind = "127.0.0.1";
