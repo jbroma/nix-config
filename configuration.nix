@@ -49,6 +49,7 @@ in
       "discord"
       "ngrok"
       "orbstack"
+      "obsidian"
       "spotify"
       # vscode extensions
       "vscode-extension-mhutchie-git-graph"
@@ -103,6 +104,7 @@ in
         google-chrome
         cursor
         discord
+        obsidian
         _1password-gui
       ]
       ++ lib.optionals (type == "work") [
