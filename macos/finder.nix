@@ -1,4 +1,8 @@
-{ ... }:
+{
+  lib,
+  type,
+  ...
+}:
 
 {
   system.defaults.NSGlobalDomain = {
@@ -35,6 +39,12 @@
         "icloud_drive"
         "tags"
       ];
+    }
+    // lib.optionalAttrs (type == "personal") {
+      # Keep Desktop and Documents synced with iCloud Drive on personal machines.
+      FXICloudDriveEnabled = true;
+      FXICloudDriveDesktop = true;
+      FXICloudDriveDocuments = true;
     };
   };
 }
