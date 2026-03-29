@@ -13,6 +13,7 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - codex-app
   - codex-cli
   - codex-monitor
+  - discord
   - dcg
   - handy
   - minisim
@@ -266,6 +267,10 @@ update_codex_monitor() {
   update_simple_sri "codex-monitor" "$file" "$latest" "$url"
 }
 
+update_discord() {
+  REPO_ROOT="$repo_root" bash "$repo_root/scripts/update-discord.sh"
+}
+
 update_dcg() {
   local file="pkgs/dcg.nix"
   local latest url
@@ -382,6 +387,7 @@ update_cleanshot_x
 update_codex_app
 update_codex_cli
 update_codex_monitor
+update_discord
 update_dcg
 update_handy
 update_minisim

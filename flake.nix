@@ -36,6 +36,7 @@
             "claude-code"
             "codex-app"
             "codex-cli"
+            "discord"
             "ngrok"
           ];
       };
@@ -85,6 +86,7 @@
                   codex-cli = customPkgs.codex-cli;
                   codex-app = customPkgs.codex-app;
                   codex-monitor = customPkgs.codex-monitor;
+                  discord = customPkgs.discord;
                   zed-editor = customPkgs.zed-editor;
                   worktrunk = customPkgs.worktrunk;
                   vite-plus = customPkgs.vite-plus;
