@@ -89,6 +89,7 @@ in
         vim
         gnupg
         dnsmasq
+        exiftool
         zstd
         ast-grep
         nmap
