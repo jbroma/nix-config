@@ -40,6 +40,7 @@ in
       # "Xcode.app"
       "google-chrome"
       "claude-code"
+      "claude-desktop"
       "codex-app"
       "codex-cli"
       "cursor"
@@ -69,6 +70,7 @@ in
         android-studio
         cleanshot-x
         claude-code
+        claude-desktop
         codex-app
         codex-cli
         codex-monitor

@@ -34,6 +34,7 @@
             # "Xcode.app"
             "cursor"
             "claude-code"
+            "claude-desktop"
             "codex-app"
             "codex-cli"
             "discord"
@@ -79,6 +80,7 @@
                   android-studio = customPkgs.android-studio;
                   minisim = customPkgs.minisim;
                   claude-code = customPkgs.claude-code;
+                  claude-desktop = customPkgs.claude-desktop;
                   cursor = pkgs.code-cursor;
                   cleanshot-x = customPkgs.cleanshot-x;
                   handy = customPkgs.handy;

@@ -9,6 +9,7 @@ Usage: ./scripts/pkg-update.sh [--no-verify]
 Updates every custom package in pkgs/ with explicit source handlers:
   - android-studio
   - claude-code
+  - claude-desktop
   - cleanshot-x
   - codex-app
   - codex-cli
@@ -199,6 +200,10 @@ update_claude_code() {
   update_simple_sri "claude-code" "$file" "$latest" "$url"
 }
 
+update_claude_desktop() {
+  REPO_ROOT="$repo_root" bash "$repo_root/scripts/update-claude-desktop.sh"
+}
+
 update_cleanshot_x() {
   local file="pkgs/cleanshot-x.nix"
   local page latest url sri hash before
@@ -383,6 +388,7 @@ echo "Updating packages in pkgs/..."
 
 update_android_studio
 update_claude_code
+update_claude_desktop
 update_cleanshot_x
 update_codex_app
 update_codex_cli
