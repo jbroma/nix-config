@@ -7,12 +7,12 @@
 
 stdenv.mkDerivation rec {
   name = "android-studio";
-  version = "2025.3.2.6";
-  dmgName = "android-studio-panda2-mac_arm.dmg";
+  version = "2025.3.3.6";
+  dmgName = "android-studio-panda3-mac_arm.dmg";
 
   src = fetchurl {
     url = "https://redirector.gvt1.com/edgedl/android/studio/install/${version}/${dmgName}";
-    sha256 = "6c9944ce8dac9b5dd05e96a46f2e042628ced568557d29d1299adf5dad817cb7";
+    sha256 = "e28009b47e248f9fcf32bfd33335cb616390d92133af1e8ed5f6ef61cff007c3";
   };
   buildInputs = [ undmg ];
 

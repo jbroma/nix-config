@@ -16,7 +16,7 @@
 }:
 
 let
-  version = "0.0.382";
+  version = "0.0.383";
   disableBreakingUpdates = writeTextFile {
     name = "disable-breaking-updates.py";
     executable = true;
@@ -60,7 +60,7 @@ stdenv.mkDerivation {
   src = fetchurl {
     # Source: nixpkgs pkgs/applications/networking/instant-messengers/discord/sources.json
     url = "https://stable.dl2.discordapp.net/apps/osx/${version}/Discord.dmg";
-    hash = "sha256-vBadXUHrYhvkqzkCvGnKf25A19TKcFs5D0tzC54E0Hk=";
+    hash = "sha256-91S8lqqJbMG/V1pTiaTnoTzRh+5u0cIU2+r3BeuPLiU=";
   };
 
   nativeBuildInputs = [
