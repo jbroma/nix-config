@@ -31,6 +31,7 @@ flake.nix                    # Entry point - two configs: work, personal
 │
 ├── home-manager/            # Home-manager modules
 │   ├── claude-code.nix      # Claude Code: settings, hooks, skills, plugins
+│   ├── codex.nix            # Codex: settings, hooks, skills, agents, rules
 │   ├── gemini.nix           # Gemini CLI: rules symlinks
 │   ├── cursor.nix           # Cursor: settings, extensions, .cursorrules
 │   ├── zsh.nix              # Shell config with modern CLI aliases
@@ -53,6 +54,7 @@ flake.nix                    # Entry point - two configs: work, personal
 The `ai/` directory is a Nix flake input providing shared configuration for AI coding tools. Each tool has its own home-manager module that symlinks relevant parts:
 
 - `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks`, `~/.claude/CLAUDE.md`
+- `codex.nix`: `~/.codex/skills`, `~/.codex/agents`, `~/.codex/hooks`, `~/.codex/AGENTS.md`, `~/.codex/rules/default.rules`, generated `~/.codex/config.toml`
 - `gemini.nix`: `~/.gemini/rules`, `~/.gemini/GEMINI.md`
 - `cursor.nix`: `~/.cursorrules`
 

@@ -59,6 +59,7 @@ in
 
   # Symlinks from ai submodule
   home.file.".codex/AGENTS.md".source = "${ai}/CORE.md";
+  home.file.".codex/agents".source = "${ai}/agents";
   home.file.".codex/hooks".source = "${ai}/hooks";
   home.file.".codex/skills".source = "${ai}/skills";
   home.file.".codex/rules/default.rules".source = "${ai}/rules/codex.rules";
