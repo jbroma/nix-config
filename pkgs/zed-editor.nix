@@ -9,14 +9,14 @@ let
   inherit (stdenv.hostPlatform) system;
   sources = {
     aarch64-darwin = {
-      url = "https://github.com/zed-industries/zed/releases/download/v0.230.0/Zed-aarch64.dmg";
-      sha256 = "132d1msga55n9canavpyx2ph5v11g85qxwvwq5z3cip74xbk6zyy";
+      url = "https://github.com/zed-industries/zed/releases/download/v0.230.2/Zed-aarch64.dmg";
+      sha256 = "0n2y314y30ifjhpvxzv6haabk7cmza9irkzis5j889lb9978akla";
     };
   };
 in
 stdenv.mkDerivation {
   pname = "zed-editor";
-  version = "0.230.0";
+  version = "0.230.2";
 
   src = fetchurl sources.${system};
 
