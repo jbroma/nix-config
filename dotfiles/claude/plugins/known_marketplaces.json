@@ -9,11 +9,11 @@
   },
   "local-marketplace": {
     "source": {
-      "source": "directory",
-      "path": "/Users/jbroma/.claude/plugins/local-marketplace"
+      "source": "file",
+      "path": "/Users/jbroma/.claude/plugins/local-marketplace/.claude-plugin/marketplace.json"
     },
     "installLocation": "/Users/jbroma/.claude/plugins/local-marketplace",
-    "lastUpdated": "2026-04-01T15:08:50.326Z"
+    "lastUpdated": "2026-04-07T10:51:21.610Z"
   },
   "agent-island": {
     "source": {

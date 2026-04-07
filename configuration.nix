@@ -77,7 +77,6 @@ in
         zed-editor
         raycast
         minisim
-        handy
         spotify
         git
         ghostty

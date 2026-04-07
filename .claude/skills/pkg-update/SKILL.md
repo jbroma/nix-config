@@ -16,7 +16,6 @@ Updates local packages in `~/.nix/pkgs/`.
 |---------|-------------|---------------|
 | claude-code | npm registry | `curl -s "https://registry.npmjs.org/@anthropic-ai/claude-code/latest" \| jq -r '.version'` |
 | minisim | GitHub releases | `gh api repos/okwasniewski/MiniSim/releases/latest --jq '.tag_name'` |
-| handy | GitHub releases | `gh api repos/cjpais/Handy/releases/latest --jq '.tag_name'` |
 | cleanshot-x | Direct URL | WebFetch `https://cleanshot.com/changelog` |
 | android-studio | Google redirector | WebFetch `https://developer.android.com/studio/releases` + verify |
 | codex-app | Static URL | `nix-prefetch-url` the URL, compare hash. Version extracted from `Info.plist` post-build (build fails on mismatch) |

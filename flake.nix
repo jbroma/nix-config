@@ -83,7 +83,6 @@
                   claude-desktop = customPkgs.claude-desktop;
                   cursor = pkgs.code-cursor;
                   cleanshot-x = customPkgs.cleanshot-x;
-                  handy = customPkgs.handy;
                   dcg = customPkgs.dcg;
                   codex-cli = customPkgs.codex-cli;
                   codex-app = customPkgs.codex-app;

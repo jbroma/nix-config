@@ -16,7 +16,6 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - codex-monitor
   - discord
   - dcg
-  - handy
   - minisim
   - vite-plus
   - worktrunk
@@ -285,15 +284,6 @@ update_dcg() {
   update_simple_sri "dcg" "$file" "$latest" "$url"
 }
 
-update_handy() {
-  local file="pkgs/handy.nix"
-  local latest url
-
-  latest=$(gh api repos/cjpais/Handy/releases/latest --jq '.tag_name' | sed 's/^v//')
-  url="https://github.com/cjpais/Handy/releases/download/v${latest}/Handy_${latest}_aarch64.dmg"
-  update_simple_nix32 "handy" "$file" "$latest" "$url"
-}
-
 update_minisim() {
   local file="pkgs/minisim.nix"
   local latest url
@@ -395,7 +385,6 @@ update_codex_cli
 update_codex_monitor
 update_discord
 update_dcg
-update_handy
 update_minisim
 update_vite_plus
 update_worktrunk
