@@ -21,14 +21,13 @@
 
     persistent-apps = [
       "/System/Applications/Apps.app"
-      "/Applications/Safari.app"
       "/Applications/Nix Apps/Google Chrome.app"
-      "/System/Applications/Calendar.app"
-      "/System/Applications/Mail.app"
-      "/System/Applications/Notes.app"
       "/Applications/Xcode.app"
       "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app"
+      "/Applications/Nix Apps/WezTerm.app"
       "/Applications/Nix Apps/Cursor.app"
+      "/Applications/Nix Apps/Zed.app"
+      "/Applications/Nix Apps/Codex.app"
       "/Applications/Nix Apps/Spotify.app"
       "/Applications/Nix Apps/Discord.app"
     ]
