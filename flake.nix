@@ -85,7 +85,6 @@
                   dcg = customPkgs.dcg;
                   codex-cli = customPkgs.codex-cli;
                   codex-app = customPkgs.codex-app;
-                  codex-monitor = customPkgs.codex-monitor;
                   discord = customPkgs.discord;
                   zed-editor = customPkgs.zed-editor;
                   worktrunk = customPkgs.worktrunk;

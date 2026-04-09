@@ -73,7 +73,6 @@ in
         claude-desktop
         codex-app
         codex-cli
-        codex-monitor
         zed-editor
         raycast
         minisim

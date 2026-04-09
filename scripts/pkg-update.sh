@@ -13,7 +13,6 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - cleanshot-x
   - codex-app
   - codex-cli
-  - codex-monitor
   - discord
   - dcg
   - minisim
@@ -262,15 +261,6 @@ update_codex_cli() {
   update_simple_sri "codex-cli" "$file" "$latest" "$url"
 }
 
-update_codex_monitor() {
-  local file="pkgs/codex-monitor.nix"
-  local latest url
-
-  latest=$(gh api repos/Dimillian/CodexMonitor/releases/latest --jq '.tag_name' | sed 's/^v//')
-  url="https://github.com/Dimillian/CodexMonitor/releases/download/v${latest}/CodexMonitor.app.tar.gz"
-  update_simple_sri "codex-monitor" "$file" "$latest" "$url"
-}
-
 update_discord() {
   REPO_ROOT="$repo_root" bash "$repo_root/scripts/update-discord.sh"
 }
@@ -382,7 +372,6 @@ update_claude_desktop
 update_cleanshot_x
 update_codex_app
 update_codex_cli
-update_codex_monitor
 update_discord
 update_dcg
 update_minisim
