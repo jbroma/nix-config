@@ -44,7 +44,6 @@
     ./home-manager/zsh.nix
     ./home-manager/git.nix
     ./home-manager/1password.nix
-    ./home-manager/ghostty.nix
     ./home-manager/wezterm.nix
     ./home-manager/bat.nix
     ./home-manager/fzf.nix

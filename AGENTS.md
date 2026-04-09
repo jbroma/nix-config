@@ -47,7 +47,7 @@ flake.nix                    # Entry point - two configs: work, personal
 
 - `specialArgs = { inherit type user; }` passes profile type (work/personal) and user info to all modules
 - Custom packages in `./pkgs/` are auto-loaded via `mapAttrs'` over the directory
-- Overlays substitute: `ghostty-bin`, `code-cursor`, archived Spotify ARM64 build
+- Overlays substitute: `code-cursor`, archived Spotify ARM64 build
 
 ## AI Integration
 

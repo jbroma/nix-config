@@ -49,8 +49,6 @@
       darwin-cleanup = "sudo nix-collect-garbage --delete-older-than 7d";
       flake-update = "(cd ~/.nix && nix flake update)";
       code = "cursor";
-      # Screenshot-optimized terminal for Twitter photos
-      ghostty-screenshot = "ghostty --config-file=~/.config/ghostty/screenshot-config";
       # Worktrunk switch
       wsc = "wt switch --create";
       # Worktrunk remove worktree

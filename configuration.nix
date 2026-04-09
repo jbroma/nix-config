@@ -79,7 +79,6 @@ in
         minisim
         spotify
         git
-        ghostty
         oh-my-posh
         nerd-fonts.fira-code
         nerd-fonts.hack

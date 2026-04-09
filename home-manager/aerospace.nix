@@ -79,10 +79,6 @@
         }
         # App Automatic Workspace Assignment
         {
-          "if".app-id = "com.mitchellh.ghostty";
-          run = "move-node-to-workspace 1";
-        }
-        {
           "if".app-id = "com.github.wez.wezterm";
           run = "move-node-to-workspace 1";
         }

@@ -28,7 +28,6 @@
       "/System/Applications/Notes.app"
       "/Applications/Xcode.app"
       "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app"
-      "/Applications/Nix Apps/Ghostty.app"
       "/Applications/Nix Apps/Cursor.app"
       "/Applications/Nix Apps/Spotify.app"
       "/Applications/Nix Apps/Discord.app"

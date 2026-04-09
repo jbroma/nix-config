@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}:
+{ ... }:
 
 {
   programs.zellij = {
@@ -12,11 +8,4 @@
       theme = "ao";
     };
   };
-
-  # Uncomment to auto-start zellij in Ghostty.
-  # programs.ghostty = {
-  #   settings = {
-  #     initial-command = "${lib.getExe pkgs.zsh} -l -c zellij -l welcome";
-  #   };
-  # };
 }

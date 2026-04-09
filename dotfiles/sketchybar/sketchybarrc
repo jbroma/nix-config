@@ -103,7 +103,7 @@ ICON_FOLDER="󰉋"    # nf-md-folder
 
 declare -A WORKSPACE_ICONS
 WORKSPACE_ICONS=(
-  [1]="$ICON_TERMINAL"  # Ghostty
+  [1]="$ICON_TERMINAL"  # Terminal
   [2]="$ICON_GLOBE"     # Chrome/Safari
   [3]="$ICON_CODE"      # Cursor
   [4]="$ICON_SLACK"     # Slack/Discord

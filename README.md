@@ -7,7 +7,7 @@ My personal macOS configuration using [Nix](https://nixos.org/), [nix-darwin](ht
 -   System-level macOS preferences (Finder, keyboard, control center, etc.)
 -   Development tools and CLI utilities
 -   Shell configuration (zsh, oh-my-posh)
--   Terminal setup (ghostty, zellij)
+-   Terminal setup (wezterm, zellij)
 -   Window management (aerospace, sketchybar)
 -   Git, editor configs, and more
 
