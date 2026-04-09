@@ -15,11 +15,17 @@ LOCAL_MARKETPLACE="${3:-}"
 PLUGINS_DIR="${HOME}/.claude/plugins"
 CACHE_DIR="${PLUGINS_DIR}/cache"
 PLUGINS_JSON="${DOTFILES_CLAUDE}/plugins/installed_plugins.json"
+KNOWN_MARKETPLACES_TEMPLATE="${DOTFILES_CLAUDE}/plugins/known_marketplaces.json"
+KNOWN_MARKETPLACES_PATH="${PLUGINS_DIR}/known_marketplaces.json"
 
 # Setup plugin config symlinks
 mkdir -p "$PLUGINS_DIR"
-ln -sf "${DOTFILES_CLAUDE}/plugins/known_marketplaces.json" "${PLUGINS_DIR}/known_marketplaces.json"
 ln -sf "${DOTFILES_CLAUDE}/plugins/installed_plugins.json" "${PLUGINS_DIR}/installed_plugins.json"
+
+# Claude mutates known marketplaces during updates, so keep it as local state.
+if [[ ! -e "$KNOWN_MARKETPLACES_PATH" ]]; then
+  cp "$KNOWN_MARKETPLACES_TEMPLATE" "$KNOWN_MARKETPLACES_PATH"
+fi
 
 # Add local marketplace if path provided
 if [[ -n "$LOCAL_MARKETPLACE" && -d "$LOCAL_MARKETPLACE" ]]; then

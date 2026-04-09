@@ -95,8 +95,8 @@ in
       extraKnownMarketplaces = {
         "local-marketplace" = {
           source = {
-            source = "file";
-            path = "${localMarketplacePath}/.claude-plugin/marketplace.json";
+            source = "directory";
+            path = localMarketplacePath;
           };
         };
       };
