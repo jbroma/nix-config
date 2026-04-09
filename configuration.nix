@@ -193,17 +193,22 @@ in
   '';
 
   system.activationScripts.postActivation.text = lib.mkAfter ''
-    cursorNixApp="/Applications/Nix Apps/Cursor.app"
-    cursorAppLink="/Applications/Cursor.app"
+    ensure_app_link() {
+      nix_app="/Applications/Nix Apps/$1.app"
+      app_link="/Applications/$1.app"
 
-    if [ -e "$cursorNixApp" ]; then
-      if [ -L "$cursorAppLink" ]; then
-        rm -f "$cursorAppLink"
-        ln -s "$cursorNixApp" "$cursorAppLink"
-      elif [ ! -e "$cursorAppLink" ]; then
-        ln -s "$cursorNixApp" "$cursorAppLink"
+      if [ -e "$nix_app" ]; then
+        if [ -L "$app_link" ]; then
+          rm -f "$app_link"
+          ln -s "$nix_app" "$app_link"
+        elif [ ! -e "$app_link" ]; then
+          ln -s "$nix_app" "$app_link"
+        fi
       fi
-    fi
+    }
+
+    ensure_app_link "Cursor"
+    ensure_app_link "Google Chrome"
   '';
 
   # dnsmasq config
