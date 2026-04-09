@@ -14,7 +14,6 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - codex-app
   - codex-cli
   - discord
-  - dcg
   - minisim
   - vite-plus
   - worktrunk
@@ -265,15 +264,6 @@ update_discord() {
   REPO_ROOT="$repo_root" bash "$repo_root/scripts/update-discord.sh"
 }
 
-update_dcg() {
-  local file="pkgs/dcg.nix"
-  local latest url
-
-  latest=$(gh api repos/Dicklesworthstone/destructive_command_guard/releases/latest --jq '.tag_name' | sed 's/^v//')
-  url="https://github.com/Dicklesworthstone/destructive_command_guard/releases/download/v${latest}/dcg-aarch64-apple-darwin.tar.xz"
-  update_simple_sri "dcg" "$file" "$latest" "$url"
-}
-
 update_minisim() {
   local file="pkgs/minisim.nix"
   local latest url
@@ -373,7 +363,6 @@ update_cleanshot_x
 update_codex_app
 update_codex_cli
 update_discord
-update_dcg
 update_minisim
 update_vite_plus
 update_worktrunk

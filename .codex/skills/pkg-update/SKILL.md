@@ -42,7 +42,6 @@ Update local packages in `~/.nix/pkgs/`.
 | `cleanshot-x` | `https://cleanshot.com/changelog` (manual) | hex (`sha256`) | Download URL pattern: `.../CleanShot-X-${version}.dmg`. |
 | `codex-app` | Static URL only. Use cache-busting for checks/prefetch: `u="https://persistent.oaistatic.com/codex-app-prod/Codex.dmg?ts=$(date +%s)"` then `nix store prefetch-file --json --refresh "$u"` | SRI (`hash`) | CDN can serve stale blob at the bare URL. Keep derivation URL static, but use cache-busting URL for version/hash discovery. Derivation validates `CFBundleShortVersionString` and fails with expected version to set. |
 | `codex-cli` | `gh api repos/openai/codex/releases/latest --jq '.tag_name' \| sed 's/^rust-v//'` | SRI (`hash`) | URL tag prefix is `rust-v${version}`. |
-| `dcg` | `gh api repos/Dicklesworthstone/destructive_command_guard/releases/latest --jq '.tag_name' \| sed 's/^v//'` | SRI (`hash`) | Tarball URL uses `v${version}` tag. |
 | `minisim` | `gh api repos/okwasniewski/MiniSim/releases/latest --jq '.tag_name' \| sed 's/^v//'` | hex (`sha256`) | ZIP filename: `MiniSim.app.zip`. |
 | `worktrunk` | `gh api repos/max-sixty/worktrunk/releases/latest --jq '.tag_name' \| sed 's/^v//'` | SRI (`hash`) | Tarball URL uses `worktrunk-aarch64-apple-darwin.tar.xz`. |
 | `zed-editor` | `gh api repos/zed-industries/zed/releases/latest --jq '.tag_name' \| sed 's/^v//'` | nix32 (`sha256`) | Keep `version` and release URL (`v${version}` + `Zed-aarch64.dmg`) aligned. |

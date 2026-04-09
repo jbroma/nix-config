@@ -34,7 +34,6 @@
     uv
     watchman
     zellij
-    dcg
     worktrunk
   ];
 
