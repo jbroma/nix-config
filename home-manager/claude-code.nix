@@ -73,7 +73,7 @@ in
     settings = {
       "$schema" = "https://json.schemastore.org/claude-code-settings.json";
       # Default model - use Opus for best quality
-      model = "opus";
+      model = "opus[1m]";
       # Keep reasoning enabled and bias supported models toward deeper analysis.
       alwaysThinkingEnabled = true;
       effortLevel = "high";
@@ -81,6 +81,7 @@ in
       env = {
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
         ENABLE_TOOL_SEARCH = "auto";
+        CLAUDE_CODE_EFFORT_LEVEL = "max";
         CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
       };
       attribution = {
