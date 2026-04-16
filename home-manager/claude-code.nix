@@ -80,7 +80,7 @@ in
       # Claude-specific environment configuration belongs in settings.json.
       env = {
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
-        ENABLE_TOOL_SEARCH = "auto";
+        ENABLE_TOOL_SEARCH = "true";
         CLAUDE_CODE_EFFORT_LEVEL = "max";
         CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
       };
