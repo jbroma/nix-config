@@ -14,6 +14,7 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - codex-app
   - codex-cli
   - discord
+  - maestro-studio
   - minisim
   - vite-plus
   - worktrunk
@@ -273,6 +274,32 @@ update_minisim() {
   update_simple_hex "minisim" "$file" "$latest" "$url"
 }
 
+update_maestro_studio() {
+  local file="pkgs/maestro-studio.nix"
+  local release_json latest url digest sha256 before
+
+  release_json=$(gh api repos/mobile-dev-inc/maestro-studio/releases/latest)
+  latest=$(printf '%s' "$release_json" | jq -r '.tag_name' | sed 's/^v//')
+  url=$(printf '%s' "$release_json" | jq -r '.assets[] | select(.name=="Maestro-Studio-mac-universal.zip") | .browser_download_url')
+  digest=$(printf '%s' "$release_json" | jq -r '.assets[] | select(.name=="Maestro-Studio-mac-universal.zip") | .digest')
+
+  if [[ -z "$latest" || "$latest" == "null" || -z "$url" || "$url" == "null" || -z "$digest" || "$digest" == "null" ]]; then
+    echo "error: failed to resolve Maestro Studio release metadata" >&2
+    exit 1
+  fi
+
+  sha256=${digest#sha256:}
+  prepare_update "maestro-studio" "$file" "$latest" "$url" || return 0
+  before=$_pkg_update_before
+
+  VERSION="$latest" SHA256="$sha256" replace_in_file "$file" '
+    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
+    s/sha256 = "[^"]+";/sha256 = "$ENV{SHA256}";/;
+  '
+
+  log_status "maestro-studio" "$before" "$latest"
+}
+
 update_vite_plus() {
   local file="pkgs/vite-plus.nix"
   local latest url
@@ -364,6 +391,7 @@ update_codex_app
 update_codex_cli
 update_discord
 update_minisim
+update_maestro_studio
 update_vite_plus
 update_worktrunk
 update_zed_editor

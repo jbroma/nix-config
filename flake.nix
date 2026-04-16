@@ -38,6 +38,7 @@
             "codex-app"
             "codex-cli"
             "discord"
+            "maestro-studio"
             "ngrok"
           ];
       };
@@ -85,6 +86,7 @@
                   codex-cli = customPkgs.codex-cli;
                   codex-app = customPkgs.codex-app;
                   discord = customPkgs.discord;
+                  maestro-studio = customPkgs.maestro-studio;
                   zed-editor = customPkgs.zed-editor;
                   worktrunk = customPkgs.worktrunk;
                   vite-plus = customPkgs.vite-plus;
