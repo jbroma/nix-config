@@ -7,12 +7,12 @@
   xz,
 }:
 let
-  version = "0.34.2";
+  version = "0.38.0";
 
   sources = {
     "aarch64-darwin" = {
       url = "https://github.com/max-sixty/worktrunk/releases/download/v${version}/worktrunk-aarch64-apple-darwin.tar.xz";
-      hash = "sha256-/QRXlsYg0V9lBzLhTAROvwzsWdWQRKUuTWekTwU5Ia4=";
+      hash = "sha256-D4eUB5XodL7TsKro9MYhZkv8gisFRAzOeboEjQ7DpO4=";
     };
   };
 
