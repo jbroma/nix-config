@@ -80,6 +80,39 @@ extract_first_match() {
   printf '%s' "$input" | rg -o "$pattern" | head -n 1
 }
 
+extract_android_studio_stable_release_path() {
+  local input=$1
+  local release_path
+
+  release_path=$(printf '%s' "$input" | perl -0ne '
+    if (m{id="agree-button__studio_mac_arm_bundle_download"[^>]*href="https://[^"]+/android/studio/install/([0-9]{4}\.[0-9]\.[0-9]\.[0-9]/android-studio-[[:alnum:]-]+-mac_arm\.dmg)"}s) {
+      print "$1\n";
+      exit;
+    }
+
+    if (m{href="https://[^"]+/android/studio/install/([0-9]{4}\.[0-9]\.[0-9]\.[0-9]/android-studio-[[:alnum:]-]+-mac_arm\.dmg)"[^>]*id="agree-button__studio_mac_arm_bundle_download"}s) {
+      print "$1\n";
+      exit;
+    }
+  ')
+
+  if [[ -z "$release_path" ]]; then
+    echo "error: failed to locate stable Android Studio Mac ARM download link" >&2
+    exit 1
+  fi
+
+  printf '%s\n' "$release_path"
+}
+
+ensure_android_studio_stable_dmg() {
+  local dmg_name=$1
+
+  if [[ "$dmg_name" =~ (canary|beta|rc|preview|alpha) ]]; then
+    echo "error: resolved Android Studio preview artifact (${dmg_name}); stable channel only" >&2
+    exit 1
+  fi
+}
+
 current_version() {
   local file=$1
   rg -o 'version = "[^"]+"' "$file" | head -n 1 | sed -E 's/.*"([^"]+)"/\1/'
@@ -169,10 +202,11 @@ update_android_studio() {
   local page release_path latest dmg_name url sri hash before
 
   page=$(curl -fsSL https://developer.android.com/studio/releases)
-  release_path=$(extract_first_match 'install/[0-9]{4}\.[0-9]\.[0-9]\.[0-9]/android-studio-[[:alnum:]-]+-mac_arm\.dmg' "$page")
+  release_path=$(extract_android_studio_stable_release_path "$page")
   latest=${release_path#install/}
   latest=${latest%%/*}
   dmg_name=${release_path##*/}
+  ensure_android_studio_stable_dmg "$dmg_name"
   url="https://redirector.gvt1.com/edgedl/android/studio/install/${latest}/${dmg_name}"
   prepare_update "android-studio" "$file" "$latest" "$url" || return 0
   before=$_pkg_update_before
