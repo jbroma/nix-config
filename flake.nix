@@ -87,6 +87,7 @@
                   codex-app = customPkgs.codex-app;
                   discord = customPkgs.discord;
                   maestro-studio = customPkgs.maestro-studio;
+                  wsmancli = customPkgs.wsmancli;
                   zed-editor = customPkgs.zed-editor;
                   worktrunk = customPkgs.worktrunk;
                   vite-plus = customPkgs.vite-plus;

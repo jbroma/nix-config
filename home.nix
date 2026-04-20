@@ -33,6 +33,7 @@
     typescript-language-server
     uv
     watchman
+    wsmancli
     zellij
     worktrunk
   ];
