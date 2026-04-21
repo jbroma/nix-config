@@ -117,12 +117,35 @@ cleanup_old_versions() {
     return 0
   fi
 
+  dir_sort_key() {
+    local target="$1"
+
+    if stat --format='%W' "$target" >/dev/null 2>&1; then
+      local birth
+      birth="$(stat --format='%W' "$target")"
+      if [ "$birth" != "-1" ]; then
+        printf '%s\n' "$birth"
+        return 0
+      fi
+
+      stat --format='%Y\n' "$target"
+      return 0
+    fi
+
+    if stat -f '%B' "$target" >/dev/null 2>&1; then
+      printf '%s\n' "$(stat -f '%B' "$target")"
+      return 0
+    fi
+
+    stat -f '%m\n' "$target"
+  }
+
   delete_count=$((count - max_versions + 1))
   while IFS= read -r old_version; do
     rm -rf "$old_version"
   done < <(
     for dir in "${versions[@]}"; do
-      printf '%s %s\n' "$(stat -f %B "$dir")" "$dir"
+      printf '%s %s\n' "$(dir_sort_key "$dir")" "$dir"
     done | sort -n | head -n "$delete_count" | cut -d' ' -f2-
   )
 }
