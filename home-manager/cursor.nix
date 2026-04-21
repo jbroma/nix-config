@@ -2,6 +2,7 @@
   pkgs,
   lib,
   ai,
+  config,
   ...
 }:
 let
@@ -28,6 +29,18 @@ let
 
   managedCursorSettingsFile = pkgs.writeText "cursor-managed-settings.json" (
     builtins.toJSON managedCursorSettings
+  );
+  cursorMcpServers = lib.mapAttrs (
+    _: server:
+    if server ? type then
+      server
+    else
+      server // { type = "stdio"; }
+  ) config.mcp.servers;
+  cursorMcpConfigFile = pkgs.writeText "cursor-mcp.json" (
+    builtins.toJSON {
+      mcpServers = cursorMcpServers;
+    }
   );
 
   cursorExtensions =
@@ -80,8 +93,9 @@ let
 in
 {
   home.file = {
-    # Cursor symlink
-    ".cursorrules".source = "${ai}/CORE.md";
+    ".cursor/mcp.json".source = cursorMcpConfigFile;
+    ".cursor/rules/CORE.md".source = "${ai}/CORE.md";
+    ".cursor/skills".source = "${ai}/skills";
   }
   // builtins.listToAttrs extensionLinks;
 
