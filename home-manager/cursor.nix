@@ -31,11 +31,7 @@ let
     builtins.toJSON managedCursorSettings
   );
   cursorMcpServers = lib.mapAttrs (
-    _: server:
-    if server ? type then
-      server
-    else
-      server // { type = "stdio"; }
+    _: server: if server ? type then server else server // { type = "stdio"; }
   ) config.mcp.servers;
   cursorMcpConfigFile = pkgs.writeText "cursor-mcp.json" (
     builtins.toJSON {
