@@ -76,12 +76,10 @@ in
       model = "opus[1m]";
       # Keep reasoning enabled and bias supported models toward deeper analysis.
       alwaysThinkingEnabled = true;
-      effortLevel = "high";
       # Claude-specific environment configuration belongs in settings.json.
       env = {
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
         ENABLE_TOOL_SEARCH = "true";
-        CLAUDE_CODE_EFFORT_LEVEL = "max";
         CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
       };
       attribution = {
