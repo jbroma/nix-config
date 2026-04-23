@@ -20,9 +20,9 @@ let
       hookDefinitionsRaw;
   hookDefinitions = builtins.fromJSON hookDefinitionsResolved;
 
-  # Read permissions from ai submodule + add defaultMode for file edits
+  # Read permissions from ai submodule + enable classifier-backed auto mode by default
   permissions = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json") // {
-    defaultMode = "acceptEdits";
+    defaultMode = "auto";
   };
 
   # Path to dotfiles in this repo (for mutable symlinks)
@@ -86,7 +86,7 @@ in
         commit = "";
         pr = "";
       };
-      # Default permissions from ai submodule + allowEdits mode
+      # Default permissions from ai submodule + classifier-backed auto mode
       permissions = permissions;
       # Enable plugins from dotfile (single source of truth)
       enabledPlugins = enabledPlugins;
