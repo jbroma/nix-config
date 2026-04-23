@@ -53,6 +53,7 @@
     ./home-manager/vim.nix
     ./home-manager/direnv.nix
     ./home-manager/mise.nix
+    ./home-manager/pnpm.nix
     ./home-manager/delta.nix
     ./home-manager/ripgrep.nix
     ./home-manager/cursor.nix
