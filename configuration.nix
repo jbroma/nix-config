@@ -162,7 +162,10 @@ in
   };
 
   # enable touch id for sudo
-  security.pam.services.sudo_local.touchIdAuth = true;
+  security.pam.services.sudo_local = {
+    touchIdAuth = true;
+    reattach = true;
+  };
 
   # macos preferences
   imports = [
