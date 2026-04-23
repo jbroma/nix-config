@@ -15,7 +15,7 @@ let
     _: server: lib.filterAttrs (k: _: k != "type") server
   ) config.mcp.servers;
   codexSettings = {
-    model = "gpt-5.4";
+    model = "gpt-5.5";
     model_personality = "pragmatic";
     approval_policy = "on-request";
     sandbox_mode = "workspace-write";
