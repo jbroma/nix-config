@@ -88,6 +88,7 @@ in
       };
       # Default permissions from ai submodule + classifier-backed auto mode
       permissions = permissions;
+      skipAutoPermissionPrompt = true;
       # Enable plugins from dotfile (single source of truth)
       enabledPlugins = enabledPlugins;
       # Local marketplace for custom plugins
