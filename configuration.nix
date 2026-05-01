@@ -195,6 +195,8 @@ in
   '';
 
   system.activationScripts.postActivation.text = lib.mkAfter ''
+    "${pkgs.spotify}/bin/install-spotify" "/Applications/Spotify.app"
+
     ensure_app_link() {
       nix_app="/Applications/Nix Apps/$1.app"
       app_link="/Applications/$1.app"

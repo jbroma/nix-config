@@ -40,6 +40,7 @@
             "discord"
             "maestro-studio"
             "ngrok"
+            "spotify"
           ];
       };
 
@@ -87,6 +88,7 @@
                   codex-app = customPkgs.codex-app;
                   discord = customPkgs.discord;
                   maestro-studio = customPkgs.maestro-studio;
+                  spotify = customPkgs.spotify;
                   wsmancli = customPkgs.wsmancli;
                   zed-editor = customPkgs.zed-editor;
                   worktrunk = customPkgs.worktrunk;
