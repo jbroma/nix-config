@@ -37,11 +37,6 @@
   };
 
   system.defaults.CustomUserPreferences = {
-    "com.apple.universalaccess" = {
-      # Reduce transparency in the menu bar and elsewhere
-      reduceTransparency = false;
-    };
-
     "com.apple.print.PrintingPrefs" = {
       # Automatically quit printer app once the print jobs complete
       "Quit When Finished" = true;
