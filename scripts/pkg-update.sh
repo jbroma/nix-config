@@ -16,6 +16,7 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - discord
   - maestro-studio
   - minisim
+  - spotify
   - vite-plus
   - worktrunk
   - zed-editor
@@ -116,6 +117,32 @@ ensure_android_studio_stable_dmg() {
 current_version() {
   local file=$1
   rg -o 'version = "[^"]+"' "$file" | head -n 1 | sed -E 's/.*"([^"]+)"/\1/'
+}
+
+current_sri_hash() {
+  local file=$1
+  rg -o 'hash = "sha256-[^"]+"' "$file" | head -n 1 | sed -E 's/.*"(sha256-[^"]+)"/\1/'
+}
+
+read_dmg_info_plist_key() {
+  local dmg_path=$1
+  local app_name=$2
+  local key=$3
+  local tmp mount value
+
+  tmp=$(mktemp -d)
+  mount="$tmp/mnt"
+  mkdir -p "$mount"
+
+  trap 'hdiutil detach "$mount" >/dev/null 2>&1 || true; cleanup_empty_dir "$mount"; cleanup_empty_dir "$tmp"' RETURN
+  hdiutil attach -mountpoint "$mount" -nobrowse -quiet "$dmg_path"
+  value=$(/usr/libexec/PlistBuddy -c "Print :${key}" "$mount/${app_name}/Contents/Info.plist")
+  hdiutil detach "$mount" >/dev/null 2>&1 || true
+  cleanup_empty_dir "$mount"
+  cleanup_empty_dir "$tmp"
+  trap - RETURN
+
+  printf '%s\n' "$value"
 }
 
 prepare_update() {
@@ -258,7 +285,7 @@ update_cleanshot_x() {
 
 update_codex_app() {
   local file="pkgs/codex-app.nix"
-  local ts url json hash store_path tmp before actual
+  local ts url json hash store_path before actual
 
   ts=$(date +%s)
   url="https://persistent.oaistatic.com/codex-app-prod/Codex.dmg?ts=${ts}"
@@ -268,15 +295,7 @@ update_codex_app() {
   store_path=$(printf '%s' "$json" | jq -r '.storePath')
   before=$(current_version "$file")
 
-  tmp=$(mktemp -d)
-  trap 'hdiutil detach "$tmp/mnt" >/dev/null 2>&1 || true; cleanup_empty_dir "$tmp/mnt"; cleanup_empty_dir "$tmp"' RETURN
-  mkdir -p "$tmp/mnt"
-  hdiutil attach -mountpoint "$tmp/mnt" -nobrowse -quiet "$store_path"
-  actual=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$tmp/mnt/Codex.app/Contents/Info.plist")
-  hdiutil detach "$tmp/mnt" >/dev/null 2>&1 || true
-  cleanup_empty_dir "$tmp/mnt"
-  cleanup_empty_dir "$tmp"
-  trap - RETURN
+  actual=$(read_dmg_info_plist_key "$store_path" "Codex.app" "CFBundleShortVersionString")
 
   VERSION="$actual" HASH="$hash" replace_in_file "$file" '
     s/version = "[^"]+";/version = "$ENV{VERSION}";/;
@@ -332,6 +351,36 @@ update_maestro_studio() {
   '
 
   log_status "maestro-studio" "$before" "$latest"
+}
+
+update_spotify() {
+  local file="pkgs/spotify.nix"
+  local url json hash store_path before current_hash actual
+
+  url="https://download.scdn.co/SpotifyARM64.dmg"
+  ensure_url_exists "$url"
+  json=$(prefetch_json "$url" --refresh)
+  hash=$(printf '%s' "$json" | jq -r '.hash')
+  store_path=$(printf '%s' "$json" | jq -r '.storePath')
+  before=$(current_version "$file")
+  current_hash=$(current_sri_hash "$file")
+  actual=$(read_dmg_info_plist_key "$store_path" "Spotify.app" "CFBundleVersion")
+
+  if [[ "$before" == "$actual" && "$current_hash" == "$hash" ]]; then
+    log_status "spotify" "$before" "$actual"
+    return 0
+  fi
+
+  VERSION="$actual" HASH="$hash" replace_in_file "$file" '
+    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
+    s/hash = "sha256-[^"]+";/hash = "$ENV{HASH}";/;
+  '
+
+  if [[ "$before" == "$actual" ]]; then
+    printf '  %-15s %s (artifact refreshed)\n' "spotify" "$actual"
+  else
+    log_status "spotify" "$before" "$actual"
+  fi
 }
 
 update_vite_plus() {
@@ -426,6 +475,7 @@ update_codex_cli
 update_discord
 update_minisim
 update_maestro_studio
+update_spotify
 update_vite_plus
 update_worktrunk
 update_zed_editor

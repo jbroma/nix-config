@@ -43,6 +43,7 @@ Update local packages in `~/.nix/pkgs/`.
 | `codex-app` | Static URL only. Use cache-busting for checks/prefetch: `u="https://persistent.oaistatic.com/codex-app-prod/Codex.dmg?ts=$(date +%s)"` then `nix store prefetch-file --json --refresh "$u"` | SRI (`hash`) | CDN can serve stale blob at the bare URL. Keep derivation URL static, but use cache-busting URL for version/hash discovery. Derivation validates `CFBundleShortVersionString` and fails with expected version to set. |
 | `codex-cli` | `gh api repos/openai/codex/releases/latest --jq '.tag_name' \| sed 's/^rust-v//'` | SRI (`hash`) | URL tag prefix is `rust-v${version}`. |
 | `minisim` | `gh api repos/okwasniewski/MiniSim/releases/latest --jq '.tag_name' \| sed 's/^v//'` | hex (`sha256`) | ZIP filename: `MiniSim.app.zip`. |
+| `spotify` | `nix store prefetch-file --json --refresh "https://download.scdn.co/SpotifyARM64.dmg"` then read `Spotify.app/Contents/Info.plist` `CFBundleVersion` | SRI (`hash`) | CDN URL is mutable. Keep the derivation URL static, but use `--refresh` for version/hash discovery and hash-pin the exact artifact. |
 | `worktrunk` | `gh api repos/max-sixty/worktrunk/releases/latest --jq '.tag_name' \| sed 's/^v//'` | SRI (`hash`) | Tarball URL uses `worktrunk-aarch64-apple-darwin.tar.xz`. |
 | `zed-editor` | `gh api repos/zed-industries/zed/releases/latest --jq '.tag_name' \| sed 's/^v//'` | nix32 (`sha256`) | Keep `version` and release URL (`v${version}` + `Zed-aarch64.dmg`) aligned. |
 
@@ -54,5 +55,5 @@ Update local packages in `~/.nix/pkgs/`.
 - The script checks the current pinned version and validates the upstream artifact URL before doing expensive prefetch/hash work.
 - If you add a brand-new package file and want to target-build it before staging or committing, use a `path:` flake reference so Nix sees untracked files.
 - For `codex-app`, always discover hash/version from a cache-busted URL (`?ts=...`) to avoid stale CDN edge cache.
-- `codex-app` is the exception to the cheap path: the version is hidden inside the app bundle, so the script still has to fetch the DMG after validating the URL exists.
+- `codex-app` and `spotify` are exceptions to the cheap path: the version is hidden inside the app bundle, so the script still has to fetch the DMG after validating the URL exists.
 - After touching many packages, re-list package files with `rg --files pkgs` and ensure all changed files were intentionally updated.
