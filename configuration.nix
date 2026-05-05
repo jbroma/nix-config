@@ -82,6 +82,7 @@ in
         _1password-gui
         minisim
         spotify
+        discord
         git
         oh-my-posh
         nerd-fonts.fira-code
@@ -106,7 +107,6 @@ in
       ]
       # Work machines have these apps installed outside Nix.
       ++ lib.optionals (type == "personal") [
-        discord
         obsidian
       ]
       # Work-only app managed by Nix.
