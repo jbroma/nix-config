@@ -1,12 +1,16 @@
 {
+  lib,
   pkgs,
   ai,
+  enableAi ? true,
   ...
 }:
 
 {
   # Symlink ai flake input to ~/.nix/ai for visibility
-  home.file.".nix/ai".source = ai;
+  home.file.".nix/ai" = lib.mkIf enableAi {
+    source = ai;
+  };
   # List packages you want to install for your user only.
   home.packages = with pkgs; [
     # dev
@@ -57,15 +61,17 @@
     ./home-manager/delta.nix
     ./home-manager/ripgrep.nix
     ./home-manager/spotify.nix
-    ./home-manager/cursor.nix
     ./home-manager/sketchybar.nix
     ./home-manager/aerospace.nix
-    ./home-manager/claude-code.nix
-    ./home-manager/gemini.nix
-    ./home-manager/codex.nix
     ./home-manager/mcp-servers.nix
     ./home-manager/vite-plus.nix
     ./home-manager/zed.nix
     ./home-manager/worktrunk.nix
+  ]
+  ++ lib.optionals enableAi [
+    ./home-manager/cursor.nix
+    ./home-manager/claude-code.nix
+    ./home-manager/gemini.nix
+    ./home-manager/codex.nix
   ];
 }

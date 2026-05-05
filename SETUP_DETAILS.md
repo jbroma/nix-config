@@ -19,6 +19,8 @@ After the automated setup completes, the following manual steps are recommended:
     2. Check "Show 1Password Developer Experience"
     3. Enable "SSH Agent - Use SSH Agent" (no need to configure anything since nix handles that)
     4. Optionally, set "Remember Key Approval" to a different value that's more optimal
+-   If the setup script used a `*-bootstrap` configuration because the private AI flake input was not accessible yet, run
+    `darwin-rebuild-switch` after SSH access works. That activates the normal `personal` or `work` configuration with AI tool wiring enabled.
 
 ## Xcode
 

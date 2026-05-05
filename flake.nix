@@ -66,12 +66,18 @@
       configuration =
         {
           type ? "personal",
+          enableAi ? true,
         }:
         inputs.darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
-            inherit type user utils;
-            ai = inputs.ai;
+            inherit
+              type
+              user
+              utils
+              enableAi
+              ;
+            ai = if enableAi then inputs.ai else null;
           };
           modules = darwinModules ++ [
             {
@@ -104,6 +110,14 @@
       darwinConfigurations = {
         work = configuration { type = "work"; };
         personal = configuration { type = "personal"; };
+        work-bootstrap = configuration {
+          type = "work";
+          enableAi = false;
+        };
+        personal-bootstrap = configuration {
+          type = "personal";
+          enableAi = false;
+        };
       };
 
       formatter.${system} = treefmtEval.config.build.wrapper;

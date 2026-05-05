@@ -5,6 +5,7 @@
   user,
   utils,
   ai,
+  enableAi ? true,
   ...
 }:
 
@@ -149,6 +150,7 @@ in
         user
         utils
         ai
+        enableAi
         ;
     };
   };
