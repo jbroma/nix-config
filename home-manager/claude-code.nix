@@ -72,12 +72,13 @@ in
     package = pkgs.claude-code;
     settings = {
       "$schema" = "https://json.schemastore.org/claude-code-settings.json";
-      # Default model - use Opus for best quality
-      model = "opus[1m]";
-      # Keep reasoning enabled and bias supported models toward deeper analysis.
+      # Pin Opus 4.6 with 1M context so fixed-budget thinking remains available.
+      model = "claude-opus-4-6[1m]";
+      # Keep extended thinking enabled; adaptive reasoning is disabled below.
       alwaysThinkingEnabled = true;
       # Claude-specific environment configuration belongs in settings.json.
       env = {
+        CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1";
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
         ENABLE_TOOL_SEARCH = "true";
         CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
