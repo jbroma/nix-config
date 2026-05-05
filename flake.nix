@@ -37,7 +37,6 @@
             "claude-desktop"
             "codex-app"
             "codex-cli"
-            "discord"
             "maestro-studio"
             "slack"
             "spotify"
@@ -92,7 +91,6 @@
                   cleanshot-x = customPkgs.cleanshot-x;
                   codex-cli = customPkgs.codex-cli;
                   codex-app = customPkgs.codex-app;
-                  discord = customPkgs.discord;
                   maestro-studio = customPkgs.maestro-studio;
                   spotify = customPkgs.spotify;
                   wsmancli = customPkgs.wsmancli;

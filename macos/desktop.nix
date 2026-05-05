@@ -29,7 +29,7 @@
       "/Applications/Nix Apps/Zed.app"
       "/Applications/Nix Apps/Codex.app"
       "/Applications/Nix Apps/Spotify.app"
-      "/Applications/Nix Apps/Discord.app"
+      "/Applications/Discord.app"
     ]
     ++ (
       if type == "work" then

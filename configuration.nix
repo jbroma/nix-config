@@ -48,7 +48,6 @@ in
       "1password-gui"
       "1password"
       "raycast"
-      "discord"
       "orbstack"
       "obsidian"
       "slack"
@@ -82,7 +81,6 @@ in
         _1password-gui
         minisim
         spotify
-        discord
         git
         oh-my-posh
         nerd-fonts.fira-code

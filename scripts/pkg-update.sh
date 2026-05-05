@@ -13,7 +13,6 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - cleanshot-x
   - codex-app
   - codex-cli
-  - discord
   - maestro-studio
   - minisim
   - spotify
@@ -314,10 +313,6 @@ update_codex_cli() {
   update_simple_sri "codex-cli" "$file" "$latest" "$url"
 }
 
-update_discord() {
-  REPO_ROOT="$repo_root" bash "$repo_root/scripts/update-discord.sh"
-}
-
 update_minisim() {
   local file="pkgs/minisim.nix"
   local latest url
@@ -472,7 +467,6 @@ update_claude_desktop
 update_cleanshot_x
 update_codex_app
 update_codex_cli
-update_discord
 update_minisim
 update_maestro_studio
 update_spotify

@@ -37,6 +37,7 @@ After the automated setup completes, the following manual steps are recommended:
 
 ## Discord
 
+-   Install Discord manually from https://discord.com/download
 -   Log in within the app
 
 ## Spotify
