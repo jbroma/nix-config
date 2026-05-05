@@ -39,7 +39,7 @@
             "codex-cli"
             "discord"
             "maestro-studio"
-            "ngrok"
+            "slack"
             "spotify"
           ];
       };

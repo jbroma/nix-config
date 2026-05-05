@@ -49,9 +49,9 @@ in
       "1password"
       "raycast"
       "discord"
-      "ngrok"
       "orbstack"
       "obsidian"
+      "slack"
       "spotify"
       # vscode extensions
       "vscode-extension-mhutchie-git-graph"
@@ -77,6 +77,9 @@ in
         maestro-studio
         zed-editor
         raycast
+        google-chrome
+        cursor
+        _1password-gui
         minisim
         spotify
         git
@@ -101,18 +104,14 @@ in
         # libs
         libyaml
       ]
-      # These apps are installed outside Nix in the work profile.
+      # Work machines have these apps installed outside Nix.
       ++ lib.optionals (type == "personal") [
-        google-chrome
-        cursor
         discord
         obsidian
-        _1password-gui
       ]
+      # Work-only app managed by Nix.
       ++ lib.optionals (type == "work") [
-        caddy
-        ngrok
-        air
+        slack
       ];
 
     variables = {
@@ -158,9 +157,7 @@ in
   # apps to launch on login
   launchd.user.agents = {
     raycast = mkLaunchAgent "${pkgs.raycast}/Contents/Library/LoginItems/RaycastLauncher.app/Contents/MacOS/RaycastLauncher";
-    cleanshot-x = lib.mkIf (type == "work") (
-      mkLaunchAgent "${pkgs.cleanshot-x}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X"
-    );
+    cleanshot-x = mkLaunchAgent "${pkgs.cleanshot-x}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
   };
 
   # enable touch id for sudo
@@ -213,6 +210,8 @@ in
 
     ensure_app_link "Cursor"
     ensure_app_link "Google Chrome"
+    ensure_app_link "1Password"
+    ensure_app_link "Slack"
   '';
 
   # dnsmasq config
