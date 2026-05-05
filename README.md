@@ -26,10 +26,16 @@ The script will:
 3. Prompt for configuration details (name, email, system username)
 4. Apply the nix-darwin configuration
 
-If the private AI flake input is not accessible yet, the script applies a
-`personal-bootstrap` or `work-bootstrap` configuration without AI tool wiring.
-After 1Password SSH access is enabled, run `darwin-rebuild-switch` to activate
-the full configuration.
+If the private AI flake input is not accessible yet, apply the matching
+bootstrap profile first. After 1Password SSH access is enabled, run the normal
+profile:
+
+```bash
+sudo darwin-rebuild switch --flake ~/.nix#personal-bootstrap
+darwin-rebuild-switch
+```
+
+Use `work-bootstrap` instead of `personal-bootstrap` on work machines.
 
 See [SETUP_DETAILS.md](./SETUP_DETAILS.md) for post-installation manual setup steps.
 
