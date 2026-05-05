@@ -27,9 +27,6 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 
 /nix/var/nix/profiles/default/bin/nix --extra-experimental-features "nix-command flakes" run nixpkgs#git clone https://github.com/jbroma/nix-config.git ~/.nix
 
-# Skip tracking user.nix changes from git
-git -C ~/.nix update-index --skip-worktree user.nix
-
 # Create user.nix
 cat >| ~/.nix/user.nix << EOF
 {
@@ -38,6 +35,9 @@ cat >| ~/.nix/user.nix << EOF
   username = "$SETUP_USERNAME";
 }
 EOF
+
+# Skip tracking user.nix changes from git
+git -C ~/.nix update-index --skip-worktree user.nix
 
 # Delete nix.conf since it's managed by nix-darwin
 sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin
