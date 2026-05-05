@@ -1,6 +1,7 @@
 {
   pkgs,
   type,
+  user,
   ...
 }:
 
@@ -24,7 +25,7 @@
       "/Applications/Nix Apps/Google Chrome.app"
       "/Applications/Xcode.app"
       "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app"
-      "/Applications/Nix Apps/WezTerm.app"
+      "/Users/${user.username}/Applications/Home Manager Apps/WezTerm.app"
       "/Applications/Nix Apps/Cursor.app"
       "/Applications/Nix Apps/Zed.app"
       "/Applications/Nix Apps/Codex.app"
