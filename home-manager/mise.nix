@@ -25,7 +25,7 @@ in
       tools = {
         node = "lts";
         ruby = "3.3";
-        java = "zulu-17";
+        java = "temurin-17";
         python = "3.12";
         rust = "1.88";
       };
