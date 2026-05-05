@@ -18,6 +18,7 @@ let
     model = "gpt-5.5";
     model_personality = "pragmatic";
     approval_policy = "on-request";
+    approvals_reviewer = "auto_review";
     sandbox_mode = "workspace-write";
     model_reasoning_effort = "high";
     model_reasoning_summary = "concise";
