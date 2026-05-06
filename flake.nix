@@ -25,22 +25,32 @@
   outputs =
     inputs:
     let
+      lib = inputs.nixpkgs.lib;
       system = "aarch64-darwin";
+      allowedUnfreePackages = [
+        # "Xcode.app"
+        "1password"
+        "1password-gui"
+        "android-studio"
+        "claude-code"
+        "claude-desktop"
+        "cleanshot-x"
+        "codex-app"
+        "codex-cli"
+        "cursor"
+        "google-chrome"
+        "maestro-studio"
+        "obsidian"
+        "orbstack"
+        "raycast"
+        "slack"
+        "spotify"
+        "vscode-extension-mhutchie-git-graph"
+      ];
+      allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfreePackages;
       pkgs = import inputs.nixpkgs {
         inherit system;
-        config.allowUnfreePredicate =
-          pkg:
-          builtins.elem (inputs.nixpkgs.lib.getName pkg) [
-            # "Xcode.app"
-            "cursor"
-            "claude-code"
-            "claude-desktop"
-            "codex-app"
-            "codex-cli"
-            "maestro-studio"
-            "slack"
-            "spotify"
-          ];
+        config.allowUnfreePredicate = allowUnfreePredicate;
       };
 
       treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
@@ -74,6 +84,7 @@
               type
               user
               utils
+              allowedUnfreePackages
               enableAi
               ;
             ai = if enableAi then inputs.ai else null;

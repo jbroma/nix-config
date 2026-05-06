@@ -4,6 +4,7 @@
   type,
   user,
   utils,
+  allowedUnfreePackages,
   ai,
   enableAi ? true,
   ...
@@ -35,31 +36,7 @@ in
     sandbox = true;
   };
 
-  nixpkgs.config.allowUnfreePredicate =
-    pkg:
-    builtins.elem (lib.getName pkg) [
-      # "Xcode.app"
-      "google-chrome"
-      "claude-code"
-      "claude-desktop"
-      "codex-app"
-      "codex-cli"
-      "cursor"
-      "1password-gui"
-      "1password"
-      "raycast"
-      "orbstack"
-      "obsidian"
-      "slack"
-      "spotify"
-      # vscode extensions
-      "vscode-extension-mhutchie-git-graph"
-    ];
-
-  # https://github.com/NixOS/nixpkgs/pull/486721 - Darwin updater broken
-  nixpkgs.config.permittedInsecurePackages = [
-    "google-chrome-144.0.7559.97"
-  ];
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfreePackages;
 
   environment = {
     # List packages you want to install system-wide.
