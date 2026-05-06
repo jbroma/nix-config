@@ -57,9 +57,8 @@ while IFS= read -r plugin; do
 done < <(jq -r '.plugins | keys[]' "$PLUGINS_JSON")
 
 if ((${#failed_plugins[@]} > 0)); then
-  echo "error: failed to install Claude plugins:" >&2
+  echo "warning: failed to install Claude plugins:" >&2
   for plugin in "${failed_plugins[@]}"; do
     echo "  - ${plugin}" >&2
   done
-  exit 1
 fi
