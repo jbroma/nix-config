@@ -29,13 +29,18 @@ fi
 
 # Add local marketplace if path provided
 if [[ -n "$LOCAL_MARKETPLACE" && -d "$LOCAL_MARKETPLACE" ]]; then
-  "$CLAUDE_BIN" plugin marketplace add "$LOCAL_MARKETPLACE" 2>/dev/null || true
+  if "$CLAUDE_BIN" plugin marketplace list --json \
+    | jq -e --arg path "$LOCAL_MARKETPLACE" 'any(.[]; .source == "directory" and .path == $path)' >/dev/null; then
+    :
+  elif ! "$CLAUDE_BIN" plugin marketplace add "$LOCAL_MARKETPLACE"; then
+    echo "warning: failed to add local Claude plugin marketplace: $LOCAL_MARKETPLACE" >&2
+  fi
 fi
 
 # Install plugins not already cached
-plugins=$(jq -r '.plugins | keys[]' "$PLUGINS_JSON")
+failed_plugins=()
 
-for plugin in $plugins; do
+while IFS= read -r plugin; do
   # Parse plugin name and marketplace from "name@marketplace" format
   name="${plugin%@*}"
   marketplace="${plugin#*@}"
@@ -45,6 +50,16 @@ for plugin in $plugins; do
     echo "Skipping ${plugin} (already cached)"
   else
     echo "Installing ${plugin}..."
-    "$CLAUDE_BIN" plugin install "$plugin" --scope user 2>/dev/null || true
+    if ! "$CLAUDE_BIN" plugin install "$plugin" --scope user; then
+      failed_plugins+=("$plugin")
+    fi
   fi
-done
+done < <(jq -r '.plugins | keys[]' "$PLUGINS_JSON")
+
+if ((${#failed_plugins[@]} > 0)); then
+  echo "error: failed to install Claude plugins:" >&2
+  for plugin in "${failed_plugins[@]}"; do
+    echo "  - ${plugin}" >&2
+  done
+  exit 1
+fi
