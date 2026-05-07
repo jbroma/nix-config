@@ -54,6 +54,7 @@ in
         zed-editor
         raycast
         google-chrome
+        lmstudio
         cursor
         _1password-gui
         minisim

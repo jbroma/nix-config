@@ -39,6 +39,7 @@
         "codex-cli"
         "cursor"
         "google-chrome"
+        "lmstudio"
         "maestro-studio"
         "obsidian"
         "orbstack"
@@ -102,6 +103,15 @@
                   cleanshot-x = customPkgs.cleanshot-x;
                   codex-cli = customPkgs.codex-cli;
                   codex-app = customPkgs.codex-app;
+                  lmstudio = super.lmstudio.overrideAttrs (old: {
+                    # nixpkgs' darwin.sigtool-provided codesign does not support --deep, but LM
+                    # Studio needs a recursive re-sign after patching its bundled JavaScript.
+                    installPhase =
+                      builtins.replaceStrings
+                        [ "codesign --force --deep --sign -" ]
+                        [ "/usr/bin/codesign --force --deep --sign -" ]
+                        old.installPhase;
+                  });
                   maestro-studio = customPkgs.maestro-studio;
                   spotify = customPkgs.spotify;
                   wsmancli = customPkgs.wsmancli;
