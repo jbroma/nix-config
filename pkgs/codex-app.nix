@@ -5,23 +5,26 @@
   stdenv,
   lib,
   fetchurl,
-  undmg,
+  _7zz,
 }:
 let
-  version = "26.506.31421";
+  version = "26.513.20950";
 in
 stdenv.mkDerivation {
   pname = "codex-app";
   inherit version;
 
   src = fetchurl {
-    url = "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg";
-    hash = "sha256-4FroU+UDXJSbB5FfjGhiGyXrQ/R+UYXuaYPoR7oXbyc=";
+    name = "Codex-${version}.dmg";
+    url = "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg?version=${version}";
+    hash = "sha256-WTeptN8D9hF2ffvlJKppfLTOJr5Z0hjokHCnGX6drk0=";
   };
 
-  nativeBuildInputs = [ undmg ];
+  nativeBuildInputs = [ _7zz ];
 
   sourceRoot = ".";
+
+  unpackCmd = "7zz x -snld -xr'!*:com.apple.*' \"$curSrc\"";
 
   installPhase = ''
     runHook preInstall
