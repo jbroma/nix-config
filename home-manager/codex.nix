@@ -27,12 +27,12 @@ let
     file_opener = "cursor";
 
     features = {
+      goals = true;
+      prevent_idle_sleep = true;
       shell_tool = true;
       shell_snapshot = true;
       unified_exec = true;
       multi_agent = true;
-      request_rule = true;
-      undo = true;
     };
 
     agents = {
