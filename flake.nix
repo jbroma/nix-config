@@ -30,6 +30,7 @@
       allowedUnfreePackages = [
         # "Xcode.app"
         "1password"
+        "1password-cli"
         "1password-gui"
         "android-studio"
         "claude-code"
