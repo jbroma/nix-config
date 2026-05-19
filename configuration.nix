@@ -51,6 +51,7 @@ in
         codex-app
         codex-cli
         maestro-studio
+        openscreen
         zed-editor
         raycast
         google-chrome
@@ -188,6 +189,7 @@ in
     ensure_app_link "Google Chrome"
     ensure_app_link "1Password"
     ensure_app_link "Slack"
+    ensure_app_link "Openscreen"
   '';
 
   # dnsmasq config
