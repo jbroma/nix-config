@@ -45,6 +45,7 @@ in
       [
         # xcode
         android-studio
+        bettershot
         cleanshot-x
         claude-code
         claude-desktop
@@ -190,6 +191,7 @@ in
     ensure_app_link "1Password"
     ensure_app_link "Slack"
     ensure_app_link "Openscreen"
+    ensure_app_link "bettershot"
   '';
 
   # dnsmasq config

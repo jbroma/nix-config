@@ -37,6 +37,7 @@ Update local packages in `~/.nix/pkgs/`.
 | Package | Upstream check | Hash format in file | Notes |
 |---------|----------------|---------------------|-------|
 | `android-studio` | `https://developer.android.com/studio/releases` (manual) | hex (`sha256`) | Redirector URLs can return 302 for invalid versions. Verify real DMG and keep app name `Android Studio.app` (not preview builds). |
+| `bettershot` | `gh api repos/KartikLabhshetwar/better-shot/releases/latest --jq '.tag_name' \| sed 's/^v//'` | SRI (`hash`) | DMG asset name uses `bettershot_${version}_aarch64.dmg`; GitHub release digest is converted from base16 to SRI when available. |
 | `claude-code` | `v=$(curl -fsSL "https://registry.npmjs.org/@anthropic-ai/claude-code/latest" \| jq -r '.version')` then `curl -fsI "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/${v}/darwin-arm64/claude"` | SRI (`hash`) | Package is native binary (not npm install). Treat npm version as candidate and validate binary URL exists. |
 | `claude-desktop` | `curl -fsSL "https://downloads.claude.ai/releases/darwin/universal/RELEASES.json" \| jq` | SRI (`hash`) | Read `.currentRelease` for the version and `.releases[].updateTo.url` for the exact versioned zip. Prefer `bash scripts/update-claude-desktop.sh` to keep `version`, `url`, and `hash` aligned together. |
 | `cleanshot-x` | `https://cleanshot.com/changelog` (manual) | hex (`sha256`) | Download URL pattern: `.../CleanShot-X-${version}.dmg`. |

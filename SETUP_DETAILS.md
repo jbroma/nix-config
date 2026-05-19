@@ -31,6 +31,10 @@ After the automated setup completes, the following manual steps are recommended:
 -   Run the application manually and enter the license key
 -   Follow the setup in the app
 
+## Better Shot
+
+-   Launch the app manually and grant Screen Recording permission when macOS prompts for it
+
 ## Cursor
 
 -   Log in within the app

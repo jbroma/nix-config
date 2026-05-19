@@ -8,6 +8,7 @@ Usage: ./scripts/pkg-update.sh [--no-verify]
 
 Updates every custom package in pkgs/ with explicit source handlers:
   - android-studio
+  - bettershot
   - claude-code
   - claude-desktop
   - cleanshot-x
@@ -59,6 +60,10 @@ sri_to_nix32() {
 
 sri_to_hex() {
   nix hash convert --from sri --to base16 "$1"
+}
+
+base16_to_sri() {
+  nix hash convert --from base16 --to sri "sha256:$1"
 }
 
 replace_in_file() {
@@ -246,6 +251,38 @@ update_android_studio() {
   '
 
   log_status "android-studio" "$before" "$latest"
+}
+
+update_bettershot() {
+  local file="pkgs/bettershot.nix"
+  local release_json latest asset_name url digest hash before
+
+  release_json=$(gh api repos/KartikLabhshetwar/better-shot/releases/latest)
+  latest=$(printf '%s' "$release_json" | jq -r '.tag_name' | sed 's/^v//')
+  asset_name="bettershot_${latest}_aarch64.dmg"
+  url=$(printf '%s' "$release_json" | jq -r --arg name "$asset_name" '.assets[] | select(.name==$name) | .browser_download_url')
+  digest=$(printf '%s' "$release_json" | jq -r --arg name "$asset_name" '.assets[] | select(.name==$name) | .digest')
+
+  if [[ -z "$latest" || "$latest" == "null" || -z "$url" || "$url" == "null" ]]; then
+    echo "error: failed to resolve Better Shot release metadata for ${asset_name}" >&2
+    exit 1
+  fi
+
+  prepare_update "bettershot" "$file" "$latest" "$url" || return 0
+  before=$_pkg_update_before
+
+  if [[ -n "$digest" && "$digest" != "null" && "$digest" == sha256:* ]]; then
+    hash=$(base16_to_sri "${digest#sha256:}")
+  else
+    hash=$(prefetch_sri "$url")
+  fi
+
+  VERSION="$latest" HASH="$hash" replace_in_file "$file" '
+    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
+    s/hash = "sha256-[^"]+";/hash = "$ENV{HASH}";/;
+  '
+
+  log_status "bettershot" "$before" "$latest"
 }
 
 update_claude_code() {
@@ -462,6 +499,7 @@ cd "$repo_root"
 echo "Updating packages in pkgs/..."
 
 update_android_studio
+update_bettershot
 update_claude_code
 update_claude_desktop
 update_cleanshot_x
