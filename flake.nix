@@ -97,7 +97,6 @@
                 (_: super: {
                   # xcode = pkgs.darwin.xcode_26;
                   android-studio = customPkgs.android-studio;
-                  bettershot = customPkgs.bettershot;
                   minisim = customPkgs.minisim;
                   claude-code = customPkgs.claude-code;
                   claude-desktop = customPkgs.claude-desktop;
