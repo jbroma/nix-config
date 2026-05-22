@@ -45,7 +45,6 @@ let
       esbenp.prettier-vscode
       expo.vscode-expo-tools
       jnoortheen.nix-ide
-      oxc.oxc-vscode
       rust-lang.rust-analyzer
       flowtype.flow-for-vscode
       mhutchie.git-graph
@@ -65,6 +64,7 @@ let
     ])
     ++ (with pkgs.vscode-extensions; [
       biomejs.biome
+      oxc.oxc-vscode
       vadimcn.vscode-lldb
       unifiedjs.vscode-mdx
     ]);
