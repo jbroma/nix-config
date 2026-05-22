@@ -12,15 +12,15 @@
   ripgrep,
 }:
 let
-  version = "1.7196.1";
+  version = "1.8555.0";
 in
 stdenv.mkDerivation {
   pname = "claude-desktop";
   inherit version;
 
   src = fetchurl {
-    url = "https://downloads.claude.ai/releases/darwin/universal/1.7196.1/Claude-abcd6556f79f4cca317ff02bfe0bedbeeb6e56a9.zip";
-    hash = "sha256-er2qAW9BBt5Q/zTcagK5Q4VWUnO69DLZRQxtgOPnQUk=";
+    url = "https://downloads.claude.ai/releases/darwin/universal/1.8555.0/Claude-8245b7a72393fec67fa946b26a825bfbd3f947b3.zip";
+    hash = "sha256-OEG25cBPNqAp2IwICx5/PJcvpgyJDdLzEyPddFAwdtc=";
   };
 
   nativeBuildInputs = [ unzip ];
