@@ -5,7 +5,7 @@
   unzip,
 }:
 let
-  version = "0.9.1";
+  version = "0.9.2";
 in
 stdenv.mkDerivation {
   pname = "maestro-studio";
@@ -13,7 +13,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/mobile-dev-inc/maestro-studio/releases/download/v${version}/Maestro-Studio-mac-universal.zip";
-    sha256 = "a2336c9a32e03ba0b4f530e9d8a9513985415d799e1e7427e422a7200c563b0c";
+    sha256 = "9383e5f7c4f4be904fc8ea488223ee386e622c4a9d012376a23b1b55ee531118";
   };
 
   nativeBuildInputs = [ unzip ];
