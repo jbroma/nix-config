@@ -100,7 +100,7 @@
                   minisim = customPkgs.minisim;
                   claude-code = customPkgs.claude-code;
                   claude-desktop = customPkgs.claude-desktop;
-                  cursor = pkgs.code-cursor;
+                  cursor = customPkgs.cursor;
                   cleanshot-x = customPkgs.cleanshot-x;
                   codex-cli = customPkgs.codex-cli;
                   codex-app = customPkgs.codex-app;

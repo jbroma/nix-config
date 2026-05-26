@@ -13,6 +13,7 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - cleanshot-x
   - codex-app
   - codex-cli
+  - cursor
   - maestro-studio
   - minisim
   - spotify
@@ -313,6 +314,44 @@ update_codex_cli() {
   update_simple_sri "codex-cli" "$file" "$latest" "$url"
 }
 
+update_cursor() {
+  local file="pkgs/cursor.nix"
+  local response latest url json hash before current_url
+
+  response=$(curl -fsSL "https://www.cursor.com/api/download?platform=darwin-arm64&releaseTrack=latest")
+  latest=$(printf '%s' "$response" | jq -r '.version')
+  url=$(printf '%s' "$response" | jq -r '.downloadUrl')
+
+  if [[ -z "$latest" || "$latest" == "null" || -z "$url" || "$url" == "null" ]]; then
+    echo "error: failed to resolve Cursor release metadata" >&2
+    exit 1
+  fi
+
+  before=$(current_version "$file")
+  current_url=$(rg -o 'url = "https://downloads\.cursor\.com/production/[^"]+"' "$file" | head -n 1 | sed -E 's/.*"([^"]+)"/\1/')
+
+  if [[ "$before" == "$latest" && "$current_url" == "$url" ]]; then
+    log_status "cursor" "$before" "$latest"
+    return 0
+  fi
+
+  ensure_url_exists "$url"
+  json=$(prefetch_json "$url" --refresh)
+  hash=$(printf '%s' "$json" | jq -r '.hash')
+
+  VERSION="$latest" URL="$url" HASH="$hash" replace_in_file "$file" '
+    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
+    s|url = "https://downloads\.cursor\.com/production/[^"]+";|url = "$ENV{URL}";|;
+    s/hash = "sha256-[^"]+";/hash = "$ENV{HASH}";/;
+  '
+
+  if [[ "$before" == "$latest" ]]; then
+    printf '  %-15s %s (artifact refreshed)\n' "cursor" "$latest"
+  else
+    log_status "cursor" "$before" "$latest"
+  fi
+}
+
 update_minisim() {
   local file="pkgs/minisim.nix"
   local latest url
@@ -467,6 +506,7 @@ update_claude_desktop
 update_cleanshot_x
 update_codex_app
 update_codex_cli
+update_cursor
 update_minisim
 update_maestro_studio
 update_spotify
