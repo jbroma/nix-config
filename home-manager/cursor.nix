@@ -90,7 +90,6 @@ in
 {
   home.file = {
     ".cursor/mcp.json".source = cursorMcpConfigFile;
-    ".cursor/rules/CORE.md".source = "${ai}/CORE.md";
     ".cursor/skills".source = "${ai}/skills";
   }
   // builtins.listToAttrs extensionLinks;

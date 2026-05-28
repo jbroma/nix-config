@@ -33,7 +33,7 @@ flake.nix                    # Entry point - two configs: work, personal
 │   ├── claude-code.nix      # Claude Code: settings, hooks, skills, plugins
 │   ├── codex.nix            # Codex: settings, hooks, skills, agents, rules
 │   ├── gemini.nix           # Gemini CLI: rules symlinks
-│   ├── cursor.nix           # Cursor: settings, extensions, .cursorrules
+│   ├── cursor.nix           # Cursor: settings, extensions, MCP, skills
 │   ├── zsh.nix              # Shell config with modern CLI aliases
 │   └── [tool].nix           # Per-tool configurations
 │
@@ -56,7 +56,9 @@ The `ai/` directory is a Nix flake input providing shared configuration for AI c
 - `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks`, `~/.claude/CLAUDE.md`
 - `codex.nix`: `~/.codex/skills`, `~/.codex/agents`, `~/.codex/hooks`, `~/.codex/AGENTS.md`, `~/.codex/rules/default.rules`, generated `~/.codex/config.toml`
 - `gemini.nix`: `~/.gemini/rules`, `~/.gemini/GEMINI.md`
-- `cursor.nix`: `~/.cursorrules`
+- `cursor.nix`: `~/.cursor/skills`, `~/.cursor/mcp.json`, generated Cursor settings
+
+Cursor's Agents Window reads project instructions from the active workspace, such as root `AGENTS.md` and `.cursor/rules/*.mdc`. Global personal rules are Cursor User Rules configured through Cursor Settings > Rules; home-level `~/.cursor/rules/*.mdc` files are not a reliable injected prompt source for the Agents Window.
 
 The `ai` input is also symlinked to `~/.nix/ai` for visibility (in `home.nix`).
 
