@@ -110,7 +110,8 @@
 		"always_allow_tool_actions": true
 	},
 	"agent_servers": {
-		"claude": {
+		"claude-acp": {
+			"type": "registry",
 			"env": {
 				"ANTHROPIC_MODEL": "opus"
 			}
