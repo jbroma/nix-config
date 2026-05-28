@@ -72,13 +72,13 @@ in
     package = pkgs.claude-code;
     settings = {
       "$schema" = "https://json.schemastore.org/claude-code-settings.json";
-      # Pin Opus 4.6 with 1M context so fixed-budget thinking remains available.
-      model = "claude-opus-4-6[1m]";
-      # Keep extended thinking enabled; adaptive reasoning is disabled below.
+      # Pin Opus 4.8 with 1M context and deeper adaptive reasoning.
+      model = "claude-opus-4-8[1m]";
+      effortLevel = "xhigh";
+      # Keep extended thinking enabled.
       alwaysThinkingEnabled = true;
       # Claude-specific environment configuration belongs in settings.json.
       env = {
-        CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1";
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
         ENABLE_TOOL_SEARCH = "true";
         CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
