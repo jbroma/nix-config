@@ -128,7 +128,7 @@ read_dmg_info_plist_key() {
   local dmg_path=$1
   local app_name=$2
   local key=$3
-  local tmp mount value
+  local tmp mount app_bundle value
 
   tmp=$(mktemp -d)
   mount="$tmp/mnt"
@@ -136,7 +136,15 @@ read_dmg_info_plist_key() {
 
   trap 'hdiutil detach "$mount" >/dev/null 2>&1 || true; cleanup_empty_dir "$mount"; cleanup_empty_dir "$tmp"' RETURN
   hdiutil attach -mountpoint "$mount" -nobrowse -quiet "$dmg_path"
-  value=$(/usr/libexec/PlistBuddy -c "Print :${key}" "$mount/${app_name}/Contents/Info.plist")
+  app_bundle="$mount/${app_name}"
+  if [[ ! -f "$app_bundle/Contents/Info.plist" ]]; then
+    app_bundle=$(find "$mount" -maxdepth 3 -type d -name "$app_name" -print -quit)
+  fi
+  if [[ -z "$app_bundle" || ! -f "$app_bundle/Contents/Info.plist" ]]; then
+    echo "error: failed to locate ${app_name}/Contents/Info.plist in ${dmg_path}" >&2
+    exit 1
+  fi
+  value=$(/usr/libexec/PlistBuddy -c "Print :${key}" "$app_bundle/Contents/Info.plist")
   hdiutil detach "$mount" >/dev/null 2>&1 || true
   cleanup_empty_dir "$mount"
   cleanup_empty_dir "$tmp"
