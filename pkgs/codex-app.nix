@@ -8,7 +8,7 @@
   _7zz,
 }:
 let
-  version = "26.519.81530";
+  version = "26.527.30818";
 in
 stdenv.mkDerivation {
   pname = "codex-app";
@@ -17,7 +17,7 @@ stdenv.mkDerivation {
   src = fetchurl {
     name = "Codex-${version}.dmg";
     url = "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg?version=${version}";
-    hash = "sha256-yanuEZhqD4gBWLgeRZtktoRkI5b0nq9/oOAY9KjDe0I=";
+    hash = "sha256-L5fZniPJ9N1mwOAr2tpebGa/Z3cs2J+IaoG1udfrSHw=";
   };
 
   nativeBuildInputs = [ _7zz ];
@@ -29,8 +29,15 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
 
+    app_bundle=$(find . -maxdepth 3 -type d -name "Codex.app" -print -quit)
+    if [ -z "$app_bundle" ]; then
+      echo "ERROR: Codex.app not found in DMG" >&2
+      find . -maxdepth 3 -print >&2
+      exit 1
+    fi
+
     mkdir -p "$out/Applications"
-    cp -r "Codex.app" "$out/Applications/Codex.app"
+    cp -R "$app_bundle" "$out/Applications/Codex.app"
 
     # Verify version matches what we expect
     actual=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$out/Applications/Codex.app/Contents/Info.plist")
