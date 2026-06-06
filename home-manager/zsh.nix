@@ -39,6 +39,10 @@
       source "${config.home.homeDirectory}/.zsh/worktrunk-clone.zsh"
     '';
 
+    profileExtra = ''
+      source "$HOME/.orbstack/shell/init.zsh" 2>/dev/null || :
+    '';
+
     localVariables = {
       # enforce using aliases
       YSU_HARDCORE = 0;
