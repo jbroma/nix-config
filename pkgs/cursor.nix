@@ -6,7 +6,7 @@
 }:
 
 let
-  version = "3.7.12";
+  version = "3.7.21";
 in
 stdenv.mkDerivation {
   pname = "cursor";
@@ -14,8 +14,8 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     name = "Cursor-${version}-darwin-arm64.dmg";
-    url = "https://downloads.cursor.com/production/b887a26c4f70bd8136bfffeda812b24194ec9ce0/darwin/arm64/Cursor-darwin-arm64.dmg";
-    hash = "sha256-T/xYrPRQ7JE1QqqZwYbHEAaKsYe9BvF2VsMipxWX/e0=";
+    url = "https://downloads.cursor.com/production/517f696d8ab6c53eb04fbfdaae705cd146bf346e/darwin/arm64/Cursor-darwin-arm64.dmg";
+    hash = "sha256-GNBM28oWORVLyntS1H9EUY1L/T9OlNNSUEschXQ27RQ=";
   };
 
   nativeBuildInputs = [ _7zz ];
