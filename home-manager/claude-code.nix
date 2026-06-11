@@ -72,8 +72,9 @@ in
     package = pkgs.claude-code;
     settings = {
       "$schema" = "https://json.schemastore.org/claude-code-settings.json";
-      # Pin Opus 4.8 with 1M context and deeper adaptive reasoning.
-      model = "claude-opus-4-8[1m]";
+      # Pin Fable 5 and require confirmation before switching on flagged requests.
+      model = "claude-fable-5";
+      switchModelsOnFlag = false;
       effortLevel = "xhigh";
       # Keep extended thinking enabled.
       alwaysThinkingEnabled = true;
