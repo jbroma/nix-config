@@ -7,11 +7,11 @@
 
 stdenvNoCC.mkDerivation {
   pname = "spotify";
-  version = "1.2.90.451";
+  version = "1.2.92.147";
 
   src = fetchurl {
     url = "https://download.scdn.co/SpotifyARM64.dmg";
-    hash = "sha256-rQuvF7LWHBR3q8GJQWO671n1NRDKinQps+zYfXPktrU=";
+    hash = "sha256-pRfQpuLLqvUOlr+742+MoLqSVwKDYxm+yk5Yrr8IrUI=";
   };
 
   nativeBuildInputs = [ undmg ];
