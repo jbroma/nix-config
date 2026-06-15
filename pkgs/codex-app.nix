@@ -8,7 +8,7 @@
   _7zz,
 }:
 let
-  version = "26.609.41114";
+  version = "26.609.71144";
 in
 stdenv.mkDerivation {
   pname = "codex-app";
@@ -17,7 +17,7 @@ stdenv.mkDerivation {
   src = fetchurl {
     name = "Codex-${version}.dmg";
     url = "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg?version=${version}";
-    hash = "sha256-/MTamgmXP9NcA5kBhDSqgOTjoEES0OqYyw7utw+52eg=";
+    hash = "sha256-EwHR7P/lyqY7sl0f5F+y3j6ywQgP50VMcrtmg3ZIcjU=";
   };
 
   nativeBuildInputs = [ _7zz ];
