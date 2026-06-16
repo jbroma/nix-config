@@ -72,8 +72,8 @@ in
     package = pkgs.claude-code;
     settings = {
       "$schema" = "https://json.schemastore.org/claude-code-settings.json";
-      # Pin Fable 5 and require confirmation before switching on flagged requests.
-      model = "claude-fable-5";
+      # Pin Opus with the 1M context window and require confirmation before switching on flagged requests.
+      model = "opus[1m]";
       switchModelsOnFlag = false;
       effortLevel = "xhigh";
       # Keep extended thinking enabled.
