@@ -7,12 +7,12 @@
 
 stdenv.mkDerivation rec {
   name = "android-studio";
-  version = "2026.1.1.9";
-  dmgName = "android-studio-quail1-patch1-mac_arm.dmg";
+  version = "2026.1.1.10";
+  dmgName = "android-studio-quail1-patch2-mac_arm.dmg";
 
   src = fetchurl {
     url = "https://redirector.gvt1.com/edgedl/android/studio/install/${version}/${dmgName}";
-    sha256 = "07145348f0b7bce6336eb362addd773093a84c40a4780f436beb6795a48b1270";
+    sha256 = "69a13f8b7430f91919ff8b958c941d69953c13095e29fafa51e77d32417521a2";
   };
   buildInputs = [ undmg ];
 
