@@ -86,12 +86,12 @@ extract_android_studio_stable_release_path() {
   local release_path
 
   release_path=$(printf '%s' "$input" | perl -0ne '
-    if (m{id="agree-button__studio_mac_arm_bundle_download"[^>]*href="https://[^"]+/android/studio/install/([0-9]{4}\.[0-9]\.[0-9]\.[0-9]/android-studio-[[:alnum:]-]+-mac_arm\.dmg)"}s) {
+    if (m{id="agree-button__studio_mac_arm_bundle_download"[^>]*href="https://[^"]+/android/studio/install/([0-9]{4}(?:\.[0-9]+){3}/android-studio-[[:alnum:]-]+-mac_arm\.dmg)"}s) {
       print "$1\n";
       exit;
     }
 
-    if (m{href="https://[^"]+/android/studio/install/([0-9]{4}\.[0-9]\.[0-9]\.[0-9]/android-studio-[[:alnum:]-]+-mac_arm\.dmg)"[^>]*id="agree-button__studio_mac_arm_bundle_download"}s) {
+    if (m{href="https://[^"]+/android/studio/install/([0-9]{4}(?:\.[0-9]+){3}/android-studio-[[:alnum:]-]+-mac_arm\.dmg)"[^>]*id="agree-button__studio_mac_arm_bundle_download"}s) {
       print "$1\n";
       exit;
     }
@@ -475,56 +475,108 @@ log_status() {
   fi
 }
 
-verify=true
+run_isolated_handler() {
+  local source_file=$1
+  local working_directory=$2
+  local handler=$3
 
-while (($#)); do
-  case "$1" in
-    --no-verify)
-      verify=false
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "error: unknown argument: $1" >&2
-      usage >&2
-      exit 1
-      ;;
-  esac
-  shift
-done
+  "$BASH" -c '
+    set -euo pipefail
+    source "$1"
+    repo_root=$2
+    cd "$repo_root"
+    "$3"
+  ' pkg-update-handler "$source_file" "$working_directory" "$handler"
+}
 
-require_cmd curl
-require_cmd gh
-require_cmd hdiutil
-require_cmd jq
-require_cmd nix
-require_cmd perl
-require_cmd rg
+main() {
+  local verify=true
+  local update_specs=(
+    "android-studio:update_android_studio"
+    "claude-code:update_claude_code"
+    "claude-desktop:update_claude_desktop"
+    "cleanshot-x:update_cleanshot_x"
+    "codex-app:update_codex_app"
+    "codex-cli:update_codex_cli"
+    "cursor:update_cursor"
+    "minisim:update_minisim"
+    "maestro-studio:update_maestro_studio"
+    "spotify:update_spotify"
+    "vite-plus:update_vite_plus"
+    "worktrunk:update_worktrunk"
+    "zed-editor:update_zed_editor"
+  )
+  local failed_steps=()
+  local spec name handler status
 
-repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-cd "$repo_root"
+  while (($#)); do
+    case "$1" in
+      --no-verify)
+        verify=false
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      *)
+        echo "error: unknown argument: $1" >&2
+        usage >&2
+        exit 1
+        ;;
+    esac
+    shift
+  done
 
-echo "Updating packages in pkgs/..."
+  require_cmd curl
+  require_cmd gh
+  require_cmd hdiutil
+  require_cmd jq
+  require_cmd nix
+  require_cmd perl
+  require_cmd rg
 
-update_android_studio
-update_claude_code
-update_claude_desktop
-update_cleanshot_x
-update_codex_app
-update_codex_cli
-update_cursor
-update_minisim
-update_maestro_studio
-update_spotify
-update_vite_plus
-update_worktrunk
-update_zed_editor
+  repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+  cd "$repo_root"
 
-if [[ "$verify" == true ]]; then
-  echo ""
-  echo "Verifying darwin configurations..."
-  nix build .#darwinConfigurations.personal.system --no-link
-  nix build .#darwinConfigurations.work.system --no-link
+  echo "Updating packages in pkgs/..."
+
+  for spec in "${update_specs[@]}"; do
+    name=${spec%%:*}
+    handler=${spec#*:}
+
+    if run_isolated_handler "$repo_root/scripts/pkg-update.sh" "$repo_root" "$handler"; then
+      continue
+    else
+      status=$?
+    fi
+
+    printf '  %-15s failed (exit %s)\n' "$name" "$status" >&2
+    failed_steps+=("$name")
+  done
+
+  if [[ "$verify" == true ]]; then
+    echo ""
+    echo "Verifying darwin configurations..."
+
+    if ! nix build .#darwinConfigurations.personal.system --no-link; then
+      failed_steps+=("personal verification")
+    fi
+
+    if ! nix build .#darwinConfigurations.work.system --no-link; then
+      failed_steps+=("work verification")
+    fi
+  fi
+
+  if ((${#failed_steps[@]} > 0)); then
+    echo "" >&2
+    echo "Completed with failures:" >&2
+    printf '  - %s\n' "${failed_steps[@]}" >&2
+    return 1
+  fi
+
+  return 0
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
 fi
