@@ -3,8 +3,8 @@
 #
 # Usage: setup-plugins.sh <claude-binary> <dotfiles-claude-dir> [local-marketplace-path] [extra-plugin...]
 #
-# Seeds plugin config and installs only plugins not already present in
-# ~/.claude/plugins/cache/.
+# Seeds plugin config and installs only plugins not already registered with
+# Claude Code.
 
 set -euo pipefail
 
@@ -14,7 +14,6 @@ LOCAL_MARKETPLACE="${3:-}"
 EXTRA_PLUGINS=("${@:4}")
 
 PLUGINS_DIR="${HOME}/.claude/plugins"
-CACHE_DIR="${PLUGINS_DIR}/cache"
 PLUGINS_TEMPLATE="${DOTFILES_CLAUDE}/plugins/installed_plugins.json"
 PLUGINS_JSON="${PLUGINS_DIR}/installed_plugins.json"
 KNOWN_MARKETPLACES_TEMPLATE="${DOTFILES_CLAUDE}/plugins/known_marketplaces.json"
@@ -85,19 +84,27 @@ install_plugin() {
   with_writable_claude_settings "$CLAUDE_BIN" plugin install "$plugin" --scope user
 }
 
-# Install plugins not already cached
+is_plugin_installed() {
+  local plugin="$1"
+  local install_path
+
+  install_path="$(
+    "$CLAUDE_BIN" plugin list --json 2>/dev/null \
+      | jq -r --arg plugin "$plugin" '.[] | select(.id == $plugin) | .installPath // empty' \
+      | sed -n '1p'
+  )" || install_path=""
+
+  [[ -n "$install_path" && -d "$install_path" ]]
+}
+
+# Install plugins not already registered
 failed_plugins=()
 
 while IFS= read -r plugin; do
   [[ -n "$plugin" ]] || continue
 
-  # Parse plugin name and marketplace from "name@marketplace" format
-  name="${plugin%@*}"
-  marketplace="${plugin#*@}"
-  cache_path="${CACHE_DIR}/${marketplace}/${name}"
-
-  if [[ -d "$cache_path" ]]; then
-    echo "Skipping ${plugin} (already cached)"
+  if is_plugin_installed "$plugin"; then
+    echo "Skipping ${plugin} (already installed)"
   else
     echo "Installing ${plugin}..."
     if ! install_plugin "$plugin"; then
