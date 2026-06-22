@@ -75,6 +75,12 @@ with_writable_claude_settings() {
 
 install_plugin() {
   local plugin="$1"
+  local settings="${HOME}/.claude/settings.json"
+
+  if [[ -L "$settings" ]]; then
+    with_writable_claude_settings "$CLAUDE_BIN" plugin install "$plugin" --scope user
+    return $?
+  fi
 
   if "$CLAUDE_BIN" plugin install "$plugin" --scope user; then
     return 0
