@@ -14,6 +14,25 @@ let
   codexMcpServers = lib.mapAttrs (
     _: server: lib.filterAttrs (k: _: k != "type") server
   ) config.mcp.servers;
+  integrationConfig = builtins.fromJSON (builtins.readFile "${ai}/integrations/plugins.json");
+  codexIntegrations = integrationConfig.codex;
+  codexMarketplaces = lib.mapAttrs (
+    _: marketplace: builtins.removeAttrs marketplace [ "add" ]
+  ) codexIntegrations.marketplaces;
+  codexPlugins = lib.mapAttrs (_: plugin: {
+    enabled = plugin.enabled or false;
+  }) codexIntegrations.plugins;
+  installPlugins = builtins.attrNames (
+    lib.filterAttrs (
+      _: plugin: (plugin.enabled or false) && (plugin.install or true)
+    ) codexIntegrations.plugins
+  );
+  installPluginCommands = lib.concatStringsSep "\n" (
+    map (plugin: ''
+      run ${pkgs.codex-cli}/bin/codex plugin add ${lib.escapeShellArg plugin} >/dev/null || \
+        echo "warning: failed to install Codex plugin: ${plugin}" >&2
+    '') installPlugins
+  );
   codexSettings = {
     model = "gpt-5.5";
     model_personality = "pragmatic";
@@ -50,6 +69,8 @@ let
     };
 
     mcp_servers = codexMcpServers;
+    marketplaces = codexMarketplaces;
+    plugins = codexPlugins;
   };
   codexBaseConfig = tomlFormat.generate "config.toml" codexSettings;
   codexConfigScript = ../scripts/generate-codex-config.sh;
@@ -70,5 +91,9 @@ in
   # discovered dynamically without deleting Codex-managed plugin/app state.
   home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${codexConfigScript}" "${codexBaseConfig}" "${pkgs.yq-go}/bin/yq"
+  '';
+
+  home.activation.codexPlugins = lib.hm.dag.entryAfter [ "codexConfig" ] ''
+    ${installPluginCommands}
   '';
 }
