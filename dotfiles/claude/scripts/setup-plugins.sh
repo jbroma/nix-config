@@ -1,26 +1,35 @@
 #!/usr/bin/env bash
-# Setup Claude Code plugins: symlinks config files and installs missing plugins
+# Setup Claude Code plugins: seeds mutable plugin state and installs missing plugins
 #
-# Usage: setup-plugins.sh <claude-binary> <dotfiles-claude-dir> [local-marketplace-path]
+# Usage: setup-plugins.sh <claude-binary> <dotfiles-claude-dir> [local-marketplace-path] [extra-plugin...]
 #
-# Creates symlinks for plugin config and installs only plugins
-# not already present in ~/.claude/plugins/cache/
+# Seeds plugin config and installs only plugins not already present in
+# ~/.claude/plugins/cache/.
 
 set -euo pipefail
 
 CLAUDE_BIN="${1:?Usage: setup-plugins.sh <claude-binary> <dotfiles-claude-dir> [local-marketplace-path]}"
 DOTFILES_CLAUDE="${2:?Usage: setup-plugins.sh <claude-binary> <dotfiles-claude-dir> [local-marketplace-path]}"
 LOCAL_MARKETPLACE="${3:-}"
+EXTRA_PLUGINS=("${@:4}")
 
 PLUGINS_DIR="${HOME}/.claude/plugins"
 CACHE_DIR="${PLUGINS_DIR}/cache"
-PLUGINS_JSON="${DOTFILES_CLAUDE}/plugins/installed_plugins.json"
+PLUGINS_TEMPLATE="${DOTFILES_CLAUDE}/plugins/installed_plugins.json"
+PLUGINS_JSON="${PLUGINS_DIR}/installed_plugins.json"
 KNOWN_MARKETPLACES_TEMPLATE="${DOTFILES_CLAUDE}/plugins/known_marketplaces.json"
 KNOWN_MARKETPLACES_PATH="${PLUGINS_DIR}/known_marketplaces.json"
 
-# Setup plugin config symlinks
+# Seed mutable plugin state. Claude rewrites this file during installs/updates.
 mkdir -p "$PLUGINS_DIR"
-ln -sf "${DOTFILES_CLAUDE}/plugins/installed_plugins.json" "${PLUGINS_DIR}/installed_plugins.json"
+if [[ -L "$PLUGINS_JSON" ]]; then
+  tmp="$(mktemp "${PLUGINS_JSON}.seed.XXXXXX")"
+  cp "$PLUGINS_JSON" "$tmp"
+  rm "$PLUGINS_JSON"
+  mv "$tmp" "$PLUGINS_JSON"
+elif [[ ! -e "$PLUGINS_JSON" ]]; then
+  cp "$PLUGINS_TEMPLATE" "$PLUGINS_JSON"
+fi
 
 # Claude mutates known marketplaces during updates, so keep it as local state.
 if [[ ! -e "$KNOWN_MARKETPLACES_PATH" ]]; then
@@ -37,10 +46,51 @@ if [[ -n "$LOCAL_MARKETPLACE" && -d "$LOCAL_MARKETPLACE" ]]; then
   fi
 fi
 
+with_writable_claude_settings() {
+  local settings="${HOME}/.claude/settings.json"
+  local backup="${settings}.managed-link"
+  local tmp status
+
+  [[ -L "$settings" ]] || return 1
+  [[ ! -e "$backup" ]] || return 1
+
+  tmp="$(mktemp "${settings}.writable.XXXXXX")"
+  cp "$settings" "$tmp"
+
+  restore_claude_settings() {
+    rm -f "$settings"
+    mv "$backup" "$settings"
+  }
+
+  mv "$settings" "$backup"
+  mv "$tmp" "$settings"
+  trap restore_claude_settings RETURN
+
+  status=0
+  "$@" || status=$?
+
+  restore_claude_settings
+  trap - RETURN
+  return "$status"
+}
+
+install_plugin() {
+  local plugin="$1"
+
+  if "$CLAUDE_BIN" plugin install "$plugin" --scope user; then
+    return 0
+  fi
+
+  echo "Retrying ${plugin} with temporary writable Claude settings..."
+  with_writable_claude_settings "$CLAUDE_BIN" plugin install "$plugin" --scope user
+}
+
 # Install plugins not already cached
 failed_plugins=()
 
 while IFS= read -r plugin; do
+  [[ -n "$plugin" ]] || continue
+
   # Parse plugin name and marketplace from "name@marketplace" format
   name="${plugin%@*}"
   marketplace="${plugin#*@}"
@@ -50,11 +100,16 @@ while IFS= read -r plugin; do
     echo "Skipping ${plugin} (already cached)"
   else
     echo "Installing ${plugin}..."
-    if ! "$CLAUDE_BIN" plugin install "$plugin" --scope user; then
+    if ! install_plugin "$plugin"; then
       failed_plugins+=("$plugin")
     fi
   fi
-done < <(jq -r '.plugins | keys[]' "$PLUGINS_JSON")
+done < <(
+  {
+    jq -r '.plugins | keys[]' "$PLUGINS_JSON"
+    printf '%s\n' "${EXTRA_PLUGINS[@]}"
+  } | sort -u
+)
 
 if ((${#failed_plugins[@]} > 0)); then
   echo "warning: failed to install Claude plugins:" >&2

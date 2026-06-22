@@ -28,35 +28,80 @@ let
   # Path to dotfiles in this repo (for mutable symlinks)
   dotfilesDir = "${config.home.homeDirectory}/.nix/dotfiles";
 
-  # Read plugins from dotfile (single source of truth)
+  integrationConfig = builtins.fromJSON (builtins.readFile "${ai}/integrations/plugins.json");
+  claudeIntegrations = integrationConfig.claude;
+
+  # Read existing plugin state from dotfile seed, then add desired plugins from ai-sauce.
   installedPluginsJson = builtins.fromJSON (
     builtins.readFile ../dotfiles/claude/plugins/installed_plugins.json
   );
-  plugins = builtins.attrNames installedPluginsJson.plugins;
+  desiredPlugins = builtins.attrNames (
+    lib.filterAttrs (_: plugin: plugin.enabled or false) claudeIntegrations.plugins
+  );
+  installPlugins = builtins.attrNames (
+    lib.filterAttrs (
+      _: plugin: (plugin.enabled or false) && (plugin.install or true)
+    ) claudeIntegrations.plugins
+  );
+  plugins = lib.unique ((builtins.attrNames installedPluginsJson.plugins) ++ desiredPlugins);
 
   # Convert plugin list to { "plugin@marketplace" = true; } format
   enabledPlugins = lib.genAttrs plugins (_: true);
 
-  # Local marketplace for custom plugins (symlinked to ~/.claude/plugins/local-marketplace)
-  localMarketplacePath = "${config.home.homeDirectory}/.claude/plugins/local-marketplace";
+  # AI Sauce marketplace for custom and imported plugins.
+  aiSauceMarketplacePath = "${config.home.homeDirectory}/.claude/plugins/ai-sauce-marketplace";
+  resolveClaudeMarketplace =
+    marketplace:
+    let
+      source = marketplace.source;
+    in
+    if
+      source.source == "directory" && (source ? path) && source.path == "$AI_SAUCE_CLAUDE_MARKETPLACE"
+    then
+      marketplace
+      // {
+        source = source // {
+          path = aiSauceMarketplacePath;
+        };
+      }
+    else
+      marketplace;
+  extraKnownMarketplaces = lib.mapAttrs (_: resolveClaudeMarketplace) claudeIntegrations.marketplaces;
 
   claude = "${pkgs.claude-code}/bin/claude";
   setupScript = "${dotfilesDir}/claude/scripts/setup-plugins.sh";
+  githubMarketplaceCommands = lib.concatStringsSep "\n" (
+    lib.mapAttrsToList (
+      name: marketplace:
+      let
+        source = marketplace.source;
+      in
+      if source.source == "github" then
+        ''
+          run ${claude} plugin marketplace add ${lib.escapeShellArg source.repo} || \
+            echo "warning: failed to add Claude marketplace: ${name}" >&2
+        ''
+      else
+        ""
+    ) claudeIntegrations.marketplaces
+  );
+  installPluginArgs = lib.concatMapStringsSep " " lib.escapeShellArg installPlugins;
 in
 {
   # Claude Code symlinks (read-only, from ai submodule)
   home.file.".claude/CLAUDE.md".source = "${ai}/CORE.md";
   home.file.".claude/hooks".source = "${ai}/hooks";
-  home.file.".claude/plugins/local-marketplace".source = "${ai}/marketplace";
+  home.file.".claude/plugins/ai-sauce-marketplace".source = "${ai}/marketplace";
   home.file.".claude/skills".source = "${ai}/skills";
 
   # Binary symlink for ~/.local/bin (needed by claude code native install)
   home.file.".local/bin/claude".source = "${pkgs.claude-code}/bin/claude";
 
-  # Plugin setup: symlinks config files and installs missing plugins
-  # Uses direct symlinks (not nix store) since Claude Code only resolves one level
+  # Plugin setup: seeds mutable plugin state and installs missing plugins.
+  # Uses direct marketplace symlinks since Claude Code only resolves one level.
   home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${localMarketplacePath}"
+    ${githubMarketplaceCommands}
+    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${aiSauceMarketplacePath}" ${installPluginArgs}
   '';
 
   # MCP servers: merge into ~/.claude.json (preserves OAuth, preferences, stats)
@@ -91,17 +136,10 @@ in
       # Default permissions from ai submodule + classifier-backed auto mode
       permissions = permissions;
       skipAutoPermissionPrompt = true;
-      # Enable plugins from dotfile (single source of truth)
+      # Enabled plugins combine existing mutable plugin state with ai-sauce desired integrations.
       enabledPlugins = enabledPlugins;
-      # Local marketplace for custom plugins
-      extraKnownMarketplaces = {
-        "local-marketplace" = {
-          source = {
-            source = "directory";
-            path = localMarketplacePath;
-          };
-        };
-      };
+      # Marketplaces are declared in ai-sauce/integrations/plugins.json.
+      extraKnownMarketplaces = extraKnownMarketplaces;
       hooks = hookDefinitions;
       sandbox = {
         enabled = true;
