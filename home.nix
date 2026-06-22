@@ -14,7 +14,6 @@
   # List packages you want to install for your user only.
   home.packages = with pkgs; [
     # dev
-    aerospace
     bat
     bun
     delta

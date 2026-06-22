@@ -44,19 +44,13 @@ in
       with pkgs;
       [
         # xcode
-        android-studio
-        cleanshot-x
         claude-code
-        claude-desktop
-        codex-app
         codex-cli
         maestro-studio
         openscreen
-        zed-editor
         raycast
         google-chrome
         lmstudio
-        cursor
         _1password-gui
         minisim
         spotify
@@ -98,6 +92,25 @@ in
     };
   };
 
+  homebrew = {
+    enable = true;
+    casks = [
+      "android-studio"
+      "claude"
+      "cleanshot"
+      "codex-app"
+      "cursor"
+      "nikitabobko/tap/aerospace"
+      "wezterm"
+      "zed"
+    ];
+    onActivation = {
+      autoUpdate = false;
+      upgrade = false;
+      cleanup = "none";
+    };
+  };
+
   fonts.packages = with pkgs; [
     atkinson-hyperlegible
     atkinson-hyperlegible-next
@@ -133,8 +146,9 @@ in
 
   # apps to launch on login
   launchd.user.agents = {
+    aerospace = mkLaunchAgent "/Applications/AeroSpace.app/Contents/MacOS/AeroSpace";
     raycast = mkLaunchAgent "${pkgs.raycast}/Contents/Library/LoginItems/RaycastLauncher.app/Contents/MacOS/RaycastLauncher";
-    cleanshot-x = mkLaunchAgent "${pkgs.cleanshot-x}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
+    cleanshot-x = mkLaunchAgent "/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
   };
 
   # enable touch id for sudo
@@ -168,6 +182,27 @@ in
     if ! xcode-select --version 2>/dev/null; then
       xcode-select --install
     fi
+
+    remove_nix_app_link() {
+      app_link="/Applications/$1.app"
+
+      if [ -L "$app_link" ]; then
+        target=$(readlink "$app_link")
+        case "$target" in
+          "/Applications/Nix Apps/"*)
+            rm -f "$app_link"
+            ;;
+        esac
+      fi
+    }
+
+    remove_nix_app_link "Android Studio"
+    remove_nix_app_link "Claude"
+    remove_nix_app_link "CleanShot X"
+    remove_nix_app_link "Codex"
+    remove_nix_app_link "Cursor"
+    remove_nix_app_link "WezTerm"
+    remove_nix_app_link "Zed"
   '';
 
   system.activationScripts.postActivation.text = lib.mkAfter ''
@@ -185,7 +220,6 @@ in
       fi
     }
 
-    ensure_app_link "Cursor"
     ensure_app_link "Google Chrome"
     ensure_app_link "1Password"
     ensure_app_link "Slack"

@@ -94,8 +94,6 @@ in
   }
   // builtins.listToAttrs extensionLinks;
 
-  home.packages = [ pkgs.cursor ];
-
   # Keep Cursor settings mutable while applying Nix-managed settings on switch.
   home.activation.cursorSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run ${pkgs.bash}/bin/bash ${../scripts/merge-cursor-settings.sh} \

@@ -12,6 +12,11 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    homebrew-nikitabobko = {
+      url = "github:nikitabobko/homebrew-tap";
+      flake = false;
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -72,6 +77,7 @@
       darwinModules = [
         ./configuration.nix
         inputs.home-manager.darwinModules.home-manager
+        inputs.nix-homebrew.darwinModules.nix-homebrew
       ];
 
       configuration =
@@ -92,6 +98,20 @@
             ai = if enableAi then inputs.ai else null;
           };
           modules = darwinModules ++ [
+            {
+              nix-homebrew = {
+                enable = true;
+                user = user.username;
+                enableRosetta = false;
+                mutableTaps = false;
+                taps = {
+                  "nikitabobko/tap" = inputs.homebrew-nikitabobko;
+                };
+              };
+            }
+            ({ config, ... }: {
+              homebrew.taps = builtins.attrNames config.nix-homebrew.taps;
+            })
             {
               nixpkgs.overlays = [
                 (_: super: {

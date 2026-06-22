@@ -6,11 +6,7 @@
 {
   programs.aerospace = {
     enable = true;
-
-    # enable launchd agent for auto-start on login
-    launchd = {
-      enable = true;
-    };
+    package = null;
 
     settings = {
       # You can use it to add commands that run after login to macOS user session.
@@ -32,8 +28,8 @@
         "${pkgs.sketchybar}/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
       ];
 
-      # Start AeroSpace at login
-      start-at-login = true;
+      # nix-darwin launches the Homebrew-managed app bundle.
+      start-at-login = false;
 
       # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
       enable-normalization-flatten-containers = true;
