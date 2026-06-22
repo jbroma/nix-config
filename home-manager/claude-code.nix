@@ -97,19 +97,19 @@ in
   # Binary symlink for ~/.local/bin (needed by claude code native install)
   home.file.".local/bin/claude".source = "${pkgs.claude-code}/bin/claude";
 
-  # Plugin setup: seeds mutable plugin state and installs missing plugins.
-  # Uses direct marketplace symlinks since Claude Code only resolves one level.
-  home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ${githubMarketplaceCommands}
-    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${aiSauceMarketplacePath}" ${installPluginArgs}
-  '';
-
   # MCP servers: merge into ~/.claude.json (preserves OAuth, preferences, stats)
   home.activation.setupMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run ${../scripts/merge-mcp-servers.sh} \
       "${config.home.homeDirectory}/.claude.json" \
       '${mcpServersJson}' \
       "${pkgs.jq}/bin/jq"
+  '';
+
+  # Plugin setup: seeds mutable plugin state and installs missing plugins.
+  # Uses direct marketplace symlinks since Claude Code only resolves one level.
+  home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "setupMcpServers" ] ''
+    ${githubMarketplaceCommands}
+    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${aiSauceMarketplacePath}" ${installPluginArgs}
   '';
 
   programs.claude-code = {
