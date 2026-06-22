@@ -14,13 +14,5 @@
     },
     "installLocation": "/Users/jbroma/.claude/plugins/local-marketplace",
     "lastUpdated": "2026-04-09T11:29:46.577Z"
-  },
-  "agent-island": {
-    "source": {
-      "source": "directory",
-      "path": "/Users/jbroma/Developer/agent-island-cc-plugin"
-    },
-    "installLocation": "/Users/jbroma/Developer/agent-island-cc-plugin",
-    "lastUpdated": "2026-01-31T23:32:41.612Z"
   }
 }

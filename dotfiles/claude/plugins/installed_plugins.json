@@ -18,16 +18,6 @@
         "installedAt": "2026-01-22T14:21:31.418Z",
         "lastUpdated": "2026-01-22T14:21:31.418Z"
       }
-    ],
-    "agent-island-claude-code@agent-island": [
-      {
-        "scope": "user",
-        "installPath": "/Users/jbroma/.claude/plugins/cache/agent-island/agent-island-claude-code/1.0.0",
-        "version": "1.0.0",
-        "installedAt": "2026-01-31T23:32:41.935Z",
-        "lastUpdated": "2026-01-31T23:32:41.935Z",
-        "gitCommitSha": "a7ce3561b89e9e0e2d4d39fa8b309e0f198bbbbc"
-      }
     ]
   }
 }
