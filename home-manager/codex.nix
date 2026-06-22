@@ -29,8 +29,12 @@ let
   );
   installPluginCommands = lib.concatStringsSep "\n" (
     map (plugin: ''
-      run ${pkgs.codex-cli}/bin/codex plugin add ${lib.escapeShellArg plugin} >/dev/null || \
-        echo "warning: failed to install Codex plugin: ${plugin}" >&2
+      if ${pkgs.codex-cli}/bin/codex plugin list --json | ${pkgs.jq}/bin/jq -e --arg plugin ${lib.escapeShellArg plugin} '.installed[]? | select(.pluginId == $plugin)' >/dev/null; then
+        echo "Skipping ${plugin} (already installed)"
+      else
+        run ${pkgs.codex-cli}/bin/codex plugin add ${lib.escapeShellArg plugin} >/dev/null || \
+          echo "warning: failed to install Codex plugin: ${plugin}" >&2
+      fi
     '') installPlugins
   );
   codexSettings = {
@@ -94,6 +98,9 @@ in
   '';
 
   home.activation.codexPlugins = lib.hm.dag.entryAfter [ "codexConfig" ] ''
+    mkdir -p \
+      "${config.home.homeDirectory}/.codex/plugins/.marketplace-plugin-source-staging" \
+      "${config.home.homeDirectory}/.codex/plugins/.remote-plugin-install-staging"
     ${installPluginCommands}
   '';
 }
