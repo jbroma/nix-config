@@ -53,7 +53,6 @@
     ./home-manager/zellij.nix
     ./home-manager/eza.nix
     ./home-manager/vim.nix
-    ./home-manager/direnv.nix
     ./home-manager/mise.nix
     ./home-manager/pnpm.nix
     ./home-manager/delta.nix
