@@ -36,13 +36,8 @@
         # "Xcode.app"
         "1password"
         "1password-gui"
-        "android-studio"
         "claude-code"
-        "claude-desktop"
-        "cleanshot-x"
-        "codex-app"
         "codex-cli"
-        "cursor"
         "google-chrome"
         "lmstudio"
         "maestro-studio"
@@ -115,14 +110,9 @@
               nixpkgs.overlays = [
                 (_: super: {
                   # xcode = pkgs.darwin.xcode_26;
-                  android-studio = customPkgs.android-studio;
                   minisim = customPkgs.minisim;
                   claude-code = customPkgs.claude-code;
-                  claude-desktop = customPkgs.claude-desktop;
-                  cursor = customPkgs.cursor;
-                  cleanshot-x = customPkgs.cleanshot-x;
                   codex-cli = customPkgs.codex-cli;
-                  codex-app = customPkgs.codex-app;
                   lmstudio = super.lmstudio.overrideAttrs (old: {
                     # nixpkgs' darwin.sigtool-provided codesign does not support --deep, but LM
                     # Studio needs a recursive re-sign after patching its bundled JavaScript.
@@ -135,7 +125,6 @@
                   maestro-studio = customPkgs.maestro-studio;
                   spotify = customPkgs.spotify;
                   wsmancli = customPkgs.wsmancli;
-                  zed-editor = customPkgs.zed-editor;
                   worktrunk = customPkgs.worktrunk;
                   vite-plus = customPkgs.vite-plus;
                 })
