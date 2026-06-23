@@ -1,9 +1,3 @@
-if [[ -n "${__MISE_PROJECT_CONFIG_SOURCED:-}" ]]; then
-  _mise_set_project_config
-  return
-fi
-export __MISE_PROJECT_CONFIG_SOURCED=1
-
 # Keep project-specific mise config outside repos by deriving a stable
 # per-project filename under ~/.config/mise/projects unless the repo
 # already has its own mise.toml, which should remain the write target.
@@ -40,5 +34,6 @@ _mise_set_project_config() {
 }
 
 autoload -Uz add-zsh-hook
+add-zsh-hook -d chpwd _mise_set_project_config 2>/dev/null
 add-zsh-hook chpwd _mise_set_project_config
 _mise_set_project_config
