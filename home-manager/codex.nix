@@ -50,7 +50,10 @@ let
     file_opener = "cursor";
 
     features = {
+      browser_use = true;
+      browser_use_external = true;
       goals = true;
+      in_app_browser = true;
       prevent_idle_sleep = true;
       shell_tool = true;
       shell_snapshot = true;
