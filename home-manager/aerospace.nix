@@ -66,6 +66,16 @@
           run = "layout floating";
         }
         {
+          "if".window-title-regex-substring =
+            ".*(preferences|settings).*|^(open|save|export|import|print|share|about|rename|delete).*";
+          run = "layout floating";
+        }
+        {
+          "if".app-name-regex-substring =
+            "^(system settings|system preferences|system information|archive utility|calculator|dictionary|software update|installer|app store|image capture|stickies|activity monitor|disk utility|font book|audio midi setup|bluetooth file exchange|photo booth|raycast|alfred|1password|karabiner-elements|karabiner-eventviewer)$";
+          run = "layout floating";
+        }
+        {
           "if".app-name-regex-substring = "simulator";
           run = "layout floating";
         }
