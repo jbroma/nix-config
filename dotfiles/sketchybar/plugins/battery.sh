@@ -3,18 +3,18 @@
 # Load system accent color
 source "$CONFIG_DIR/plugins/accent_color.sh"
 
-# Nerd Font Material Design battery icons (literal unicode)
-BATTERY_100="󰁹"   # nf-md-battery
-BATTERY_90="󰂂"    # nf-md-battery_90
-BATTERY_80="󰂁"    # nf-md-battery_80
-BATTERY_70="󰂀"    # nf-md-battery_70
-BATTERY_60="󰁿"    # nf-md-battery_60
-BATTERY_50="󰁾"    # nf-md-battery_50
-BATTERY_40="󰁽"    # nf-md-battery_40
-BATTERY_30="󰁼"    # nf-md-battery_30
-BATTERY_20="󰁻"    # nf-md-battery_20
-BATTERY_10="󰁺"    # nf-md-battery_10
-BATTERY_CHARGING="󰂄"  # nf-md-battery_charging
+# Nerd Font Font Awesome battery icons (literal unicode)
+BATTERY_100=""   # fa-battery-full
+BATTERY_90=""    # fa-battery-full
+BATTERY_80=""    # fa-battery-three-quarters
+BATTERY_70=""    # fa-battery-three-quarters
+BATTERY_60=""    # fa-battery-half
+BATTERY_50=""    # fa-battery-half
+BATTERY_40=""    # fa-battery-quarter
+BATTERY_30=""    # fa-battery-quarter
+BATTERY_20=""    # fa-battery-empty
+BATTERY_10=""    # fa-battery-empty
+BATTERY_CHARGING=""  # fa-bolt
 
 PERCENTAGE="$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)"
 CHARGING="$(pmset -g batt | grep 'AC Power')"

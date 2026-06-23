@@ -5,11 +5,11 @@ source "$CONFIG_DIR/plugins/accent_color.sh"
 
 WHITE_50=0x80ffffff
 
-# Nerd Font Material Design volume icons (literal unicode)
-VOLUME_HIGH="󰕾"     # nf-md-volume-high
-VOLUME_MED="󰖀"      # nf-md-volume-medium
-VOLUME_LOW="󰕿"      # nf-md-volume-low
-VOLUME_MUTE="󰖁"     # nf-md-volume-off
+# Nerd Font Font Awesome volume icons (literal unicode)
+VOLUME_HIGH=""     # fa-volume-up
+VOLUME_MED=""      # fa-volume-down
+VOLUME_LOW=""      # fa-volume-off
+VOLUME_MUTE=""     # fa-volume-off
 
 # Get current volume on init or from event
 if [ "$SENDER" = "volume_change" ]; then

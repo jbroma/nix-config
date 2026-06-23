@@ -17,17 +17,20 @@ WHITE_50=0x80ffffff
 # Island shadow (for floating glass effect - subtle)
 ISLAND_SHADOW=0x20000000
 
-##### Nerd Font Material Design Icons (literal unicode) #####
-ICON_TERMINAL="󰆍"   # nf-md-console
-ICON_GLOBE="󰖟"      # nf-md-web
-ICON_CODE="󰅴"       # nf-md-code-tags
-ICON_SLACK="󰒱"      # nf-md-slack
-ICON_SPOTIFY="󰓇"    # nf-md-spotify
-ICON_CLOCK="󰥔"      # nf-md-clock
-ICON_CALENDAR="󰃭"   # nf-md-calendar
-ICON_VOLUME="󰕾"     # nf-md-volume-high
-ICON_APPS="󰀻"       # nf-md-apps
-ICON_NUMERIC="󰎤"    # nf-md-numeric (for generic workspaces)
+##### Nerd Font Font Awesome Icons (literal unicode) #####
+ICON_TERMINAL=""   # fa-desktop
+ICON_GLOBE=""      # fa-globe
+ICON_CODEX=""      # fa-terminal
+ICON_CURSOR=""     # fa-code
+ICON_DISCORD=""    # fa-discord
+ICON_NOTES=""      # fa-sticky-note
+ICON_SLACK=""      # fa-slack
+ICON_SPOTIFY=""    # fa-spotify
+ICON_CLOCK=""      # fa-clock
+ICON_CALENDAR=""   # fa-calendar
+ICON_VOLUME=""     # fa-volume-up
+ICON_APPS=""       # fa-th-large
+ICON_NUMERIC=""    # fa-hashtag (for generic workspaces)
 
 ##### Bar Appearance #####
 # Fully transparent bar - islands provide their own backgrounds
@@ -99,19 +102,19 @@ sketchybar --add item spacer_left left \
 sketchybar --add event aerospace_workspace_change
 
 # Workspace icons based on app assignments
-ICON_FOLDER="󰉋"    # nf-md-folder
+ICON_FOLDER=""    # fa-folder
 
 declare -A WORKSPACE_ICONS
 WORKSPACE_ICONS=(
   [1]="$ICON_TERMINAL"  # Terminal
   [2]="$ICON_GLOBE"     # Chrome/Safari
-  [3]="$ICON_CODE"      # Cursor
-  [4]="$ICON_SLACK"     # Slack/Discord
-  [5]="$ICON_SPOTIFY"   # Spotify
-  [6]="$ICON_FOLDER"
-  [7]="$ICON_FOLDER"
-  [8]="$ICON_FOLDER"
-  [9]="$ICON_FOLDER"
+  [3]="$ICON_CODEX"     # Codex
+  [4]="$ICON_CURSOR"    # Cursor
+  [5]="$ICON_FOLDER"
+  [6]="$ICON_NOTES"     # Notes
+  [7]="$ICON_SLACK"     # Slack
+  [8]="$ICON_DISCORD"   # Discord
+  [9]="$ICON_SPOTIFY"   # Spotify
 )
 
 workspaces=$(aerospace list-workspaces --all)
