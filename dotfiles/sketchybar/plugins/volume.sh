@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Load system accent color
-source "$CONFIG_DIR/plugins/accent_color.sh"
-
 WHITE_50=0x80ffffff
+WHITE=0xfff7f1ff
 
 # Nerd Font Font Awesome volume icons (literal unicode)
 VOLUME_HIGH=""     # fa-volume-up
@@ -19,9 +17,9 @@ else
 fi
 
 case "$VOLUME" in
-  [6-9][0-9]|100) ICON=$VOLUME_HIGH; COLOR=$ACCENT_LIGHT ;;
-  [3-5][0-9]) ICON=$VOLUME_MED; COLOR=$ACCENT_LIGHT ;;
-  [1-9]|[1-2][0-9]) ICON=$VOLUME_LOW; COLOR=$ACCENT_LIGHT ;;
+  [6-9][0-9]|100) ICON=$VOLUME_HIGH; COLOR=$WHITE ;;
+  [3-5][0-9]) ICON=$VOLUME_MED; COLOR=$WHITE ;;
+  [1-9]|[1-2][0-9]) ICON=$VOLUME_LOW; COLOR=$WHITE ;;
   *) ICON=$VOLUME_MUTE; COLOR=$WHITE_50; VOLUME=0 ;;
 esac
 

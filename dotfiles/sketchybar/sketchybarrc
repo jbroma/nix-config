@@ -4,20 +4,16 @@
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 
-# Load system accent color (reads macOS AppleAccentColor)
-source "$PLUGIN_DIR/accent_color.sh"
-
 ##### Color Palette #####
-TRANSPARENT=0x00000000
-GLASS_BG=0x26ffffff
-GLASS_BORDER=0x33ffffff
-WHITE=0xffffffff
-WHITE_50=0x80ffffff
-
-# Island shadow (for floating glass effect - subtle)
-ISLAND_SHADOW=0x20000000
+BAR_BG=0x4a181a22
+BAR_BORDER=0x2ab0b8cc
+PILL_BG=0x5a363537
+PILL_BORDER=0x1a363537
+WHITE=0xfff7f1ff
+WHITE_50=0x998b888f
 
 ##### Nerd Font Font Awesome Icons (literal unicode) #####
+ICON_APPLE=""      # fa-apple
 ICON_TERMINAL=""   # fa-desktop
 ICON_GLOBE=""      # fa-globe
 ICON_CODEX=""      # fa-terminal
@@ -26,26 +22,24 @@ ICON_DISCORD=""    # fa-discord
 ICON_NOTES=""      # fa-sticky-note
 ICON_SLACK=""      # fa-slack
 ICON_SPOTIFY=""    # fa-spotify
-ICON_CLOCK=""      # fa-clock
-ICON_CALENDAR=""   # fa-calendar
 ICON_VOLUME=""     # fa-volume-up
-ICON_APPS=""       # fa-th-large
-ICON_NUMERIC=""    # fa-hashtag (for generic workspaces)
+ICON_WIFI=""       # fa-wifi
 
 ##### Bar Appearance #####
-# Fully transparent bar - islands provide their own backgrounds
 sketchybar --bar \
   position=top \
   topmost=window \
   height=40 \
-  color=$TRANSPARENT \
+  color=$BAR_BG \
+  border_color=$BAR_BORDER \
+  border_width=1 \
   shadow=off \
-  padding_left=10 \
-  padding_right=10 \
+  padding_left=2 \
+  padding_right=2 \
   margin=10 \
-  y_offset=4 \
-  corner_radius=0 \
-  blur_radius=0
+  y_offset=0 \
+  corner_radius=16 \
+  blur_radius=64
 
 if command -v sketchybar-toggle >/dev/null 2>&1; then
   pkill -x sketchybar-toggle 2>/dev/null || true
@@ -55,47 +49,34 @@ fi
 ##### Defaults #####
 default=(
   icon.font="Hack Nerd Font:Bold:14.0"
-  label.font="Hack Nerd Font:Bold:12.0"
+  label.font="Hack Nerd Font:SemiBold:12.0"
   icon.color=$WHITE
   label.color=$WHITE
-  icon.padding_left=6
-  icon.padding_right=2
-  label.padding_left=2
-  label.padding_right=6
+  icon.padding_left=5
+  icon.padding_right=5
+  label.padding_left=3
+  label.padding_right=5
+  padding_left=2
+  padding_right=2
   background.drawing=off
+  background.height=30
+  background.corner_radius=10
+  background.color=$PILL_BG
+  background.border_color=$PILL_BORDER
+  background.border_width=1
 )
 sketchybar --default "${default[@]}"
 
-##### Left Island 1: Front App #####
-sketchybar --add item front_app left \
-  --set front_app \
-    icon="$ICON_APPS" \
-    icon.color=$ACCENT_LIGHT \
-    icon.font="Hack Nerd Font:Bold:14.0" \
-    icon.padding_left=8 \
-    icon.padding_right=2 \
-    label.color=$WHITE \
-    label.font="Hack Nerd Font:Bold:12.0" \
-    label.padding_left=0 \
-    label.padding_right=8 \
-    label.max_chars=15 \
-    script="$PLUGIN_DIR/front_app.sh" \
-  --subscribe front_app front_app_switched
-
-# Front app island background
-sketchybar --add bracket front_app_island front_app \
-  --set front_app_island \
-    background.drawing=on \
-    background.color=$GLASS_BG \
-    background.border_color=$GLASS_BORDER \
-    background.border_width=1 \
-    background.corner_radius=14 \
-    background.height=28 \
-    background.blur_radius=50 \
-    background.shadow.drawing=on \
-    background.shadow.color=$ISLAND_SHADOW \
-    background.shadow.distance=3 \
-    background.shadow.angle=90
+##### Left: Apple + Workspaces #####
+sketchybar --add item apple left \
+  --set apple \
+    icon="$ICON_APPLE" \
+    icon.color=$WHITE \
+    icon.font="Hack Nerd Font:Bold:20.0" \
+    icon.padding_left=10 \
+    icon.padding_right=8 \
+    label.drawing=off \
+    click_script="open -a 'System Settings'"
 
 # Spacer between islands
 sketchybar --add item spacer_left left \
@@ -128,146 +109,87 @@ workspaces=$(aerospace list-workspaces --all)
 for sid in $workspaces; do
   icon="${WORKSPACE_ICONS[$sid]:-$sid}"
 
-  # All workspaces use same layout: icon + number
   sketchybar --add item space.$sid left \
     --subscribe space.$sid aerospace_workspace_change \
     --set space.$sid \
       icon="$icon" \
       icon.color=$WHITE_50 \
       icon.font="Hack Nerd Font:Bold:14.0" \
-      icon.padding_left=6 \
-      icon.padding_right=2 \
+      icon.padding_left=7 \
+      icon.padding_right=3 \
       label="$sid" \
       label.color=$WHITE_50 \
       label.font="Hack Nerd Font:Bold:11.0" \
       label.padding_left=0 \
-      label.padding_right=6 \
+      label.padding_right=7 \
+      background.drawing=off \
       click_script="aerospace workspace $sid" \
       script="$PLUGIN_DIR/aerospace.sh $sid"
 done
 
-# Workspaces island background bracket
-sketchybar --add bracket workspaces_island '/space\..*/' \
-  --set workspaces_island \
-    background.drawing=on \
-    background.color=$GLASS_BG \
-    background.border_color=$GLASS_BORDER \
-    background.border_width=1 \
-    background.corner_radius=14 \
-    background.height=28 \
-    background.blur_radius=50 \
-    background.shadow.drawing=on \
-    background.shadow.color=$ISLAND_SHADOW \
-    background.shadow.distance=3 \
-    background.shadow.angle=90
+##### Right: Status Pills #####
 
-##### Right Island: Status Items #####
-
-# Date (leftmost in right island)
 sketchybar --add item date right \
   --set date \
     update_freq=60 \
-    icon="$ICON_CALENDAR" \
-    icon.color=$ACCENT_LIGHT \
-    icon.font="Hack Nerd Font:Bold:14.0" \
-    icon.padding_left=8 \
-    icon.padding_right=4 \
-    label.padding_left=0 \
-    label.padding_right=8 \
+    icon.drawing=off \
+    label.font="Hack Nerd Font:Bold:12.0" \
+    label.padding_left=10 \
+    label.padding_right=10 \
+    background.drawing=on \
     script="$PLUGIN_DIR/date.sh" \
     click_script="$PLUGIN_DIR/click_calendar.sh"
 
-# Separator
-sketchybar --add item sep0 right \
-  --set sep0 \
-    icon.drawing=off \
-    label=│ \
-    label.color=$WHITE_50 \
-    label.font="Hack Nerd Font:Regular:12.0" \
-    label.padding_left=0 \
-    label.padding_right=0
-
-# Clock
 sketchybar --add item clock right \
   --set clock \
     update_freq=10 \
-    icon="$ICON_CLOCK" \
-    icon.color=$ACCENT_LIGHT \
-    icon.font="Hack Nerd Font:Bold:14.0" \
-    icon.padding_left=8 \
-    icon.padding_right=4 \
-    label.padding_left=0 \
-    label.padding_right=8 \
+    icon.drawing=off \
+    label.font="Hack Nerd Font:Bold:12.0" \
+    label.padding_left=10 \
+    label.padding_right=10 \
+    background.drawing=on \
     script="$PLUGIN_DIR/clock.sh" \
     click_script="$PLUGIN_DIR/click_clock.sh"
 
-# Separator
-sketchybar --add item sep1 right \
-  --set sep1 \
-    icon.drawing=off \
-    label=│ \
-    label.color=$WHITE_50 \
-    label.font="Hack Nerd Font:Regular:12.0" \
-    label.padding_left=0 \
-    label.padding_right=0
-
-# Battery
 sketchybar --add item battery right \
   --set battery \
     update_freq=120 \
-    icon.color=$ACCENT_LIGHT \
+    icon.color=$WHITE \
     icon.font="Hack Nerd Font:Bold:16.0" \
-    icon.padding_left=8 \
+    icon.padding_left=10 \
     icon.padding_right=4 \
     label.font="Hack Nerd Font:Bold:11.0" \
     label.padding_left=0 \
-    label.padding_right=8 \
+    label.padding_right=10 \
+    background.drawing=on \
     script="$PLUGIN_DIR/battery.sh" \
     click_script="$PLUGIN_DIR/click_battery.sh" \
   --subscribe battery system_woke power_source_change
 
-# Separator
-sketchybar --add item sep2 right \
-  --set sep2 \
-    icon.drawing=off \
-    label=│ \
-    label.color=$WHITE_50 \
-    label.font="Hack Nerd Font:Regular:12.0" \
-    label.padding_left=0 \
-    label.padding_right=0
+sketchybar --add item wifi right \
+  --set wifi \
+    icon="$ICON_WIFI" \
+    icon.color=$WHITE \
+    icon.font="Hack Nerd Font:Bold:14.0" \
+    icon.padding_left=10 \
+    icon.padding_right=10 \
+    label.drawing=off \
+    background.drawing=on \
+    click_script="open 'x-apple.systempreferences:com.apple.Network-Settings.extension'"
 
-# Volume (rightmost in right island)
 sketchybar --add item volume right \
   --set volume \
     icon="$ICON_VOLUME" \
-    icon.color=$ACCENT_LIGHT \
+    icon.color=$WHITE \
     icon.font="Hack Nerd Font:Bold:14.0" \
-    icon.padding_left=8 \
-    icon.padding_right=4 \
-    label.font="Hack Nerd Font:Bold:11.0" \
-    label.padding_left=0 \
-    label.padding_right=8 \
+    icon.padding_left=10 \
+    icon.padding_right=10 \
+    label.drawing=off \
+    background.drawing=on \
     scroll_texts=off \
     script="$PLUGIN_DIR/volume.sh" \
     click_script="$PLUGIN_DIR/click_sound.sh" \
-  --subscribe volume volume_change mouse.scrolled \
-  --set volume scroll_up_script="$PLUGIN_DIR/volume_up.sh" \
-               scroll_down_script="$PLUGIN_DIR/volume_down.sh"
-
-# Right island background bracket
-sketchybar --add bracket right_island volume sep2 battery sep1 clock sep0 date \
-  --set right_island \
-    background.drawing=on \
-    background.color=$GLASS_BG \
-    background.border_color=$GLASS_BORDER \
-    background.border_width=1 \
-    background.corner_radius=14 \
-    background.height=28 \
-    background.blur_radius=50 \
-    background.shadow.drawing=on \
-    background.shadow.color=$ISLAND_SHADOW \
-    background.shadow.distance=3 \
-    background.shadow.angle=90
+  --subscribe volume volume_change
 
 ##### Initialize #####
 sketchybar --update
