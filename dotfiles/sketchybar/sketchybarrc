@@ -36,6 +36,7 @@ ICON_NUMERIC=""    # fa-hashtag (for generic workspaces)
 # Fully transparent bar - islands provide their own backgrounds
 sketchybar --bar \
   position=top \
+  topmost=window \
   height=40 \
   color=$TRANSPARENT \
   shadow=off \
@@ -45,6 +46,11 @@ sketchybar --bar \
   y_offset=4 \
   corner_radius=0 \
   blur_radius=0
+
+if command -v sketchybar-toggle >/dev/null 2>&1; then
+  pkill -x sketchybar-toggle 2>/dev/null || true
+  sketchybar-toggle &
+fi
 
 ##### Defaults #####
 default=(

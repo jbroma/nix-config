@@ -92,6 +92,9 @@ in
 
   homebrew = {
     enable = true;
+    brews = [
+      "malpern/tap/sketchybar-toggle"
+    ];
     casks = [
       "android-studio"
       "claude"
@@ -238,6 +241,20 @@ in
     ensure_app_link "1Password"
     ensure_app_link "Slack"
     ensure_app_link "Openscreen"
+
+    sketchybar_homebrew_bin="/opt/homebrew/bin/sketchybar"
+    sketchybar_nix_bin="/etc/profiles/per-user/${user.username}/bin/sketchybar"
+    if [ -d /opt/homebrew/bin ] && [ -x "$sketchybar_nix_bin" ]; then
+      if [ ! -e "$sketchybar_homebrew_bin" ]; then
+        ln -s "$sketchybar_nix_bin" "$sketchybar_homebrew_bin"
+      elif [ -L "$sketchybar_homebrew_bin" ]; then
+        case "$(readlink "$sketchybar_homebrew_bin")" in
+          /etc/profiles/per-user/*/bin/sketchybar)
+            ln -sf "$sketchybar_nix_bin" "$sketchybar_homebrew_bin"
+            ;;
+        esac
+      fi
+    fi
   '';
 
   # dnsmasq config

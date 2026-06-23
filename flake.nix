@@ -17,6 +17,10 @@
       url = "github:nikitabobko/homebrew-tap";
       flake = false;
     };
+    homebrew-malpern = {
+      url = "github:malpern/homebrew-tap";
+      flake = false;
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -99,11 +103,15 @@
                 mutableTaps = false;
                 taps = {
                   "nikitabobko/homebrew-tap" = inputs.homebrew-nikitabobko;
+                  "malpern/homebrew-tap" = inputs.homebrew-malpern;
                 };
               };
             }
             {
-              homebrew.taps = [ "nikitabobko/tap" ];
+              homebrew.taps = [
+                "nikitabobko/tap"
+                "malpern/tap"
+              ];
             }
             {
               nixpkgs.overlays = [
