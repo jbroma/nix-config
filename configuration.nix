@@ -101,7 +101,7 @@ in
       "codex-app"
       "cursor"
       "nikitabobko/tap/aerospace"
-      "wezterm"
+      "wezterm@nightly"
       "zed"
     ];
     onActivation = {
@@ -203,6 +203,16 @@ in
     remove_nix_app_link "Cursor"
     remove_nix_app_link "WezTerm"
     remove_nix_app_link "Zed"
+
+    brew_as_user() {
+      sudo --user=${user.username} --set-home /opt/homebrew/bin/brew "$@"
+    }
+
+    if [ -x /opt/homebrew/bin/brew ] \
+      && brew_as_user list --cask wezterm >/dev/null 2>&1 \
+      && ! brew_as_user list --cask wezterm@nightly >/dev/null 2>&1; then
+      brew_as_user uninstall --cask wezterm
+    fi
   '';
 
   system.activationScripts.postActivation.text = lib.mkAfter ''

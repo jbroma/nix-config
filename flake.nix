@@ -105,13 +105,13 @@
                 enableRosetta = false;
                 mutableTaps = false;
                 taps = {
-                  "nikitabobko/tap" = inputs.homebrew-nikitabobko;
+                  "nikitabobko/homebrew-tap" = inputs.homebrew-nikitabobko;
                 };
               };
             }
-            ({ config, ... }: {
-              homebrew.taps = builtins.attrNames config.nix-homebrew.taps;
-            })
+            {
+              homebrew.taps = [ "nikitabobko/tap" ];
+            }
             {
               nixpkgs.overlays = [
                 (_: super: {
