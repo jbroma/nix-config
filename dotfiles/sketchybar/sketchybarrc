@@ -78,13 +78,6 @@ sketchybar --add item apple left \
     label.drawing=off \
     click_script="open -a 'System Settings'"
 
-# Spacer between islands
-sketchybar --add item spacer_left left \
-  --set spacer_left \
-    icon.drawing=off \
-    label.drawing=off \
-    width=8
-
 ##### Left Island 2: Workspaces #####
 sketchybar --add event aerospace_workspace_change
 
