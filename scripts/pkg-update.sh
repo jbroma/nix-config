@@ -7,19 +7,13 @@ usage() {
 Usage: ./scripts/pkg-update.sh [--no-verify]
 
 Updates every custom package in pkgs/ with explicit source handlers:
-  - android-studio
   - claude-code
-  - claude-desktop
-  - cleanshot-x
-  - codex-app
   - codex-cli
-  - cursor
   - maestro-studio
   - minisim
   - spotify
   - vite-plus
   - worktrunk
-  - zed-editor
 
 By default, runs:
   nix build .#darwinConfigurations.personal.system --no-link
@@ -54,10 +48,6 @@ prefetch_sri() {
   prefetch_json "$url" "$@" | jq -r '.hash'
 }
 
-sri_to_nix32() {
-  nix hash convert --from sri --to nix32 "$1"
-}
-
 sri_to_hex() {
   nix hash convert --from sri --to base16 "$1"
 }
@@ -72,45 +62,6 @@ cleanup_empty_dir() {
   local dir=$1
   if [[ -d "$dir" ]]; then
     rmdir "$dir" 2>/dev/null || true
-  fi
-}
-
-extract_first_match() {
-  local pattern=$1
-  local input=$2
-  printf '%s' "$input" | rg -o "$pattern" | head -n 1
-}
-
-extract_android_studio_stable_release_path() {
-  local input=$1
-  local release_path
-
-  release_path=$(printf '%s' "$input" | perl -0ne '
-    if (m{id="agree-button__studio_mac_arm_bundle_download"[^>]*href="https://[^"]+/android/studio/install/([0-9]{4}(?:\.[0-9]+){3}/android-studio-[[:alnum:]-]+-mac_arm\.dmg)"}s) {
-      print "$1\n";
-      exit;
-    }
-
-    if (m{href="https://[^"]+/android/studio/install/([0-9]{4}(?:\.[0-9]+){3}/android-studio-[[:alnum:]-]+-mac_arm\.dmg)"[^>]*id="agree-button__studio_mac_arm_bundle_download"}s) {
-      print "$1\n";
-      exit;
-    }
-  ')
-
-  if [[ -z "$release_path" ]]; then
-    echo "error: failed to locate stable Android Studio Mac ARM download link" >&2
-    exit 1
-  fi
-
-  printf '%s\n' "$release_path"
-}
-
-ensure_android_studio_stable_dmg() {
-  local dmg_name=$1
-
-  if [[ "$dmg_name" =~ (canary|beta|rc|preview|alpha) ]]; then
-    echo "error: resolved Android Studio preview artifact (${dmg_name}); stable channel only" >&2
-    exit 1
   fi
 }
 
@@ -188,28 +139,6 @@ update_simple_sri() {
   log_status "$name" "$before" "$latest"
 }
 
-update_simple_nix32() {
-  local name=$1
-  local file=$2
-  local latest=$3
-  local url=$4
-  local sri
-  local hash
-  local before
-
-  prepare_update "$name" "$file" "$latest" "$url" || return 0
-  before=$_pkg_update_before
-  sri=$(prefetch_sri "$url")
-  hash=$(sri_to_nix32 "$sri")
-
-  VERSION="$latest" SHA256="$hash" replace_in_file "$file" '
-    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
-    s/sha256 = "[^"]+";/sha256 = "$ENV{SHA256}";/;
-  '
-
-  log_status "$name" "$before" "$latest"
-}
-
 update_simple_hex() {
   local name=$1
   local file=$2
@@ -232,31 +161,6 @@ update_simple_hex() {
   log_status "$name" "$before" "$latest"
 }
 
-update_android_studio() {
-  local file="pkgs/android-studio.nix"
-  local page release_path latest dmg_name url sri hash before
-
-  page=$(curl -fsSL https://developer.android.com/studio/releases)
-  release_path=$(extract_android_studio_stable_release_path "$page")
-  latest=${release_path#install/}
-  latest=${latest%%/*}
-  dmg_name=${release_path##*/}
-  ensure_android_studio_stable_dmg "$dmg_name"
-  url="https://redirector.gvt1.com/edgedl/android/studio/install/${latest}/${dmg_name}"
-  prepare_update "android-studio" "$file" "$latest" "$url" || return 0
-  before=$_pkg_update_before
-  sri=$(prefetch_sri "$url")
-  hash=$(sri_to_hex "$sri")
-
-  VERSION="$latest" DMG_NAME="$dmg_name" SHA256="$hash" replace_in_file "$file" '
-    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
-    s/dmgName = "[^"]+";/dmgName = "$ENV{DMG_NAME}";/;
-    s/sha256 = "[^"]+";/sha256 = "$ENV{SHA256}";/;
-  '
-
-  log_status "android-studio" "$before" "$latest"
-}
-
 update_claude_code() {
   local file="pkgs/claude-code.nix"
   local latest url
@@ -267,52 +171,6 @@ update_claude_code() {
   update_simple_sri "claude-code" "$file" "$latest" "$url"
 }
 
-update_claude_desktop() {
-  REPO_ROOT="$repo_root" bash "$repo_root/scripts/update-claude-desktop.sh"
-}
-
-update_cleanshot_x() {
-  local file="pkgs/cleanshot-x.nix"
-  local page latest url sri hash before
-
-  page=$(curl -fsSL https://cleanshot.com/changelog)
-  latest=$(printf '%s' "$page" | perl -ne 'if (/class="number"[^>]*>([0-9]+(?:\.[0-9]+){1,2})</) { print "$1\n"; exit }')
-  url="https://updates.getcleanshot.com/v3/CleanShot-X-${latest}.dmg"
-  prepare_update "cleanshot-x" "$file" "$latest" "$url" || return 0
-  before=$_pkg_update_before
-  sri=$(prefetch_sri "$url")
-  hash=$(sri_to_hex "$sri")
-
-  VERSION="$latest" SHA256="$hash" replace_in_file "$file" '
-    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
-    s/sha256 = "[^"]+";/sha256 = "$ENV{SHA256}";/;
-  '
-
-  log_status "cleanshot-x" "$before" "$latest"
-}
-
-update_codex_app() {
-  local file="pkgs/codex-app.nix"
-  local ts url json hash store_path before actual
-
-  ts=$(date +%s)
-  url="https://persistent.oaistatic.com/codex-app-prod/Codex.dmg?ts=${ts}"
-  ensure_url_exists "$url"
-  json=$(prefetch_json "$url" --refresh)
-  hash=$(printf '%s' "$json" | jq -r '.hash')
-  store_path=$(printf '%s' "$json" | jq -r '.storePath')
-  before=$(current_version "$file")
-
-  actual=$(read_dmg_info_plist_key "$store_path" "Codex.app" "CFBundleShortVersionString")
-
-  VERSION="$actual" HASH="$hash" replace_in_file "$file" '
-    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
-    s/hash = "sha256-[^"]+";/hash = "$ENV{HASH}";/;
-  '
-
-  log_status "codex-app" "$before" "$actual"
-}
-
 update_codex_cli() {
   local file="pkgs/codex-cli.nix"
   local latest url
@@ -320,44 +178,6 @@ update_codex_cli() {
   latest=$(gh api repos/openai/codex/releases/latest --jq '.tag_name' | sed 's/^rust-v//')
   url="https://github.com/openai/codex/releases/download/rust-v${latest}/codex-aarch64-apple-darwin.tar.gz"
   update_simple_sri "codex-cli" "$file" "$latest" "$url"
-}
-
-update_cursor() {
-  local file="pkgs/cursor.nix"
-  local response latest url json hash before current_url
-
-  response=$(curl -fsSL "https://www.cursor.com/api/download?platform=darwin-arm64&releaseTrack=latest")
-  latest=$(printf '%s' "$response" | jq -r '.version')
-  url=$(printf '%s' "$response" | jq -r '.downloadUrl')
-
-  if [[ -z "$latest" || "$latest" == "null" || -z "$url" || "$url" == "null" ]]; then
-    echo "error: failed to resolve Cursor release metadata" >&2
-    exit 1
-  fi
-
-  before=$(current_version "$file")
-  current_url=$(rg -o 'url = "https://downloads\.cursor\.com/production/[^"]+"' "$file" | head -n 1 | sed -E 's/.*"([^"]+)"/\1/')
-
-  if [[ "$before" == "$latest" && "$current_url" == "$url" ]]; then
-    log_status "cursor" "$before" "$latest"
-    return 0
-  fi
-
-  ensure_url_exists "$url"
-  json=$(prefetch_json "$url" --refresh)
-  hash=$(printf '%s' "$json" | jq -r '.hash')
-
-  VERSION="$latest" URL="$url" HASH="$hash" replace_in_file "$file" '
-    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
-    s|url = "https://downloads\.cursor\.com/production/[^"]+";|url = "$ENV{URL}";|;
-    s/hash = "sha256-[^"]+";/hash = "$ENV{HASH}";/;
-  '
-
-  if [[ "$before" == "$latest" ]]; then
-    printf '  %-15s %s (artifact refreshed)\n' "cursor" "$latest"
-  else
-    log_status "cursor" "$before" "$latest"
-  fi
 }
 
 update_minisim() {
@@ -443,26 +263,6 @@ update_worktrunk() {
   update_simple_sri "worktrunk" "$file" "$latest" "$url"
 }
 
-update_zed_editor() {
-  local file="pkgs/zed-editor.nix"
-  local latest url sri hash before
-
-  latest=$(gh api repos/zed-industries/zed/releases/latest --jq '.tag_name' | sed 's/^v//')
-  url="https://github.com/zed-industries/zed/releases/download/v${latest}/Zed-aarch64.dmg"
-  prepare_update "zed-editor" "$file" "$latest" "$url" || return 0
-  before=$_pkg_update_before
-  sri=$(prefetch_sri "$url")
-  hash=$(sri_to_nix32 "$sri")
-
-  VERSION="$latest" SHA256="$hash" replace_in_file "$file" '
-    s|url = "https://github.com/zed-industries/zed/releases/download/v[^"]+/Zed-aarch64\.dmg";|url = "https://github.com/zed-industries/zed/releases/download/v$ENV{VERSION}/Zed-aarch64.dmg";|;
-    s|sha256 = "[^"]+";|sha256 = "$ENV{SHA256}";|;
-    s|version = "[^"]+";|version = "$ENV{VERSION}";|;
-  '
-
-  log_status "zed-editor" "$before" "$latest"
-}
-
 log_status() {
   local name=$1
   local before=$2
@@ -492,19 +292,13 @@ run_isolated_handler() {
 main() {
   local verify=true
   local update_specs=(
-    "android-studio:update_android_studio"
     "claude-code:update_claude_code"
-    "claude-desktop:update_claude_desktop"
-    "cleanshot-x:update_cleanshot_x"
-    "codex-app:update_codex_app"
     "codex-cli:update_codex_cli"
-    "cursor:update_cursor"
     "minisim:update_minisim"
     "maestro-studio:update_maestro_studio"
     "spotify:update_spotify"
     "vite-plus:update_vite_plus"
     "worktrunk:update_worktrunk"
-    "zed-editor:update_zed_editor"
   )
   local failed_steps=()
   local spec name handler status
