@@ -1,6 +1,8 @@
 {
 	"base_keymap": "VSCode",
 	"theme": "GitHub Dark",
+	"diff_view_style": "unified",
+	"double_click_in_multibuffer": "open",
 	"preview_tabs": {
 		"enabled": false
 	},
