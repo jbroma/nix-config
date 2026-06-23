@@ -41,7 +41,7 @@
       accordion-padding = 30;
 
       # Possible values: tiles|accordion
-      default-root-container-layout = "tiles";
+      default-root-container-layout = "accordion";
 
       # Possible values: horizontal|vertical|auto
       # 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
