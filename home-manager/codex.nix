@@ -39,13 +39,13 @@ let
   );
   codexSettings = {
     model = "gpt-5.5";
-    model_personality = "pragmatic";
+    personality = "pragmatic";
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
     sandbox_mode = "workspace-write";
     model_reasoning_effort = "high";
-    model_reasoning_summary = "concise";
-    model_verbosity = "high";
+    model_reasoning_summary = "auto";
+    model_verbosity = "low";
     web_search = "live";
     file_opener = "cursor";
 
