@@ -9,7 +9,7 @@
 
 let
   homeAssistantMcpUrl = "http://homeassistant.internal:8123/api/mcp";
-  homeAssistantTokenRef = "op://Personal/Home Assistant MCP/token";
+  homeAssistantKeychainService = "homeassistant-mcp-token";
 
   sharedMcpServers = {
     context7 = {
@@ -52,13 +52,19 @@ let
       args = [
         "-lc"
         ''
-          homeassistant_token_ref="''${HOMEASSISTANT_TOKEN_REF:-${homeAssistantTokenRef}}"
-          homeassistant_token="$(
-            OP_BIOMETRIC_UNLOCK_ENABLED=true ${pkgs._1password-cli}/bin/op read "$homeassistant_token_ref"
-          )"
+          homeassistant_token="''${HOMEASSISTANT_TOKEN:-}"
 
           if [ -z "$homeassistant_token" ]; then
-            echo "Home Assistant MCP token is empty; check $homeassistant_token_ref" >&2
+            keychain_service="''${HOMEASSISTANT_KEYCHAIN_SERVICE:-${homeAssistantKeychainService}}"
+            keychain_account="''${HOMEASSISTANT_KEYCHAIN_ACCOUNT:-$USER}"
+            homeassistant_token="$(/usr/bin/security find-generic-password \
+              -s "$keychain_service" \
+              -a "$keychain_account" \
+              -w 2>/dev/null || true)"
+          fi
+
+          if [ -z "$homeassistant_token" ]; then
+            echo "Home Assistant MCP token not found in HOMEASSISTANT_TOKEN or macOS Keychain service $keychain_service" >&2
             exit 1
           fi
 
