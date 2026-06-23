@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  type,
   ai,
   enableAi ? true,
   ...
@@ -39,6 +40,11 @@
     wsmancli
     zellij
   ];
+
+  home.sessionVariables = lib.mkIf (type == "work") {
+    PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+  };
 
   home.stateVersion = "25.11";
 
