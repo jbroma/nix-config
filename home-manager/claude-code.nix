@@ -149,10 +149,6 @@ in
           allowLocalBinding = true;
         };
       };
-      statusLine = {
-        type = "command";
-        command = "wt list statusline --format=claude-code";
-      };
     };
   };
 }

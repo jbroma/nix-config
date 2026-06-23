@@ -123,7 +123,6 @@
                   });
                   maestro-studio = customPkgs.maestro-studio;
                   wsmancli = customPkgs.wsmancli;
-                  worktrunk = customPkgs.worktrunk;
                   vite-plus = customPkgs.vite-plus;
                 })
                 inputs.nix-vscode-extensions.overlays.default

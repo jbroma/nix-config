@@ -14,7 +14,6 @@
     zsh-you-should-use
   ];
 
-  home.file.".zsh/worktrunk-clone.zsh".source = ../dotfiles/zsh/worktrunk-clone.zsh;
   home.file.".zsh/mise-project-config.zsh".source = ../dotfiles/zsh/mise-project-config.zsh;
 
   programs.zsh = {
@@ -36,7 +35,6 @@
       bindkey "^[[1;5D" backward-word      # Ctrl+Left Arrow
 
       source "${config.home.homeDirectory}/.zsh/mise-project-config.zsh"
-      source "${config.home.homeDirectory}/.zsh/worktrunk-clone.zsh"
     '';
 
     profileExtra = ''
@@ -53,10 +51,6 @@
       darwin-cleanup = "sudo nix-collect-garbage --delete-older-than 7d";
       flake-update = "(cd ~/.nix && nix flake update)";
       code = "cursor";
-      # Worktrunk switch
-      wsc = "wt switch --create";
-      # Worktrunk remove worktree
-      wrm = "wt remove --foreground --force";
     };
 
     plugins = [

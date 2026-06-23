@@ -71,7 +71,6 @@ in
         podman
         orbstack
         yq-go
-        remarshal
         # libs
         libyaml
       ]

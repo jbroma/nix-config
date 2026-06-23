@@ -38,7 +38,6 @@
     watchman
     wsmancli
     zellij
-    worktrunk
   ];
 
   home.stateVersion = "25.11";
@@ -65,7 +64,6 @@
     ./home-manager/ollama.nix
     ./home-manager/vite-plus.nix
     ./home-manager/zed.nix
-    ./home-manager/worktrunk.nix
   ]
   ++ lib.optionals enableAi [
     ./home-manager/cursor.nix

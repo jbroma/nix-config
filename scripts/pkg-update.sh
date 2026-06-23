@@ -12,7 +12,6 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - maestro-studio
   - minisim
   - vite-plus
-  - worktrunk
 
 By default, runs:
   nix build .#darwinConfigurations.personal.system --no-link
@@ -182,15 +181,6 @@ update_vite_plus() {
   update_simple_sri "vite-plus" "$file" "$latest" "$url"
 }
 
-update_worktrunk() {
-  local file="pkgs/worktrunk.nix"
-  local latest url
-
-  latest=$(gh api repos/max-sixty/worktrunk/releases/latest --jq '.tag_name' | sed 's/^v//')
-  url="https://github.com/max-sixty/worktrunk/releases/download/v${latest}/worktrunk-aarch64-apple-darwin.tar.xz"
-  update_simple_sri "worktrunk" "$file" "$latest" "$url"
-}
-
 log_status() {
   local name=$1
   local before=$2
@@ -225,7 +215,6 @@ main() {
     "minisim:update_minisim"
     "maestro-studio:update_maestro_studio"
     "vite-plus:update_vite_plus"
-    "worktrunk:update_worktrunk"
   )
   local failed_steps=()
   local spec name handler status
