@@ -85,6 +85,7 @@ in
         cloudflared
         doppler
         gh-poi
+        gnutar
         go
         google-cloud-sdk
         pinact
