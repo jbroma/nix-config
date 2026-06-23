@@ -1,6 +1,53 @@
 {
 	"base_keymap": "VSCode",
 	"theme": "GitHub Dark",
+	"preview_tabs": {
+		"enabled": false
+	},
+	"focus_follows_mouse": {
+		"enabled": true
+	},
+	"toolbar": {
+		"code_actions": false,
+		"agent_review": false,
+		"selections_menu": false,
+		"quick_actions": false,
+		"breadcrumbs": false
+	},
+	"status_bar": {
+		"show_active_file": false,
+		"cursor_position_button": false,
+		"active_language_button": false
+	},
+	"tab_bar": {
+		"show_nav_history_buttons": false,
+		"show_tab_bar_buttons": false,
+		"show_pinned_tabs_in_separate_row": false,
+		"show": false
+	},
+	"scrollbar": {
+		"axes": {
+			"horizontal": false
+		},
+		"diagnostics": "error",
+		"git_diff": false,
+		"show": "never"
+	},
+	"minimap": {
+		"current_line_highlight": "all",
+		"thumb": "hover",
+		"show": "always"
+	},
+	"diagnostics": {
+		"button": true,
+		"lsp_pull_diagnostics": {
+			"debounce_ms": 90
+		},
+		"inline": {
+			"enabled": true
+		},
+		"include_warnings": true
+	},
 	"buffer_font_family": "Hack Nerd Font",
 	"buffer_font_size": 12,
 	"buffer_font_features": {
