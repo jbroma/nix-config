@@ -78,9 +78,21 @@ in
       ++ lib.optionals (type == "personal") [
         obsidian
       ]
-      # Work-only app managed by Nix.
+      # Work-only tools and apps managed by Nix.
       ++ lib.optionals (type == "work") [
+        air
+        caddy
+        cloudflared
+        doppler
+        gh-poi
+        go
+        google-cloud-sdk
+        pinact
+        pulumi
+        sentry-cli
         slack
+        similarity
+        usql
       ];
 
     variables = {
