@@ -53,7 +53,6 @@ in
         lmstudio
         _1password-gui
         minisim
-        spotify
         git
         oh-my-posh
         nerd-fonts.fira-code
@@ -101,6 +100,7 @@ in
       "codex-app"
       "cursor"
       "nikitabobko/tap/aerospace"
+      "spotify"
       "wezterm@nightly"
       "zed"
     ];
@@ -203,6 +203,11 @@ in
     remove_nix_app_link "Cursor"
     remove_nix_app_link "WezTerm"
     remove_nix_app_link "Zed"
+
+    spotify_update_dir="/Users/${user.username}/Library/Application Support/Spotify/PersistentCache/Update"
+    if [ -e "$spotify_update_dir" ]; then
+      /usr/bin/chflags -R nouchg "$spotify_update_dir" 2>/dev/null || true
+    fi
 
     brew_as_user() {
       sudo --user=${user.username} --set-home /opt/homebrew/bin/brew "$@"

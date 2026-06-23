@@ -59,7 +59,6 @@
     ./home-manager/pnpm.nix
     ./home-manager/delta.nix
     ./home-manager/ripgrep.nix
-    ./home-manager/spotify.nix
     ./home-manager/sketchybar.nix
     ./home-manager/aerospace.nix
     ./home-manager/mcp-servers.nix

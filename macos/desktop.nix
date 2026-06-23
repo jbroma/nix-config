@@ -29,7 +29,7 @@
       "/Applications/Cursor.app"
       "/Applications/Zed.app"
       "/Applications/Codex.app"
-      "/Applications/Nix Apps/Spotify.app"
+      "/Applications/Spotify.app"
       "/Applications/Discord.app"
     ]
     ++ (

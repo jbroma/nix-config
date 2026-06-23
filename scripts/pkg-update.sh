@@ -11,7 +11,6 @@ Updates every custom package in pkgs/ with explicit source handlers:
   - codex-cli
   - maestro-studio
   - minisim
-  - spotify
   - vite-plus
   - worktrunk
 
@@ -58,50 +57,9 @@ replace_in_file() {
   perl -0pi -e "$script" "$file"
 }
 
-cleanup_empty_dir() {
-  local dir=$1
-  if [[ -d "$dir" ]]; then
-    rmdir "$dir" 2>/dev/null || true
-  fi
-}
-
 current_version() {
   local file=$1
   rg -o 'version = "[^"]+"' "$file" | head -n 1 | sed -E 's/.*"([^"]+)"/\1/'
-}
-
-current_sri_hash() {
-  local file=$1
-  rg -o 'hash = "sha256-[^"]+"' "$file" | head -n 1 | sed -E 's/.*"(sha256-[^"]+)"/\1/'
-}
-
-read_dmg_info_plist_key() {
-  local dmg_path=$1
-  local app_name=$2
-  local key=$3
-  local tmp mount app_bundle value
-
-  tmp=$(mktemp -d)
-  mount="$tmp/mnt"
-  mkdir -p "$mount"
-
-  trap 'hdiutil detach "$mount" >/dev/null 2>&1 || true; cleanup_empty_dir "$mount"; cleanup_empty_dir "$tmp"' RETURN
-  hdiutil attach -mountpoint "$mount" -nobrowse -quiet "$dmg_path"
-  app_bundle="$mount/${app_name}"
-  if [[ ! -f "$app_bundle/Contents/Info.plist" ]]; then
-    app_bundle=$(find "$mount" -maxdepth 3 -type d -name "$app_name" -print -quit)
-  fi
-  if [[ -z "$app_bundle" || ! -f "$app_bundle/Contents/Info.plist" ]]; then
-    echo "error: failed to locate ${app_name}/Contents/Info.plist in ${dmg_path}" >&2
-    exit 1
-  fi
-  value=$(/usr/libexec/PlistBuddy -c "Print :${key}" "$app_bundle/Contents/Info.plist")
-  hdiutil detach "$mount" >/dev/null 2>&1 || true
-  cleanup_empty_dir "$mount"
-  cleanup_empty_dir "$tmp"
-  trap - RETURN
-
-  printf '%s\n' "$value"
 }
 
 prepare_update() {
@@ -215,36 +173,6 @@ update_maestro_studio() {
   log_status "maestro-studio" "$before" "$latest"
 }
 
-update_spotify() {
-  local file="pkgs/spotify.nix"
-  local url json hash store_path before current_hash actual
-
-  url="https://download.scdn.co/SpotifyARM64.dmg"
-  ensure_url_exists "$url"
-  json=$(prefetch_json "$url" --refresh)
-  hash=$(printf '%s' "$json" | jq -r '.hash')
-  store_path=$(printf '%s' "$json" | jq -r '.storePath')
-  before=$(current_version "$file")
-  current_hash=$(current_sri_hash "$file")
-  actual=$(read_dmg_info_plist_key "$store_path" "Spotify.app" "CFBundleVersion")
-
-  if [[ "$before" == "$actual" && "$current_hash" == "$hash" ]]; then
-    log_status "spotify" "$before" "$actual"
-    return 0
-  fi
-
-  VERSION="$actual" HASH="$hash" replace_in_file "$file" '
-    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
-    s/hash = "sha256-[^"]+";/hash = "$ENV{HASH}";/;
-  '
-
-  if [[ "$before" == "$actual" ]]; then
-    printf '  %-15s %s (artifact refreshed)\n' "spotify" "$actual"
-  else
-    log_status "spotify" "$before" "$actual"
-  fi
-}
-
 update_vite_plus() {
   local file="pkgs/vite-plus.nix"
   local latest url
@@ -296,7 +224,6 @@ main() {
     "codex-cli:update_codex_cli"
     "minisim:update_minisim"
     "maestro-studio:update_maestro_studio"
-    "spotify:update_spotify"
     "vite-plus:update_vite_plus"
     "worktrunk:update_worktrunk"
   )
@@ -323,7 +250,6 @@ main() {
 
   require_cmd curl
   require_cmd gh
-  require_cmd hdiutil
   require_cmd jq
   require_cmd nix
   require_cmd perl

@@ -45,7 +45,6 @@
         "orbstack"
         "raycast"
         "slack"
-        "spotify"
         "vscode-extension-mhutchie-git-graph"
       ];
       allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfreePackages;
@@ -123,7 +122,6 @@
                         old.installPhase;
                   });
                   maestro-studio = customPkgs.maestro-studio;
-                  spotify = customPkgs.spotify;
                   wsmancli = customPkgs.wsmancli;
                   worktrunk = customPkgs.worktrunk;
                   vite-plus = customPkgs.vite-plus;

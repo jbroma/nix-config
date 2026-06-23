@@ -47,7 +47,7 @@ flake.nix                    # Entry point - two configs: work, personal
 
 - `specialArgs = { inherit type user; }` passes profile type (work/personal) and user info to all modules
 - Custom packages in `./pkgs/` are auto-loaded via `mapAttrs'` over the directory
-- Overlays substitute custom packages such as the archived Spotify ARM64 build
+- Overlays substitute custom packages such as Claude Code, Codex CLI, and Worktrunk
 
 ## AI Integration
 
@@ -61,6 +61,12 @@ The `ai/` directory is a Nix flake input providing shared configuration for AI c
 Cursor's Agents Window reads project instructions from the active workspace, such as root `AGENTS.md` and `.cursor/rules/*.mdc`. Global personal rules are Cursor User Rules configured through Cursor Settings > Rules; home-level `~/.cursor/rules/*.mdc` files are not a reliable injected prompt source for the Agents Window.
 
 The `ai` input is also symlinked to `~/.nix/ai` for visibility (in `home.nix`).
+
+## Git Workflow
+
+- Before committing, inspect recent history and match the existing subject style.
+- Commit messages use `area: short summary`, such as `homebrew: move apps to Homebrew`; do not default to Conventional Commits (`chore:`, `fix:`, etc.) unless the local history has already moved to that style.
+- Keep commits signed. If signing fails, retry with escalation rather than bypassing signing.
 
 ## Nix-Specific Notes
 
