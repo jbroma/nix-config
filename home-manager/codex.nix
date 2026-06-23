@@ -55,7 +55,7 @@ let
       shell_tool = true;
       shell_snapshot = true;
       unified_exec = true;
-      computer_use = false;
+      computer_use = true;
       multi_agent = true;
     };
 
