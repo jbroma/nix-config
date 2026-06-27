@@ -12,6 +12,10 @@ run = "nix build --no-link .#darwinConfigurations.work.system"
 description = "Update flake inputs"
 run = "nix flake update"
 
+[tasks.homebrew-upgrade]
+description = "Upgrade installed Homebrew packages"
+run = "brew upgrade --greedy"
+
 [tasks.ai-update]
 description = "Update ai flake input submodule to latest"
 run = "nix flake update ai"
