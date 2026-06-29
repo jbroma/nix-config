@@ -1,5 +1,6 @@
 {
   lib,
+  config,
   pkgs,
   type,
   ai,
@@ -19,6 +20,7 @@
     bun
     delta
     fd
+    fontconfig
     fzf
     gh
     jq
@@ -41,10 +43,24 @@
     zellij
   ];
 
-  home.sessionVariables = lib.mkIf (type == "work") {
+  home.sessionVariables = {
+    FONTCONFIG_FILE = "${config.xdg.configHome}/fontconfig/fonts.conf";
+  }
+  // lib.optionalAttrs (type == "work") {
     PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
   };
+
+  fonts.fontconfig.enable = true;
+  xdg.configFile."fontconfig/fonts.conf".text = ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+      <include>${pkgs.fontconfig.out}/etc/fonts/fonts.conf</include>
+      <include ignore_missing="yes">${config.xdg.configHome}/fontconfig/conf.d</include>
+      <dir>/Library/Fonts/Nix Fonts</dir>
+    </fontconfig>
+  '';
 
   home.stateVersion = "25.11";
 
