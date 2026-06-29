@@ -37,6 +37,7 @@ let
       fi
     '') installPlugins
   );
+  codeFontFamily = ''"Hack Nerd Font Mono", "FiraCode Nerd Font Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace'';
   codexSettings = {
     model = "gpt-5.5";
     personality = "pragmatic";
@@ -73,6 +74,11 @@ let
       animations = true;
       show_tooltips = false;
       notifications = true;
+    };
+
+    desktop = {
+      appearanceDarkChromeTheme.fonts.code = codeFontFamily;
+      appearanceLightChromeTheme.fonts.code = codeFontFamily;
     };
 
     mcp_servers = codexMcpServers;
