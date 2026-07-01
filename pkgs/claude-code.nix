@@ -9,13 +9,13 @@
   procps,
 }:
 let
-  version = "2.1.195";
+  version = "2.1.197";
 
   # Platform-specific sources from manifest.json
   sources = {
     "aarch64-darwin" = {
       url = "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/${version}/darwin-arm64/claude";
-      hash = "sha256-i0WtrZPzNquV8z5xRJSxn9M3eklOsFwSLIZ3vIlYdq0=";
+      hash = "sha256-jMDE0eTrHco7DMkqsC7jUF3nZOAj+MkBdhwWe3IEH7g=";
     };
   };
 
