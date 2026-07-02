@@ -83,6 +83,40 @@ let
     ) claudeIntegrations.marketplaces
   );
   installPluginArgs = lib.concatMapStringsSep " " lib.escapeShellArg installPlugins;
+  claudeSettings = {
+    "$schema" = "https://json.schemastore.org/claude-code-settings.json";
+    # Pin Opus with the 1M context window and require confirmation before switching on flagged requests.
+    model = "opus[1m]";
+    switchModelsOnFlag = false;
+    # Keep extended thinking enabled.
+    alwaysThinkingEnabled = true;
+    # Claude-specific environment configuration belongs in settings.json.
+    env = {
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
+      ENABLE_TOOL_SEARCH = "true";
+      CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
+    };
+    attribution = {
+      commit = "";
+      pr = "";
+    };
+    # Permission rules from ai submodule.
+    permissions = permissions;
+    # Enabled plugins combine existing mutable plugin state with ai-sauce desired integrations.
+    enabledPlugins = enabledPlugins;
+    # Marketplaces are declared in ai-sauce/integrations/plugins.json.
+    extraKnownMarketplaces = extraKnownMarketplaces;
+    hooks = hookDefinitions;
+    sandbox = {
+      enabled = true;
+      excludedCommands = [ "git" ];
+      autoAllowBashIfSandboxed = true;
+      network = {
+        allowLocalBinding = true;
+      };
+    };
+  };
+  claudeSettingsFile = pkgs.writeText "claude-code-settings.json" (builtins.toJSON claudeSettings);
 in
 {
   # Claude Code symlinks (read-only, from ai submodule)
@@ -102,48 +136,35 @@ in
       "${pkgs.jq}/bin/jq"
   '';
 
+  # Claude mutates settings.json, so keep it writable while refreshing managed keys.
+  home.activation.setupClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    settings="${config.home.homeDirectory}/.claude/settings.json"
+    tmp="$settings.tmp"
+
+    mkdir -p "${config.home.homeDirectory}/.claude"
+    if [ -e "$settings" ] || [ -L "$settings" ]; then
+      "${pkgs.jq}/bin/jq" -s '.[0] * .[1]' "$settings" "${claudeSettingsFile}" > "$tmp"
+    else
+      cp "${claudeSettingsFile}" "$tmp"
+    fi
+    mv "$tmp" "$settings"
+  '';
+
   # Plugin setup: seeds mutable plugin state and installs missing plugins.
   # Uses direct marketplace symlinks since Claude Code only resolves one level.
-  home.activation.setupClaudePlugins = lib.hm.dag.entryAfter [ "setupMcpServers" ] ''
-    ${githubMarketplaceCommands}
-    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${aiSauceMarketplacePath}" ${installPluginArgs}
-  '';
+  home.activation.setupClaudePlugins =
+    lib.hm.dag.entryAfter
+      [
+        "setupClaudeSettings"
+        "setupMcpServers"
+      ]
+      ''
+        ${githubMarketplaceCommands}
+        PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${aiSauceMarketplacePath}" ${installPluginArgs}
+      '';
 
   programs.claude-code = {
     enable = true;
     package = pkgs.claude-code;
-    settings = {
-      "$schema" = "https://json.schemastore.org/claude-code-settings.json";
-      # Pin Opus with the 1M context window and require confirmation before switching on flagged requests.
-      model = "opus[1m]";
-      switchModelsOnFlag = false;
-      # Keep extended thinking enabled.
-      alwaysThinkingEnabled = true;
-      # Claude-specific environment configuration belongs in settings.json.
-      env = {
-        CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
-        ENABLE_TOOL_SEARCH = "true";
-        CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
-      };
-      attribution = {
-        commit = "";
-        pr = "";
-      };
-      # Permission rules from ai submodule.
-      permissions = permissions;
-      # Enabled plugins combine existing mutable plugin state with ai-sauce desired integrations.
-      enabledPlugins = enabledPlugins;
-      # Marketplaces are declared in ai-sauce/integrations/plugins.json.
-      extraKnownMarketplaces = extraKnownMarketplaces;
-      hooks = hookDefinitions;
-      sandbox = {
-        enabled = true;
-        excludedCommands = [ "git" ];
-        autoAllowBashIfSandboxed = true;
-        network = {
-          allowLocalBinding = true;
-        };
-      };
-    };
   };
 }
