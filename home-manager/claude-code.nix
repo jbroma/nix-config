@@ -20,10 +20,7 @@ let
       hookDefinitionsRaw;
   hookDefinitions = builtins.fromJSON hookDefinitionsResolved;
 
-  # Read permissions from ai submodule + enable classifier-backed auto mode by default
-  permissions = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json") // {
-    defaultMode = "auto";
-  };
+  permissions = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json");
 
   # Path to dotfiles in this repo (for mutable symlinks)
   dotfilesDir = "${config.home.homeDirectory}/.nix/dotfiles";
@@ -120,7 +117,6 @@ in
       # Pin Opus with the 1M context window and require confirmation before switching on flagged requests.
       model = "opus[1m]";
       switchModelsOnFlag = false;
-      effortLevel = "xhigh";
       # Keep extended thinking enabled.
       alwaysThinkingEnabled = true;
       # Claude-specific environment configuration belongs in settings.json.
@@ -133,9 +129,8 @@ in
         commit = "";
         pr = "";
       };
-      # Default permissions from ai submodule + classifier-backed auto mode
+      # Permission rules from ai submodule.
       permissions = permissions;
-      skipAutoPermissionPrompt = true;
       # Enabled plugins combine existing mutable plugin state with ai-sauce desired integrations.
       enabledPlugins = enabledPlugins;
       # Marketplaces are declared in ai-sauce/integrations/plugins.json.
