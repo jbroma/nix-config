@@ -38,6 +38,33 @@ let
       mcpServers = cursorMcpServers;
     }
   );
+  cursorAgentSources = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".toml" name) (
+    builtins.readDir "${ai}/agents"
+  );
+  cursorAgentFiles = lib.mapAttrs' (
+    filename: _:
+    let
+      agentName = lib.removeSuffix ".toml" filename;
+      agent = builtins.fromTOML (builtins.readFile "${ai}/agents/${filename}");
+      readonly = (agent.sandbox_mode or "") == "read-only";
+    in
+    {
+      name = ".cursor/agents/${agentName}.md";
+      value = {
+        force = true;
+        text = ''
+          ---
+          name: ${builtins.toJSON (agent.name or agentName)}
+          description: ${builtins.toJSON (agent.description or "")}
+          model: inherit
+          readonly: ${if readonly then "true" else "false"}
+          ---
+
+          ${agent.developer_instructions or ""}
+        '';
+      };
+    }
+  ) cursorAgentSources;
 
   cursorExtensions =
     (with pkgs.vscode-marketplace; [
@@ -91,7 +118,19 @@ in
   home.file = {
     ".cursor/mcp.json".source = cursorMcpConfigFile;
     ".cursor/skills".source = "${ai}/skills";
+    ".cursor/rules/core.mdc" = {
+      force = true;
+      text = ''
+        ---
+        description: Shared personal instructions from ai-sauce CORE.md
+        alwaysApply: true
+        ---
+
+        ${builtins.readFile "${ai}/CORE.md"}
+      '';
+    };
   }
+  // cursorAgentFiles
   // builtins.listToAttrs extensionLinks;
 
   # Keep Cursor settings mutable while applying Nix-managed settings on switch.
