@@ -11,9 +11,6 @@
       source = ../dotfiles/sketchybar;
       recursive = true;
     };
-    extraPackages = [
-      pkgs.aerospace
-    ];
     service = {
       enable = true;
     };

@@ -84,7 +84,6 @@ sketchybar --add event aerospace_workspace_change
 # Workspace icons based on app assignments
 ICON_FOLDER=""    # fa-folder
 
-declare -A WORKSPACE_ICONS
 WORKSPACE_ICONS=(
   [1]="$ICON_TERMINAL"  # Terminal
   [2]="$ICON_GLOBE"     # Chrome/Safari
