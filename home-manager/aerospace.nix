@@ -18,14 +18,14 @@
       # 'after-startup-command' is run after 'after-login-command'
       # Available commands : https://nikitabobko.github.io/AeroSpace/commands
       after-startup-command = [
-        "exec-and-forget ${pkgs.sketchybar}/bin/sketchybar --reload"
+        "exec-and-forget /opt/homebrew/bin/sketchybar --reload"
       ];
 
       # Notify Sketchybar about workspace change
       exec-on-workspace-change = [
         "/bin/bash"
         "-c"
-        "${pkgs.sketchybar}/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
+        "/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
       ];
 
       # nix-darwin launches the Homebrew-managed app bundle.

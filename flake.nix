@@ -21,6 +21,10 @@
       url = "github:malpern/homebrew-tap";
       flake = false;
     };
+    homebrew-felixkratz = {
+      url = "github:FelixKratz/homebrew-formulae";
+      flake = false;
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -102,6 +106,7 @@
                 enableRosetta = false;
                 mutableTaps = false;
                 taps = {
+                  "felixkratz/homebrew-formulae" = inputs.homebrew-felixkratz;
                   "nikitabobko/homebrew-tap" = inputs.homebrew-nikitabobko;
                   "malpern/homebrew-tap" = inputs.homebrew-malpern;
                 };
@@ -109,6 +114,7 @@
             }
             {
               homebrew.taps = [
+                "felixkratz/formulae"
                 "nikitabobko/tap"
                 "malpern/tap"
               ];
