@@ -28,7 +28,7 @@
       "/Applications/WezTerm.app"
       "/Applications/Cursor.app"
       "/Applications/Zed.app"
-      "/Applications/Codex.app"
+      "/Applications/ChatGPT.app"
       "/Applications/Spotify.app"
       "/Applications/Discord.app"
     ]

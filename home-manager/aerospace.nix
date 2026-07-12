@@ -107,8 +107,8 @@
           run = "move-node-to-workspace 3";
         }
         {
-          # Codex
-          "if".app-id = "com.openai.codex";
+          # ChatGPT
+          "if".app-id = "com.openai.chat";
           run = "move-node-to-workspace 3";
         }
         {

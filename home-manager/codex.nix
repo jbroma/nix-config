@@ -16,9 +16,16 @@ let
   ) config.mcp.servers;
   integrationConfig = builtins.fromJSON (builtins.readFile "${ai}/integrations/plugins.json");
   codexIntegrations = integrationConfig.codex;
-  codexMarketplaces = lib.mapAttrs (
-    _: marketplace: builtins.removeAttrs marketplace [ "add" ]
-  ) codexIntegrations.marketplaces;
+  codexMarketplaces =
+    lib.mapAttrs (
+      _: marketplace: builtins.removeAttrs marketplace [ "add" ]
+    ) codexIntegrations.marketplaces
+    // {
+      openai-bundled = {
+        source_type = "local";
+        source = "/Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled";
+      };
+    };
   codexPlugins = lib.mapAttrs (_: plugin: {
     enabled = plugin.enabled or false;
   }) codexIntegrations.plugins;

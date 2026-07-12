@@ -110,9 +110,9 @@ in
     ];
     casks = [
       "android-studio"
+      "chatgpt"
       "claude"
       "cleanshot"
-      "codex-app"
       "cursor"
       "nikitabobko/tap/aerospace"
       "spotify"
@@ -212,6 +212,7 @@ in
     }
 
     remove_nix_app_link "Android Studio"
+    remove_nix_app_link "ChatGPT"
     remove_nix_app_link "Claude"
     remove_nix_app_link "CleanShot X"
     remove_nix_app_link "Codex"
@@ -227,6 +228,11 @@ in
     brew_as_user() {
       sudo --user=${user.username} --set-home /opt/homebrew/bin/brew "$@"
     }
+
+    if [ -x /opt/homebrew/bin/brew ] \
+      && brew_as_user list --cask codex-app >/dev/null 2>&1; then
+      brew_as_user uninstall --cask codex-app
+    fi
 
     if [ -x /opt/homebrew/bin/brew ] \
       && brew_as_user list --cask wezterm >/dev/null 2>&1 \
