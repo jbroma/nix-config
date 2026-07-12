@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+ulimit -n 4096
+
 if /run/current-system/sw/bin/darwin-rebuild switch --flake "${1:?usage: rebuild-and-switch.sh <flake-ref>}"; then
   exit 0
 fi
