@@ -93,6 +93,7 @@ in
         sentry-cli
         slack
         similarity
+        tuist
         usql
       ];
 
