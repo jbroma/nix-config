@@ -120,6 +120,9 @@ in
       "spotify"
       "wezterm@nightly"
       "zed"
+    ]
+    ++ lib.optionals (type == "personal") [
+      "nordvpn"
     ];
     onActivation = {
       autoUpdate = false;
