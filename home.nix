@@ -14,34 +14,39 @@
     source = ai;
   };
   # List packages you want to install for your user only.
-  home.packages = with pkgs; [
-    # dev
-    bat
-    bun
-    delta
-    fd
-    fontconfig
-    fzf
-    gh
-    jq
-    htop
-    eza
-    mise
-    maestro
-    pnpm
-    ripgrep
-    sd
-    # sketchybar # gets installed on it's own when using home-manager integration
-    tree
-    choose
-    curlie
-    nil
-    typescript-language-server
-    uv
-    watchman
-    wsmancli
-    zellij
-  ];
+  home.packages =
+    with pkgs;
+    [
+      # dev
+      bat
+      bun
+      delta
+      fd
+      fontconfig
+      fzf
+      gh
+      jq
+      htop
+      eza
+      mise
+      maestro
+      pnpm
+      ripgrep
+      sd
+      # sketchybar # gets installed on it's own when using home-manager integration
+      tree
+      choose
+      curlie
+      nil
+      typescript-language-server
+      uv
+      watchman
+      wsmancli
+      zellij
+    ]
+    ++ lib.optionals (type == "personal") [
+      railway
+    ];
 
   home.sessionVariables = {
     FONTCONFIG_FILE = "${config.xdg.configHome}/fontconfig/fonts.conf";
