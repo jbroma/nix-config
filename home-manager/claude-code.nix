@@ -92,7 +92,8 @@ let
     alwaysThinkingEnabled = true;
     # Claude-specific environment configuration belongs in settings.json.
     env = {
-      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
+      DISABLE_AUTOUPDATER = "1";
+      CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
       ENABLE_TOOL_SEARCH = "true";
       CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
     };
@@ -143,7 +144,7 @@ in
 
     mkdir -p "${config.home.homeDirectory}/.claude"
     if [ -e "$settings" ] || [ -L "$settings" ]; then
-      "${pkgs.jq}/bin/jq" -s '.[0] * .[1]' "$settings" "${claudeSettingsFile}" > "$tmp"
+      "${pkgs.jq}/bin/jq" -s 'del(.[0].env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC) | .[0] * .[1]' "$settings" "${claudeSettingsFile}" > "$tmp"
     else
       cp "${claudeSettingsFile}" "$tmp"
     fi
