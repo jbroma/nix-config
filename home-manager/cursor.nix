@@ -91,7 +91,6 @@ let
     ])
     ++ (with pkgs.vscode-extensions; [
       biomejs.biome
-      oxc.oxc-vscode
       vadimcn.vscode-lldb
       unifiedjs.vscode-mdx
     ]);
