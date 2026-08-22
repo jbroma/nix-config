@@ -76,6 +76,28 @@ in
       ]
       # Work machines have these apps installed outside Nix.
       ++ lib.optionals (type == "personal") [
+        (writeShellScriptBin "airdrop-homelab-ca" ''
+          CA=${./homelab-ca.crt}
+
+          if ! osascript -l JavaScript -e '
+          ObjC.import("AppKit");
+          const svc = $.NSSharingService.sharingServiceNamed($.NSSharingServiceNameSendViaAirDrop);
+          svc.performWithItems($([$.NSURL.fileURLWithPath("'"$CA"'")]));
+          '; then
+            open "$HOME/homelab-backups/ca"
+            echo "AirDrop picker failed. Opened ~/homelab-backups/ca; AirDrop ca.crt from Finder."
+            exit 1
+          fi
+
+          cat <<'EOF'
+          Sent. On the iPhone:
+          1. Accept the AirDrop, choose "Save to Files" is WRONG - tap the downloaded
+             profile notification, or open Settings -> General -> VPN & Device Management
+             and install the "Orion Homelab CA" profile.
+          2. Then Settings -> General -> About -> Certificate Trust Settings ->
+             enable full trust for "Orion Homelab CA".
+          EOF
+        '')
         obsidian
       ]
       # Work-only tools and apps managed by Nix.
@@ -171,10 +193,14 @@ in
     cleanshot-x = mkLaunchAgent "/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
   };
 
-  # enable touch id for sudo
-  security.pam.services.sudo_local = {
-    touchIdAuth = true;
-    reattach = true;
+  security = {
+    pki.certificateFiles = lib.optionals (type == "personal") [ ./homelab-ca.crt ];
+
+    # enable touch id for sudo
+    pam.services.sudo_local = {
+      touchIdAuth = true;
+      reattach = true;
+    };
   };
 
   # macos preferences
@@ -255,26 +281,35 @@ in
     fi
   '';
 
-  system.activationScripts.postActivation.text = lib.mkAfter ''
-    ensure_app_link() {
-      nix_app="/Applications/Nix Apps/$1.app"
-      app_link="/Applications/$1.app"
+  system.activationScripts.postActivation.text = lib.mkAfter (
+    ''
+      ensure_app_link() {
+        nix_app="/Applications/Nix Apps/$1.app"
+        app_link="/Applications/$1.app"
 
-      if [ -e "$nix_app" ]; then
-        if [ -L "$app_link" ]; then
-          rm -f "$app_link"
-          ln -s "$nix_app" "$app_link"
-        elif [ ! -e "$app_link" ]; then
-          ln -s "$nix_app" "$app_link"
+        if [ -e "$nix_app" ]; then
+          if [ -L "$app_link" ]; then
+            rm -f "$app_link"
+            ln -s "$nix_app" "$app_link"
+          elif [ ! -e "$app_link" ]; then
+            ln -s "$nix_app" "$app_link"
+          fi
         fi
-      fi
-    }
+      }
 
-    ensure_app_link "Google Chrome"
-    ensure_app_link "1Password"
-    ensure_app_link "Slack"
-    ensure_app_link "Openscreen"
-  '';
+      ensure_app_link "Google Chrome"
+      ensure_app_link "1Password"
+      ensure_app_link "Slack"
+      ensure_app_link "Openscreen"
+    ''
+    + lib.optionalString (type == "personal") ''
+      homelab_ca=${./homelab-ca.crt}
+      if ! /usr/bin/security verify-cert -c "$homelab_ca" >/dev/null 2>&1; then
+        /usr/bin/security add-trusted-cert -d -r trustRoot \
+          -k /Library/Keychains/System.keychain "$homelab_ca"
+      fi
+    ''
+  );
 
   # dnsmasq config
   services.dnsmasq.enable = true;
