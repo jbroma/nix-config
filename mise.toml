@@ -16,6 +16,10 @@ run = "nix flake update"
 description = "Upgrade installed Homebrew packages"
 run = "brew upgrade --greedy"
 
+[tasks.ca]
+description = "Send the homelab CA certificate with OpenDrop"
+run = "./scripts/airdrop-homelab-ca.sh"
+
 [tasks.ai-update]
 description = "Update ai flake input submodule to latest"
 run = "nix flake update ai"

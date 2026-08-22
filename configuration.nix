@@ -76,28 +76,7 @@ in
       ]
       # Work machines have these apps installed outside Nix.
       ++ lib.optionals (type == "personal") [
-        (writeShellScriptBin "airdrop-homelab-ca" ''
-          CA=${./homelab-ca.crt}
-
-          if ! osascript -l JavaScript -e '
-          ObjC.import("AppKit");
-          const svc = $.NSSharingService.sharingServiceNamed($.NSSharingServiceNameSendViaAirDrop);
-          svc.performWithItems($([$.NSURL.fileURLWithPath("'"$CA"'")]));
-          '; then
-            open "$HOME/homelab-backups/ca"
-            echo "AirDrop picker failed. Opened ~/homelab-backups/ca; AirDrop ca.crt from Finder."
-            exit 1
-          fi
-
-          cat <<'EOF'
-          Sent. On the iPhone:
-          1. Accept the AirDrop, choose "Save to Files" is WRONG - tap the downloaded
-             profile notification, or open Settings -> General -> VPN & Device Management
-             and install the "Orion Homelab CA" profile.
-          2. Then Settings -> General -> About -> Certificate Trust Settings ->
-             enable full trust for "Orion Homelab CA".
-          EOF
-        '')
+        opendrop
         obsidian
       ]
       # Work-only tools and apps managed by Nix.
