@@ -2,6 +2,7 @@
   lib,
   python3Packages,
   libarchive,
+  perl,
 }:
 
 python3Packages.buildPythonApplication rec {
@@ -18,6 +19,10 @@ python3Packages.buildPythonApplication rec {
     python3Packages.setuptools
   ];
 
+  nativeBuildInputs = [
+    perl
+  ];
+
   dependencies = with python3Packages; [
     fleep
     ifaddr
@@ -32,6 +37,12 @@ python3Packages.buildPythonApplication rec {
     substituteInPlace opendrop/config.py \
       --replace-fail "from pkg_resources import resource_filename" "from importlib.resources import files" \
       --replace-fail 'resource_filename("opendrop", "certs/apple_root_ca.pem")' 'str(files("opendrop").joinpath("certs/apple_root_ca.pem"))'
+
+    perl -0pi -e 's/return ipaddress\.IPv6Address\(\n\s+ip\.ip\[0\]\n\s+\)  # first of \(ip, flowinfo, scope_id\) tuple/return ipaddress.IPv6Address(f"{ip.ip[0]}%{interface_name}")/' \
+      opendrop/util.py
+
+    perl -0pi -e 's/(\n    def remove_service\(self, zeroconf, service_type, name\):)/\n    def update_service(self, zeroconf, service_type, name):\n        self.add_service(zeroconf, service_type, name)\n\1/' \
+      opendrop/client.py
   '';
 
   makeWrapperArgs = [
