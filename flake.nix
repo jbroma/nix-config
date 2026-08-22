@@ -136,7 +136,6 @@
                         old.installPhase;
                   });
                   maestro-studio = customPkgs.maestro-studio;
-                  opendrop = customPkgs.opendrop;
                   wsmancli = customPkgs.wsmancli;
                   vite-plus = customPkgs.vite-plus;
                 })

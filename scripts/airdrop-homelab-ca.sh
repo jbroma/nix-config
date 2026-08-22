@@ -3,108 +3,85 @@ set -eu
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 ca="$repo_root/homelab-ca.crt"
-scan_seconds=${OPENDROP_SCAN_SECONDS:-12}
 
 if [ ! -f "$ca" ]; then
   echo "Missing CA certificate: $ca" >&2
   exit 1
 fi
 
-if ! command -v opendrop >/dev/null 2>&1; then
+if [ ! -x /usr/bin/swiftc ]; then
   cat >&2 <<'EOF'
-Missing dependency: opendrop
+Missing dependency: /usr/bin/swiftc
 
-Apply the personal Nix configuration so the custom opendrop package is on PATH,
-then rerun:
-  darwin-rebuild-switch
+Install Apple's command line tools, then rerun:
+  xcode-select --install
 EOF
-  exit 1
-fi
-
-if ! command -v fzf >/dev/null 2>&1; then
-  echo "Missing dependency: fzf" >&2
   exit 1
 fi
 
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/homelab-ca-airdrop.XXXXXX")
-find_log="$tmp_dir/opendrop-find.log"
-receivers="$tmp_dir/receivers.tsv"
-
-stop_find() {
-  if [ "${find_pid:-}" ]; then
-    kill -INT "$find_pid" >/dev/null 2>&1 || true
-    tries=0
-    while kill -0 "$find_pid" >/dev/null 2>&1; do
-      tries=$((tries + 1))
-      if [ "$tries" -ge 10 ]; then
-        kill -TERM "$find_pid" >/dev/null 2>&1 || true
-        break
-      fi
-      sleep 0.2
-    done
-    wait "$find_pid" >/dev/null 2>&1 || true
-    find_pid=
-  fi
-}
+swift_file="$tmp_dir/AirDropShare.swift"
+swift_bin="$tmp_dir/airdrop-share"
 
 cleanup() {
-  stop_find
   rm -rf "$tmp_dir"
 }
 trap cleanup EXIT INT TERM
 
-echo "Scanning for AirDrop receivers for ${scan_seconds}s..."
-/usr/bin/open "airdrop:" >/dev/null 2>&1 || true
-opendrop find >"$find_log" 2>&1 &
-find_pid=$!
-sleep "$scan_seconds"
-stop_find
+cat >"$swift_file" <<'SWIFT'
+import AppKit
+import Darwin
 
-awk '
-  /^Found[[:space:]]+index[[:space:]]+[0-9]+[[:space:]]+ID[[:space:]]+/ {
-    id = $5
-    name = ""
-    for (i = 7; i <= NF; i++) {
-      name = name (name ? " " : "") $i
-    }
-    if (!seen[id]++) {
-      print id "\t" name
-    }
+final class Delegate: NSObject, NSSharingServiceDelegate {
+  var status: Int32 = 0
+
+  func sharingService(_ sharingService: NSSharingService, didShareItems items: [Any]) {
+    print("AirDrop share completed")
+    status = 0
+    NSApplication.shared.stop(nil)
   }
-' "$find_log" >"$receivers"
 
-if [ ! -s "$receivers" ]; then
-  cat >&2 <<EOF
-No AirDrop receivers found.
+  func sharingService(_ sharingService: NSSharingService, didFailToShareItems items: [Any], error: Error) {
+    fputs("AirDrop share failed: \(error.localizedDescription)\n", stderr)
+    status = 1
+    NSApplication.shared.stop(nil)
+  }
+}
 
-OpenDrop output:
-$(cat "$find_log")
+let path = CommandLine.arguments[1]
 
-On the iPhone, make sure AirDrop is visible and try again:
-  OPENDROP_SCAN_SECONDS=20 mise run ca
-EOF
-  exit 1
-fi
+guard FileManager.default.fileExists(atPath: path) else {
+  fputs("File does not exist: \(path)\n", stderr)
+  exit(1)
+}
 
-selected=$(
-  fzf \
-    --prompt="AirDrop target> " \
-    --delimiter="$(printf '\t')" \
-    --with-nth=2,1 \
-    --header="Select the iPhone to receive homelab-ca.crt" \
-    <"$receivers" || true
-)
+guard let service = NSSharingService(named: .sendViaAirDrop) else {
+  fputs("AirDrop sharing service is unavailable\n", stderr)
+  exit(2)
+}
 
-if [ -z "$selected" ]; then
-  echo "No AirDrop target selected." >&2
-  exit 1
-fi
+let app = NSApplication.shared
+let delegate = Delegate()
+let url = URL(fileURLWithPath: path)
 
-receiver_id=${selected%%	*}
-receiver_name=${selected#*	}
+app.setActivationPolicy(.regular)
+service.delegate = delegate
 
-echo "Sending homelab-ca.crt to $receiver_name ($receiver_id)..."
-opendrop send -r "$receiver_id" -f "$ca"
+Timer.scheduledTimer(withTimeInterval: 300, repeats: false) { _ in
+  fputs("AirDrop share timed out after 300 seconds\n", stderr)
+  delegate.status = 124
+  NSApplication.shared.stop(nil)
+}
+
+app.activate(ignoringOtherApps: true)
+service.perform(withItems: [url])
+app.run()
+exit(delegate.status)
+SWIFT
+
+echo "Opening native AirDrop picker for homelab-ca.crt..."
+/usr/bin/swiftc "$swift_file" -o "$swift_bin"
+"$swift_bin" "$ca"
 
 cat <<'EOF'
 Sent. On the iPhone:

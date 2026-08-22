@@ -76,7 +76,6 @@ in
       ]
       # Work machines have these apps installed outside Nix.
       ++ lib.optionals (type == "personal") [
-        opendrop
         obsidian
       ]
       # Work-only tools and apps managed by Nix.
