@@ -6,12 +6,14 @@
   fetchurl,
 }:
 let
-  version = "0.147.0";
+  version = "0.149.0";
 
+  # codex-package bundles codex plus the codex-code-mode-host helper and
+  # resources (rg, zsh) that codex resolves relative to its own binary.
   sources = {
     "aarch64-darwin" = {
-      url = "https://github.com/openai/codex/releases/download/rust-v${version}/codex-aarch64-apple-darwin.tar.gz";
-      hash = "sha256-dZhLgfkqcbDA9LO1ytgOXFcXfk2Mi0seE9twOyDcQ1g=";
+      url = "https://github.com/openai/codex/releases/download/rust-v${version}/codex-package-aarch64-apple-darwin.tar.gz";
+      hash = "sha256-bHWJpS/pDjdC41ZiEVpMVcOXFWAd8NQTRbqOyPQiHU4=";
     };
   };
 
@@ -32,9 +34,9 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/bin
-    cp codex-aarch64-apple-darwin $out/bin/codex
-    chmod +x $out/bin/codex
+    mkdir -p $out
+    cp -R bin codex-path codex-resources codex-package.json $out/
+    chmod +x $out/bin/* $out/codex-path/* $out/codex-resources/zsh/bin/*
 
     runHook postInstall
   '';

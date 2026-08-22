@@ -133,7 +133,7 @@ update_codex_cli() {
   local latest url
 
   latest=$(gh api repos/openai/codex/releases/latest --jq '.tag_name' | sed 's/^rust-v//')
-  url="https://github.com/openai/codex/releases/download/rust-v${latest}/codex-aarch64-apple-darwin.tar.gz"
+  url="https://github.com/openai/codex/releases/download/rust-v${latest}/codex-package-aarch64-apple-darwin.tar.gz"
   update_simple_sri "codex-cli" "$file" "$latest" "$url"
 }
 
