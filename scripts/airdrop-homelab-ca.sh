@@ -54,6 +54,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "Scanning for AirDrop receivers for ${scan_seconds}s..."
+/usr/bin/open "airdrop:" >/dev/null 2>&1 || true
 opendrop find >"$find_log" 2>&1 &
 find_pid=$!
 sleep "$scan_seconds"
