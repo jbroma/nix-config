@@ -47,7 +47,7 @@ let
       pr = "";
     };
     # Permission rules from ai submodule.
-    permissions = permissions;
+    inherit permissions;
     hooks = hookDefinitions;
     sandbox = {
       enabled = true;
