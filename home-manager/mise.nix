@@ -28,8 +28,6 @@ in
         java = "temurin-17";
         python = "3.12";
         rust = "1.88";
-        # Not in nixpkgs; needs Node 22.12+ (the lts above).
-        "npm:agent-device" = "latest";
       };
 
       settings = {

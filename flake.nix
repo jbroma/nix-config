@@ -124,6 +124,7 @@
                 (_: super: {
                   # xcode = pkgs.darwin.xcode_26;
                   agent-browser = customPkgs.agent-browser;
+                  agent-device = customPkgs.agent-device;
                   minisim = customPkgs.minisim;
                   claude-code = customPkgs.claude-code;
                   codex-cli = customPkgs.codex-cli;

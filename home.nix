@@ -19,6 +19,7 @@
     [
       # dev
       agent-browser
+      agent-device
       bat
       bun
       delta
