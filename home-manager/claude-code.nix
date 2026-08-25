@@ -41,7 +41,6 @@ let
       DISABLE_AUTOUPDATER = "1";
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
       ENABLE_TOOL_SEARCH = "true";
-      CLAUDE_CODE_SUBAGENT_MODEL = "sonnet";
     };
     attribution = {
       commit = "";
@@ -81,7 +80,8 @@ in
   '';
 
   # Claude mutates settings.json, so keep it writable while refreshing managed keys.
-  # Objects deep-merge, which would keep removed hook events alive, so `hooks` is replaced wholesale.
+  # Objects deep-merge, which would keep removed hook events and env vars alive,
+  # so the fully-managed `hooks` and `env` objects are replaced wholesale.
   home.activation.setupClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     settings="${config.home.homeDirectory}/.claude/settings.json"
     tmp="$settings.tmp"
@@ -89,8 +89,8 @@ in
     mkdir -p "${config.home.homeDirectory}/.claude"
     if [ -e "$settings" ] || [ -L "$settings" ]; then
       "${pkgs.jq}/bin/jq" -s '.[1] as $managed
-        | del(.[0].env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, .[0].extraKnownMarketplaces["ai-sauce"])
-        | (.[0] * $managed) | .hooks = $managed.hooks' "$settings" "${claudeSettingsFile}" > "$tmp"
+        | del(.[0].extraKnownMarketplaces["ai-sauce"])
+        | (.[0] * $managed) | .hooks = $managed.hooks | .env = $managed.env' "$settings" "${claudeSettingsFile}" > "$tmp"
     else
       cp "${claudeSettingsFile}" "$tmp"
     fi
