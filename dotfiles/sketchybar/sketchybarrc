@@ -10,6 +10,8 @@ source "$CONFIG_DIR/theme.sh"
 ##### Bar Appearance #####
 # The bar itself is invisible. Two glass islands float on it, left and right,
 # so the centre stays empty for the MacBook notch.
+# blur_radius only applies to the bar's own (transparent) background; windows
+# never reach under the islands anyway, so the glass is all in glass_island.
 sketchybar --bar \
   position=top \
   topmost=window \
@@ -21,27 +23,49 @@ sketchybar --bar \
   margin=0 \
   y_offset=0
 
-island=(
-  background.drawing=on
-  background.color=$ISLAND_FILL
-  background.border_color=$ISLAND_RIM
-  background.border_width=1
-  background.height=32
-  background.corner_radius=16
-  blur_radius=64
-  background.shadow.drawing=on
-  background.shadow.color=0x59000000
-  background.shadow.angle=90
-  background.shadow.distance=4
-)
-
-# Helpers that outlive this script: restart them on every (re)load.
-if command -v sketchybar-toggle >/dev/null 2>&1; then
-  pkill -x sketchybar-toggle 2>/dev/null || true
-  sketchybar-toggle >/dev/null 2>&1 &
-fi
-pkill -f aerospace_events.sh 2>/dev/null || true
-"$PLUGIN_DIR/aerospace_events.sh" >/dev/null 2>&1 &
+# glass_island NAME MEMBER... : stack five brackets around the same items.
+# sketchybar has no gradients or inner shadows, so the glass is built from layers:
+# base fill + drop shadow, two smaller translucent layers aligned to the top edge
+# (a brightness gradient), and two offset hairline rims (lit top, shaded bottom).
+glass_island() {
+  local name=$1
+  shift
+  local layer
+  for layer in "$name" "$name.glow1" "$name.glow2" "$name.hi" "$name.lo"; do
+    sketchybar --add bracket "$layer" "$@" \
+      --set "$layer" \
+        background.drawing=on \
+        background.color=0x00000000 \
+        background.border_width=0 \
+        background.height=32 \
+        background.corner_radius=16
+  done
+  sketchybar \
+    --set "$name" \
+      background.color=$ISLAND_FILL \
+      background.shadow.drawing=on \
+      background.shadow.color=$ISLAND_SHADOW \
+      background.shadow.angle=90 \
+      background.shadow.distance=4 \
+    --set "$name.glow1" \
+      background.color=$ISLAND_GLOW \
+      background.height=22 \
+      background.corner_radius=11 \
+      background.y_offset=5 \
+    --set "$name.glow2" \
+      background.color=$ISLAND_GLOW \
+      background.height=12 \
+      background.corner_radius=6 \
+      background.y_offset=10 \
+    --set "$name.hi" \
+      background.border_width=1 \
+      background.border_color=$ISLAND_RIM_HI \
+      background.y_offset=1 \
+    --set "$name.lo" \
+      background.border_width=1 \
+      background.border_color=$ISLAND_RIM_LO \
+      background.y_offset=-1
+}
 
 ##### Defaults #####
 # Items sit directly on the island glass. background.* is only switched on for
@@ -114,8 +138,7 @@ sketchybar --add item front_app left \
     script="$PLUGIN_DIR/front_app.sh" \
   --subscribe front_app front_app_switched
 
-sketchybar --add bracket island.left apple "${WORKSPACES[@]/#/space.}" front_app \
-  --set island.left "${island[@]}"
+glass_island island.left apple "${WORKSPACES[@]/#/space.}" front_app
 
 ##### Right (added right-to-left) #####
 sketchybar --add item calendar right \
@@ -154,8 +177,7 @@ sketchybar --add item volume right \
     click_script="$PLUGIN_DIR/click_sound.sh" \
   --subscribe volume volume_change mouse.scrolled
 
-sketchybar --add bracket island.right volume wifi battery calendar \
-  --set island.right "${island[@]}"
+glass_island island.right volume wifi battery calendar
 
 ##### Initialize #####
 sketchybar --update

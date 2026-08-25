@@ -1,10 +1,15 @@
 #!/bin/bash
 # Palette, fonts and workspace icons shared by sketchybarrc and the plugins.
 
-# Liquid glass: light frosted capsules over the blurred wallpaper, a bright rim,
-# and nothing drawn inside them except the focused workspace's capsule.
-ISLAND_FILL=0x2effffff
-ISLAND_RIM=0x59ffffff
+# Liquid glass islands (see glass_island in sketchybarrc): a frosted base, two
+# translucent layers hugging the top edge for a top-to-bottom gradient, a bright
+# hairline rim nudged up and a dark one nudged down for a lit top / shaded bottom.
+ISLAND_FILL=0x1fffffff
+ISLAND_GLOW=0x0fffffff
+ISLAND_RIM_HI=0x8cffffff
+ISLAND_RIM_LO=0x33000000
+ISLAND_SHADOW=0x66000000
+# The focused workspace's capsule inside the island.
 FOCUS_FILL=0x47ffffff
 WHITE=0xffffffff
 WHITE_90=0xe6ffffff
