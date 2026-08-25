@@ -38,9 +38,11 @@ in
     target = sockLink;
   };
 
+  # IdentityAgent covers clients that never see SSH_AUTH_SOCK (git in Cursor, Zed).
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
+    matchBlocks."*".identityAgent = sockPath;
   };
 
   programs.git = {
