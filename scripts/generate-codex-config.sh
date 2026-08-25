@@ -2,13 +2,14 @@
 
 set -euo pipefail
 
-if [ "$#" -ne 2 ]; then
-  echo "usage: $0 <base-config-path> <yq-bin>" >&2
+if [ "$#" -ne 3 ]; then
+  echo "usage: $0 <base-config-path> <mcp-secrets.tsv> <yq-bin>" >&2
   exit 1
 fi
 
 base_config="$1"
-yq_bin="$2"
+secrets_tsv="$2"
+yq_bin="$3"
 config_dir="$HOME/.codex"
 config_file="$config_dir/config.toml"
 developer_dir="$HOME/Developer"
@@ -49,6 +50,16 @@ fi
 "$yq_bin" eval-all -p=toml -o=json \
   '. as $item ireduce ({}; . * $item)' \
   "${merge_inputs[@]}" > "$merged_config"
+
+# Keychain-backed MCP headers: <server> <header> <keychain service> <prefix> (tab-separated, prefix may be empty).
+while IFS=$'\t' read -r server header service prefix; do
+  [ -n "$server" ] || continue
+  key="$(/usr/bin/security find-generic-password -s "$service" -a "$USER" -w 2>/dev/null </dev/null || true)"
+  [ -n "$key" ] || continue
+  server="$server" header="$header" value="$prefix$key" "$yq_bin" eval -i -p=json -o=json \
+    '(.mcp_servers[strenv(server)] | select(. != null)).http_headers[strenv(header)] = strenv(value)' \
+    "$merged_config"
+done < "$secrets_tsv"
 
 "$yq_bin" eval -p=json -o=toml \
   'with_entries(select(.value | tag != "!!map")) | sort_keys(.)' \

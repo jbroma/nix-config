@@ -1,5 +1,5 @@
 # MCP Server configuration - Single Source of Truth
-# Other modules (claude-code.nix, gemini.nix, codex.nix) import and format as needed
+# Other modules (claude-code.nix, codex.nix, cursor.nix) import and format as needed
 {
   lib,
   pkgs,
@@ -8,43 +8,76 @@
 }:
 
 let
-  homeAssistantMcpUrl = "http://homeassistant.internal:8123/api/mcp";
-  homeAssistantKeychainService = "homeassistant-mcp-token";
-
-  # Hosted HTTP MCP server whose API key lives in the macOS Keychain
-  # (service = <service>, account = $USER). Bridged over stdio with mcp-proxy so
-  # Claude Code and Codex share one definition and the key never lands in a
-  # config file or the Nix store. Without a key the server connects keyless
-  # unless `required` is set.
-  # Add a key: security add-generic-password -a "$USER" -s <service> -w '<key>' -U
-  keychainHttpServer =
-    {
-      url,
-      service,
-      header ? "Authorization",
-      prefix ? "Bearer ",
-      required ? false,
-    }:
-    {
-      command = "${pkgs.bash}/bin/bash";
-      args = [
-        "-c"
-        ''
-          key="$(/usr/bin/security find-generic-password -s ${service} -a "$USER" -w 2>/dev/null || true)"
-          headers=()
-          if [ -n "$key" ]; then
-            headers=(--headers ${header} "${prefix}$key")
-          elif ${lib.boolToString required}; then
-            echo "Missing API key. Add it with: security add-generic-password -a \"$USER\" -s ${service} -w '<key>' -U" >&2
-            exit 1
-          fi
-          exec ${pkgs.mcp-proxy}/bin/mcp-proxy --transport streamablehttp "''${headers[@]}" "${url}"
-        ''
-      ];
+  # Hosted servers speak HTTP directly (the clients handle reconnects and 5xx).
+  # Their API keys live in the macOS Keychain (service = <service>, account =
+  # $USER) and are injected into the Claude Code, Codex, and Cursor configs at
+  # activation from `mcp.secrets`.
+  sharedMcpServers = {
+    # Web access (ai-sauce CORE.md "Web Access" says which tool does what)
+    context7 = {
+      type = "http";
+      url = "https://mcp.context7.com/mcp";
+    };
+    exa = {
+      type = "http";
+      url = "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa";
+    };
+    firecrawl = {
+      type = "http";
+      url = "https://mcp.firecrawl.dev/v2/mcp";
+    };
+    grep = {
+      type = "http";
+      url = "https://mcp.grep.app";
     };
 
-  # `keychain-mcp sync` copies these 1Password fields into the Keychain services
-  # used above.
+    chrome-devtools = {
+      command = "npx";
+      args = [
+        "-y"
+        "chrome-devtools-mcp@latest"
+      ];
+    };
+    shadcn = {
+      command = "npx";
+      args = [
+        "-y"
+        "shadcn@latest"
+        "mcp"
+      ];
+    };
+  };
+
+  personalMcpServers = {
+    homeassistant = {
+      type = "http";
+      url = "http://homeassistant.internal:8123/api/mcp";
+    };
+  };
+
+  bearer = service: {
+    inherit service;
+    header = "Authorization";
+    prefix = "Bearer ";
+  };
+  sharedSecrets = {
+    context7 = bearer "context7-api-key";
+    exa = {
+      service = "exa-api-key";
+      header = "x-api-key";
+      prefix = "";
+    };
+    firecrawl = bearer "firecrawl-api-key";
+  };
+  personalSecrets = {
+    homeassistant = bearer "homeassistant-mcp-token";
+  };
+
+  personal = type == "personal";
+  servers = sharedMcpServers // lib.optionalAttrs personal personalMcpServers;
+  secrets = sharedSecrets // lib.optionalAttrs personal personalSecrets;
+
+  # `keychain-mcp sync` copies these 1Password fields into the Keychain services above.
   keychainKeys = {
     exa-api-key = "op://Personal/Exa/Personal API Key";
     firecrawl-api-key = "op://Personal/Firecrawl/Personal API Key";
@@ -70,84 +103,29 @@ let
     };
     text = builtins.readFile ../scripts/keychain-mcp.sh;
   };
-
-  sharedMcpServers = {
-    # Web access (ai-sauce CORE.md "Web Access" says which tool does what)
-    context7 = keychainHttpServer {
-      url = "https://mcp.context7.com/mcp";
-      service = "context7-api-key";
-    };
-    exa = keychainHttpServer {
-      url = "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa";
-      service = "exa-api-key";
-      header = "x-api-key";
-      prefix = "";
-    };
-    firecrawl = keychainHttpServer {
-      url = "https://mcp.firecrawl.dev/v2/mcp";
-      service = "firecrawl-api-key";
-    };
-
-    chrome-devtools = {
-      command = "npx";
-      args = [
-        "-y"
-        "chrome-devtools-mcp@latest"
-      ];
-    };
-    shadcn = {
-      command = "npx";
-      args = [
-        "-y"
-        "shadcn@latest"
-        "mcp"
-      ];
-    };
-
-    # Hosted MCP servers (HTTP transport)
-    grep = {
-      type = "http";
-      url = "https://mcp.grep.app";
-    };
-  };
-
-  personalMcpServers = {
-    homeassistant = {
-      command = "${pkgs.bash}/bin/bash";
-      args = [
-        "-lc"
-        ''
-          homeassistant_token="''${HOMEASSISTANT_TOKEN:-}"
-
-          if [ -z "$homeassistant_token" ]; then
-            keychain_service="''${HOMEASSISTANT_KEYCHAIN_SERVICE:-${homeAssistantKeychainService}}"
-            keychain_account="''${HOMEASSISTANT_KEYCHAIN_ACCOUNT:-$USER}"
-            homeassistant_token="$(/usr/bin/security find-generic-password \
-              -s "$keychain_service" \
-              -a "$keychain_account" \
-              -w 2>/dev/null || true)"
-          fi
-
-          if [ -z "$homeassistant_token" ]; then
-            echo "Home Assistant MCP token not found in HOMEASSISTANT_TOKEN or macOS Keychain service $keychain_service" >&2
-            exit 1
-          fi
-
-          API_ACCESS_TOKEN="$homeassistant_token" exec ${pkgs.mcp-proxy}/bin/mcp-proxy \
-            --transport=streamablehttp \
-            --stateless \
-            "${homeAssistantMcpUrl}"
-        ''
-      ];
-    };
-  };
 in
 
 {
   options.mcp.servers = lib.mkOption {
     type = lib.types.attrs;
     description = "MCP server definitions shared across AI tools";
-    default = sharedMcpServers // lib.optionalAttrs (type == "personal") personalMcpServers;
+    default = servers;
+  };
+
+  options.mcp.secrets = lib.mkOption {
+    type = lib.types.attrs;
+    description = "Keychain-backed HTTP headers per server: { <server> = { service; header; prefix; }; }";
+    default = secrets;
+  };
+
+  options.mcp.secretsFile = lib.mkOption {
+    type = lib.types.path;
+    description = "TSV of <server> <header> <keychain service> <prefix>, consumed by the activation scripts (prefix last: it may be empty)";
+    default = pkgs.writeText "mcp-secrets.tsv" (
+      lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (name: s: "${name}\t${s.header}\t${s.service}\t${s.prefix}") secrets
+      )
+    );
   };
 
   config.home.packages = [ keychainMcp ];
@@ -155,12 +133,12 @@ in
   # Warn (never prompt) when a configured API key is missing from the Keychain.
   config.home.activation.checkMcpKeys = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     missing=""
-    for service in ${lib.escapeShellArgs (builtins.attrNames keychainKeys)}; do
+    for service in ${lib.escapeShellArgs (map (s: s.service) (lib.attrValues secrets))}; do
       /usr/bin/security find-generic-password -s "$service" -a "$USER" >/dev/null 2>&1 || missing="$missing $service"
     done
     if [ -n "$missing" ]; then
       warnEcho "Keychain is missing MCP API keys:$missing"
-      warnEcho "Run: keychain-mcp sync   (then keychain-mcp repin if the desktop apps prompt)"
+      warnEcho "Run: keychain-mcp sync, then darwin-rebuild switch again to inject them"
     fi
   '';
 }

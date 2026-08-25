@@ -136,6 +136,7 @@ in
     run ${../scripts/merge-mcp-servers.sh} \
       "${config.home.homeDirectory}/.claude.json" \
       "${pkgs.writeText "mcp-servers.json" mcpServersJson}" \
+      "${config.mcp.secretsFile}" \
       "${pkgs.jq}/bin/jq"
   '';
 

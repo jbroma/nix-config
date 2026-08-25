@@ -112,7 +112,7 @@ in
   # Merge ~/.codex/config.toml at activation time so trusted projects can be
   # discovered dynamically without deleting Codex-managed plugin/app state.
   home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ${pkgs.bash}/bin/bash "${codexConfigScript}" "${codexBaseConfig}" "${pkgs.yq-go}/bin/yq"
+    ${pkgs.bash}/bin/bash "${codexConfigScript}" "${codexBaseConfig}" "${config.mcp.secretsFile}" "${pkgs.yq-go}/bin/yq"
   '';
 
   home.activation.codexPlugins = lib.hm.dag.entryAfter [ "codexConfig" ] ''

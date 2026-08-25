@@ -6,8 +6,8 @@
 #
 # Commands:
 #   status  list the configured Keychain items that exist (service, account)
-#   sync    copy API keys from 1Password into the login Keychain so that
-#           /usr/bin/security (used by the MCP wrappers) reads them silently
+#   sync    copy API keys from 1Password into the login Keychain; the next
+#           darwin-rebuild switch injects them into the Claude/Codex configs
 #   repin   pin the desktop apps' own items to the vendor team id; macOS pins
 #           "Always Allow" to one build hash, so every app update re-prompts
 set -euo pipefail
@@ -60,6 +60,7 @@ sync() {
     security add-generic-password -a "$USER" -s "${names[$i]}" -w "$key" -T /usr/bin/security -U
     echo "synced  ${names[$i]}"
   done
+  echo "Run darwin-rebuild switch to inject the keys into the Claude Code and Codex configs."
 }
 
 repin() {
