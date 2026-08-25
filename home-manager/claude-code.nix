@@ -13,6 +13,13 @@ let
   };
   mcpServersJson = builtins.toJSON mcpServersConfig;
 
+  hooksDir = "${config.home.homeDirectory}/.claude/hooks";
+  hookDefinitionsRaw = builtins.readFile "${ai}/hooks/definitions.json";
+  hookDefinitionsResolved =
+    builtins.replaceStrings [ "$USER_HOOKS_DIR" ] [ hooksDir ]
+      hookDefinitionsRaw;
+  hookDefinitions = builtins.fromJSON hookDefinitionsResolved;
+
   permissions = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json");
 
   # Managed keys. `model` is deliberately absent: the app owns the model choice.
@@ -41,7 +48,7 @@ let
     };
     # Permission rules from ai submodule.
     inherit permissions;
-    hooks = config.ai.hooks;
+    hooks = hookDefinitions;
     sandbox = {
       enabled = true;
       excludedCommands = [ "git" ];
@@ -56,11 +63,9 @@ in
 {
   # Claude Code symlinks (read-only, from ai submodule)
   home.file.".claude/CLAUDE.md".text = config.ai.instructions;
+  home.file.".claude/hooks".source = "${ai}/hooks";
   home.file.".claude/skills".source = "${ai}/skills";
   home.file.".claude/agents".source = "${ai}/agents/claude";
-
-  # dcg (PreToolUse Bash hook) reads its packs and policy from here.
-  xdg.configFile."dcg/config.toml".source = "${ai}/hooks/dcg.toml";
 
   # Binary symlink for ~/.local/bin (needed by claude code native install)
   home.file.".local/bin/claude".source = "${pkgs.claude-code}/bin/claude";
