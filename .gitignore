@@ -1,2 +1,7 @@
 # Symlink to ai flake input (managed by home-manager)
 ai
+# Placeholder ai input created by setup.sh on machines without SSH access yet
+.bootstrap-ai-input
+# nix build output links
+result
+result-*
