@@ -22,71 +22,9 @@ let
 
   permissions = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json");
 
-  # Path to dotfiles in this repo (for mutable symlinks)
-  dotfilesDir = "${config.home.homeDirectory}/.nix/dotfiles";
-
-  integrationConfig = builtins.fromJSON (builtins.readFile "${ai}/integrations/plugins.json");
-  claudeIntegrations = integrationConfig.claude;
-
-  # Read existing plugin state from dotfile seed, then add desired plugins from ai-sauce.
-  installedPluginsJson = builtins.fromJSON (
-    builtins.readFile ../dotfiles/claude/plugins/installed_plugins.json
-  );
-  desiredPlugins = builtins.attrNames (
-    lib.filterAttrs (_: plugin: plugin.enabled or false) claudeIntegrations.plugins
-  );
-  installPlugins = builtins.attrNames (
-    lib.filterAttrs (
-      _: plugin: (plugin.enabled or false) && (plugin.install or true)
-    ) claudeIntegrations.plugins
-  );
-  plugins = lib.unique ((builtins.attrNames installedPluginsJson.plugins) ++ desiredPlugins);
-
-  # Convert plugin list to { "plugin@marketplace" = true; } format
-  enabledPlugins = lib.genAttrs plugins (_: true);
-
-  # AI Sauce marketplace for custom and imported plugins.
-  aiSauceMarketplacePath = "${config.home.homeDirectory}/.claude/plugins/ai-sauce-marketplace";
-  resolveClaudeMarketplace =
-    marketplace:
-    let
-      source = marketplace.source;
-    in
-    if
-      source.source == "directory" && (source ? path) && source.path == "$AI_SAUCE_CLAUDE_MARKETPLACE"
-    then
-      marketplace
-      // {
-        source = source // {
-          path = aiSauceMarketplacePath;
-        };
-      }
-    else
-      marketplace;
-  extraKnownMarketplaces = lib.mapAttrs (_: resolveClaudeMarketplace) claudeIntegrations.marketplaces;
-
-  claude = "${pkgs.claude-code}/bin/claude";
-  setupScript = "${dotfilesDir}/claude/scripts/setup-plugins.sh";
-  githubMarketplaceCommands = lib.concatStringsSep "\n" (
-    lib.mapAttrsToList (
-      name: marketplace:
-      let
-        source = marketplace.source;
-      in
-      if source.source == "github" then
-        ''
-          run ${claude} plugin marketplace add ${lib.escapeShellArg source.repo} || \
-            echo "warning: failed to add Claude marketplace: ${name}" >&2
-        ''
-      else
-        ""
-    ) claudeIntegrations.marketplaces
-  );
-  installPluginArgs = lib.concatMapStringsSep " " lib.escapeShellArg installPlugins;
+  # Managed keys. `model` is deliberately absent: the app owns the model choice.
   claudeSettings = {
     "$schema" = "https://json.schemastore.org/claude-code-settings.json";
-    # Pin Opus with the 1M context window and require confirmation before switching on flagged requests.
-    model = "opus[1m]";
     switchModelsOnFlag = false;
     # Keep extended thinking enabled.
     alwaysThinkingEnabled = true;
@@ -111,10 +49,6 @@ let
     };
     # Permission rules from ai submodule.
     permissions = permissions;
-    # Enabled plugins combine existing mutable plugin state with ai-sauce desired integrations.
-    enabledPlugins = enabledPlugins;
-    # Marketplaces are declared in ai-sauce/integrations/plugins.json.
-    extraKnownMarketplaces = extraKnownMarketplaces;
     hooks = hookDefinitions;
     sandbox = {
       enabled = true;
@@ -131,9 +65,7 @@ in
   # Claude Code symlinks (read-only, from ai submodule)
   home.file.".claude/CLAUDE.md".text = config.ai.instructions;
   home.file.".claude/hooks".source = "${ai}/hooks";
-  home.file.".claude/plugins/ai-sauce-marketplace".source = "${ai}/marketplace";
   home.file.".claude/skills".source = "${ai}/skills";
-
   home.file.".claude/agents".source = "${ai}/agents/claude";
 
   # Binary symlink for ~/.local/bin (needed by claude code native install)
@@ -149,31 +81,21 @@ in
   '';
 
   # Claude mutates settings.json, so keep it writable while refreshing managed keys.
+  # Objects deep-merge, which would keep removed hook events alive, so `hooks` is replaced wholesale.
   home.activation.setupClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     settings="${config.home.homeDirectory}/.claude/settings.json"
     tmp="$settings.tmp"
 
     mkdir -p "${config.home.homeDirectory}/.claude"
     if [ -e "$settings" ] || [ -L "$settings" ]; then
-      "${pkgs.jq}/bin/jq" -s 'del(.[0].env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC) | .[0] * .[1]' "$settings" "${claudeSettingsFile}" > "$tmp"
+      "${pkgs.jq}/bin/jq" -s '.[1] as $managed
+        | del(.[0].env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, .[0].extraKnownMarketplaces["ai-sauce"])
+        | (.[0] * $managed) | .hooks = $managed.hooks' "$settings" "${claudeSettingsFile}" > "$tmp"
     else
       cp "${claudeSettingsFile}" "$tmp"
     fi
     mv "$tmp" "$settings"
   '';
-
-  # Plugin setup: seeds mutable plugin state and installs missing plugins.
-  # Uses direct marketplace symlinks since Claude Code only resolves one level.
-  home.activation.setupClaudePlugins =
-    lib.hm.dag.entryAfter
-      [
-        "setupClaudeSettings"
-        "setupMcpServers"
-      ]
-      ''
-        ${githubMarketplaceCommands}
-        PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH" run ${setupScript} ${claude} ${dotfilesDir}/claude "${aiSauceMarketplacePath}" ${installPluginArgs}
-      '';
 
   programs.claude-code = {
     enable = true;

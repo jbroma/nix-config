@@ -30,7 +30,7 @@ flake.nix                    # Entry point - two configs: work, personal
 ├── user.nix                 # User identity (git skip-worktree, not committed)
 │
 ├── home-manager/            # Home-manager modules
-│   ├── claude-code.nix      # Claude Code: settings, hooks, skills, plugins
+│   ├── claude-code.nix      # Claude Code: settings, hooks, skills, agents
 │   ├── codex.nix            # Codex: settings, hooks, skills, agents, rules
 │   ├── cursor.nix           # Cursor: settings, extensions, MCP, skills
 │   ├── zsh.nix              # Shell config with modern CLI aliases
