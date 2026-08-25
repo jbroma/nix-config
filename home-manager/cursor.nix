@@ -137,7 +137,7 @@ in
       alwaysApply: true
       ---
 
-      ${builtins.readFile "${ai}/CORE.md"}
+      ${config.ai.instructions}
     '';
   }
   // cursorAgentFiles

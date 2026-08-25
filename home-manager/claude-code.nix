@@ -123,7 +123,7 @@ let
 in
 {
   # Claude Code symlinks (read-only, from ai submodule)
-  home.file.".claude/CLAUDE.md".source = "${ai}/CORE.md";
+  home.file.".claude/CLAUDE.md".text = config.ai.instructions;
   home.file.".claude/hooks".source = "${ai}/hooks";
   home.file.".claude/plugins/ai-sauce-marketplace".source = "${ai}/marketplace";
   home.file.".claude/skills".source = "${ai}/skills";

@@ -92,6 +92,7 @@
     ./home-manager/zed.nix
   ]
   ++ lib.optionals enableAi [
+    ./home-manager/ai-instructions.nix
     ./home-manager/cursor.nix
     ./home-manager/claude-code.nix
     ./home-manager/codex.nix
