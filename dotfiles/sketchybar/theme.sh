@@ -30,7 +30,6 @@ app_icon() {
 }
 
 # Nerd Font Font Awesome icons (literal unicode)
-ICON_CPU="" # U+F2DB
 ICON_APPLE="" # U+F179
 ICON_VOLUME="" # U+F028
 ICON_WIFI="" # U+F1EB

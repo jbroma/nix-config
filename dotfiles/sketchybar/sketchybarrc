@@ -109,6 +109,7 @@ sketchybar --add item front_app left \
     icon.padding_left=8 \
     icon.padding_right=5 \
     padding_right=8 \
+    background.drawing=off \
     script="$PLUGIN_DIR/front_app.sh" \
   --subscribe front_app front_app_switched
 
@@ -145,26 +146,14 @@ sketchybar --add item volume right \
   --set volume \
     icon="$ICON_VOLUME" \
     icon.padding_right=8 \
+    padding_left=8 \
     label.drawing=off \
     scroll_texts=off \
     script="$PLUGIN_DIR/volume.sh" \
     click_script="$PLUGIN_DIR/click_sound.sh" \
   --subscribe volume volume_change mouse.scrolled
 
-sketchybar --add graph cpu right 40 \
-  --set cpu \
-    update_freq=3 \
-    icon="$ICON_CPU" \
-    icon.padding_right=6 \
-    label.padding_right=8 \
-    graph.color=$WHITE_70 \
-    graph.fill_color=$OUTLINE \
-    graph.line_width=1.0 \
-    padding_left=8 \
-    script="$PLUGIN_DIR/cpu.sh" \
-    click_script="open -a 'Activity Monitor'"
-
-sketchybar --add bracket island.right cpu volume wifi battery calendar \
+sketchybar --add bracket island.right volume wifi battery calendar \
   --set island.right "${island[@]}"
 
 ##### Initialize #####
