@@ -54,7 +54,7 @@ The `ai/` directory is a Nix flake input providing shared configuration for AI c
 
 - `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks`, `~/.claude/CLAUDE.md`
 - `codex.nix`: `~/.codex/skills`, `~/.codex/agents`, `~/.codex/hooks`, `~/.codex/AGENTS.md`, `~/.codex/rules/default.rules`, generated `~/.codex/config.toml`
-- `cursor.nix`: `~/.cursor/skills`, `~/.cursor/agents`, generated `~/.cursor/mcp.json` and Cursor settings
+- `cursor.nix`: `~/.cursor/skills`, `~/.cursor/agents`, `~/.cursor/hooks` + `hooks.json`, generated `~/.cursor/mcp.json` and Cursor settings. Cursor keeps its own copies: the IDE toggle "Include third-party Plugins, Skills, and other configs" must stay off (activation warns otherwise)
 
 MCP servers are declared once in `mcp-servers.nix`; API keys live in the macOS Keychain and are injected into the Claude Code, Codex, and Cursor configs at activation (`keychain-mcp sync` seeds them from 1Password).
 

@@ -31,9 +31,17 @@ let
     builtins.toJSON managedCursorSettings
   );
   # Keyless server list; Keychain-backed headers are injected at activation (cursorMcp below).
+  # Cursor documents `type` only for stdio servers; remote ones are `{ url, headers }`.
   cursorMcpServers = lib.mapAttrs (
-    _: server: if server ? type then server else server // { type = "stdio"; }
+    _: server:
+    if server ? url then builtins.removeAttrs server [ "type" ] else server // { type = "stdio"; }
   ) config.mcp.servers;
+  cursorHooks = pkgs.writeText "cursor-hooks.json" (
+    builtins.toJSON {
+      version = 1;
+      hooks.stop = [ { command = "${config.home.homeDirectory}/.cursor/hooks/on-cursor-stop.sh"; } ];
+    }
+  );
   cursorMcpConfigFile = pkgs.writeText "cursor-mcp.json" (
     builtins.toJSON {
       mcpServers = cursorMcpServers;
@@ -115,19 +123,14 @@ let
   ) cursorExtensions;
 in
 {
+  # Cursor is kept on its own copies (skills, agents, hooks); the IDE toggle
+  # "Include third-party Plugins, Skills, and other configs" stays off so it
+  # never reads ~/.claude or ~/.codex. Global rules have no file form: paste
+  # CORE.md into Cursor Settings > Rules (User Rules) by hand.
   home.file = {
     ".cursor/skills".source = "${ai}/skills";
-    ".cursor/rules/core.mdc" = {
-      force = true;
-      text = ''
-        ---
-        description: Shared personal instructions from ai-sauce CORE.md
-        alwaysApply: true
-        ---
-
-        ${builtins.readFile "${ai}/CORE.md"}
-      '';
-    };
+    ".cursor/hooks".source = "${ai}/hooks";
+    ".cursor/hooks.json".source = cursorHooks;
   }
   // cursorAgentFiles
   // builtins.listToAttrs extensionLinks;
@@ -140,6 +143,19 @@ in
       "${cursorMcpConfigFile}" \
       "${config.mcp.secretsFile}" \
       "${pkgs.jq}/bin/jq"
+  '';
+
+  # Warn if a Cursor update turned third-party (Claude/Codex) config loading back on.
+  home.activation.checkCursorThirdParty = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    db="$HOME/Library/Application Support/Cursor/User/globalStorage/state.vscdb"
+    if [ -f "$db" ]; then
+      enabled="$(/usr/bin/sqlite3 -readonly "file:''${db// /%20}?immutable=1" \
+        "select value from ItemTable where key = 'cursor/thirdPartyExtensibilityEnabled';" 2>/dev/null || true)"
+      if [ "$enabled" != "false" ]; then
+        warnEcho "Cursor third-party config loading is on: it will read ~/.claude and ~/.codex."
+        warnEcho "Turn off Cursor Settings > Rules, Skills, Subagents > Include third-party Plugins, Skills, and other configs"
+      fi
+    fi
   '';
 
   # Keep Cursor settings mutable while applying Nix-managed settings on switch.
