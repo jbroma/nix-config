@@ -1,5 +1,7 @@
 {
   config,
+  lib,
+  pkgs,
   user,
   ...
 }:
@@ -20,6 +22,11 @@ let
   };
 
   signingKey = signingKeys.${user.email} or null;
+
+  # Lets git verify our own SSH signatures (git log --show-signature, %G?).
+  allowedSigners = pkgs.writeText "allowed_signers" (
+    lib.concatStringsSep "\n" (lib.mapAttrsToList (email: key: "${email} ${key}") signingKeys)
+  );
 in
 {
   home.sessionVariables = {
@@ -44,6 +51,7 @@ in
     };
     settings = {
       gpg.format = "ssh";
+      gpg.ssh.allowedSignersFile = "${allowedSigners}";
     };
   };
 }
