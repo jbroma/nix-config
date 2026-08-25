@@ -54,7 +54,9 @@ let
     model_reasoning_effort = "high";
     model_reasoning_summary = "auto";
     model_verbosity = "low";
-    web_search = "live";
+    # Built-in web search is off; web access goes through the exa/firecrawl/context7
+    # MCP servers (ai-sauce skills/web-research).
+    web_search = "disabled";
     file_opener = "cursor";
 
     features = {
@@ -71,7 +73,7 @@ let
     };
 
     agents = {
-      max_threads = 8;
+      max_concurrent_threads_per_session = 8;
     };
 
     history.persistence = "save-all";
@@ -102,7 +104,7 @@ in
 
   # Symlinks from ai submodule
   home.file.".codex/AGENTS.md".source = "${ai}/CORE.md";
-  home.file.".codex/agents".source = "${ai}/agents";
+  home.file.".codex/agents".source = "${ai}/agents/codex";
   home.file.".codex/hooks".source = "${ai}/hooks";
   home.file.".codex/skills".source = "${ai}/skills";
   home.file.".codex/rules/default.rules".source = "${ai}/rules/codex.rules";

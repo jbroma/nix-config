@@ -126,6 +126,8 @@ in
   home.file.".claude/plugins/ai-sauce-marketplace".source = "${ai}/marketplace";
   home.file.".claude/skills".source = "${ai}/skills";
 
+  home.file.".claude/agents".source = "${ai}/agents/claude";
+
   # Binary symlink for ~/.local/bin (needed by claude code native install)
   home.file.".local/bin/claude".source = "${pkgs.claude-code}/bin/claude";
 
