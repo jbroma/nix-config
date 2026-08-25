@@ -1,19 +1,14 @@
 #!/bin/bash
 # Palette, fonts and workspace icons shared by sketchybarrc and the plugins.
 
-# Islands: tinted, blurred glass slabs with a light rim.
-BAR_BG=0x4a181a22
-BAR_BORDER=0x33ffffff
-# Pills inside them: frosted white, lit from the rim. Alpha is the whole effect.
-GLASS_FILL=0x12ffffff
-GLASS_FILL_DIM=0x08ffffff
-GLASS_FILL_FOCUS=0x30ffffff
-OUTLINE=0x2effffff
-OUTLINE_DIM=0x14ffffff
-OUTLINE_FOCUS=0x8cffffff
-WHITE=0xfff7f1ff
-WHITE_70=0xb3f7f1ff
-WHITE_50=0x998b888f
+# Liquid glass: light frosted capsules over the blurred wallpaper, a bright rim,
+# and nothing drawn inside them except the focused workspace's capsule.
+ISLAND_FILL=0x2effffff
+ISLAND_RIM=0x59ffffff
+FOCUS_FILL=0x47ffffff
+WHITE=0xffffffff
+WHITE_90=0xe6ffffff
+WHITE_50=0x80ffffff
 GREEN=0xff7bd88f
 YELLOW=0xfffce566
 RED=0xfffc618d
