@@ -1,9 +1,6 @@
 #!/bin/bash
 
-WHITE=0xfff7f1ff
-GREEN=0xff7bd88f
-YELLOW=0xfffce566
-RED=0xfffc618d
+source "$CONFIG_DIR/theme.sh"
 
 # Nerd Font Font Awesome battery icons (literal unicode)
 BATTERY_FULL=""           # fa-battery-full

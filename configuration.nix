@@ -147,6 +147,7 @@ in
     plus-jakarta-sans
     public-sans
     recursive
+    sketchybar-app-font
     source-sans
     work-sans
   ];

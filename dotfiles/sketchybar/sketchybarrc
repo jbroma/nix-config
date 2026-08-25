@@ -3,27 +3,9 @@
 # Fallback if CONFIG_DIR not set by sketchybar
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
+export CONFIG_DIR
 
-##### Color Palette #####
-BAR_BG=0x4a181a22
-BAR_BORDER=0x2ab0b8cc
-PILL_BG=0x5a363537
-PILL_BORDER=0x1a363537
-WHITE=0xfff7f1ff
-WHITE_50=0x998b888f
-
-##### Nerd Font Font Awesome Icons (literal unicode) #####
-ICON_APPLE=""      # fa-apple
-ICON_TERMINAL=""   # fa-desktop
-ICON_GLOBE=""      # fa-globe
-ICON_CHATGPT=""    # fa-terminal
-ICON_CURSOR=""     # fa-code
-ICON_DISCORD=""    # fa-discord
-ICON_NOTES=""      # fa-sticky-note
-ICON_SLACK=""      # fa-slack
-ICON_SPOTIFY=""    # fa-spotify
-ICON_VOLUME=""     # fa-volume-up
-ICON_WIFI=""       # fa-wifi
+source "$CONFIG_DIR/theme.sh"
 
 ##### Bar Appearance #####
 sketchybar --bar \
@@ -41,15 +23,18 @@ sketchybar --bar \
   corner_radius=16 \
   blur_radius=64
 
+# Helpers that outlive this script: restart them on every (re)load.
 if command -v sketchybar-toggle >/dev/null 2>&1; then
   pkill -x sketchybar-toggle 2>/dev/null || true
-  sketchybar-toggle &
+  sketchybar-toggle >/dev/null 2>&1 &
 fi
+pkill -f aerospace_events.sh 2>/dev/null || true
+"$PLUGIN_DIR/aerospace_events.sh" >/dev/null 2>&1 &
 
 ##### Defaults #####
 default=(
-  icon.font="Hack Nerd Font:Bold:14.0"
-  label.font="Hack Nerd Font:SemiBold:12.0"
+  icon.font="$FONT:Bold:14.0"
+  label.font="$FONT:SemiBold:12.0"
   icon.color=$WHITE
   label.color=$WHITE
   icon.padding_left=5
@@ -67,65 +52,62 @@ default=(
 )
 sketchybar --default "${default[@]}"
 
-##### Left: Apple + Workspaces #####
+##### Left: Apple #####
 sketchybar --add item apple left \
   --set apple \
     icon="$ICON_APPLE" \
-    icon.color=$WHITE \
-    icon.font="Hack Nerd Font:Bold:20.0" \
+    icon.font="$FONT:Bold:20.0" \
     icon.padding_left=10 \
     icon.padding_right=8 \
     label.drawing=off \
     click_script="open -a 'System Settings'"
 
-##### Left Island 2: Workspaces #####
-sketchybar --add event aerospace_workspace_change
+##### Left: Workspaces #####
+# One item per workspace; a hidden observer repaints all of them at once
+# (plugins/workspaces.sh) whenever AeroSpace reports a change.
+sketchybar --add event aerospace_change
 
-# Workspace icons based on app assignments
-ICON_FOLDER=""    # fa-folder
-
-WORKSPACE_ICONS=(
-  [1]="$ICON_TERMINAL"  # Terminal
-  [2]="$ICON_GLOBE"     # Chrome/Safari
-  [3]="$ICON_CHATGPT"   # ChatGPT
-  [4]="$ICON_CURSOR"    # Cursor
-  [5]="$ICON_FOLDER"
-  [6]="$ICON_NOTES"     # Notes
-  [7]="$ICON_SLACK"     # Slack
-  [8]="$ICON_DISCORD"   # Discord
-  [9]="$ICON_SPOTIFY"   # Spotify
-)
-
-workspaces=$(aerospace list-workspaces --all)
-
-for sid in $workspaces; do
-  icon="${WORKSPACE_ICONS[$sid]:-$sid}"
-
+for sid in "${!WORKSPACE_ICONS[@]}"; do
   sketchybar --add item space.$sid left \
-    --subscribe space.$sid aerospace_workspace_change \
     --set space.$sid \
-      icon="$icon" \
+      icon="${WORKSPACE_ICONS[$sid]}" \
       icon.color=$WHITE_50 \
-      icon.font="Hack Nerd Font:Bold:14.0" \
       icon.padding_left=7 \
       icon.padding_right=3 \
       label="$sid" \
       label.color=$WHITE_50 \
-      label.font="Hack Nerd Font:Bold:11.0" \
+      label.font="$FONT:Bold:11.0" \
       label.padding_left=0 \
       label.padding_right=7 \
-      background.drawing=off \
-      click_script="aerospace workspace $sid" \
-      script="$PLUGIN_DIR/aerospace.sh $sid"
+      click_script="aerospace workspace $sid"
 done
 
-##### Right: Status Pills #####
+sketchybar --add item workspaces_observer left \
+  --set workspaces_observer \
+    drawing=off \
+    updates=on \
+    update_freq=30 \
+    script="$PLUGIN_DIR/workspaces.sh" \
+  --subscribe workspaces_observer aerospace_change front_app_switched
 
+##### Left: Focused app #####
+sketchybar --add item front_app left \
+  --set front_app \
+    icon.font="$APP_FONT" \
+    icon.padding_left=10 \
+    icon.padding_right=4 \
+    label.font="$FONT:Bold:12.0" \
+    label.padding_right=10 \
+    background.drawing=on \
+    script="$PLUGIN_DIR/front_app.sh" \
+  --subscribe front_app front_app_switched
+
+##### Right: Status Pills #####
 sketchybar --add item date right \
   --set date \
     update_freq=60 \
     icon.drawing=off \
-    label.font="Hack Nerd Font:Bold:12.0" \
+    label.font="$FONT:Bold:12.0" \
     label.padding_left=10 \
     label.padding_right=10 \
     background.drawing=on \
@@ -136,7 +118,7 @@ sketchybar --add item clock right \
   --set clock \
     update_freq=10 \
     icon.drawing=off \
-    label.font="Hack Nerd Font:Bold:12.0" \
+    label.font="$FONT:Bold:12.0" \
     label.padding_left=10 \
     label.padding_right=10 \
     background.drawing=on \
@@ -146,11 +128,10 @@ sketchybar --add item clock right \
 sketchybar --add item battery right \
   --set battery \
     update_freq=120 \
-    icon.color=$WHITE \
-    icon.font="Hack Nerd Font:Bold:16.0" \
+    icon.font="$FONT:Bold:16.0" \
     icon.padding_left=10 \
     icon.padding_right=4 \
-    label.font="Hack Nerd Font:Bold:11.0" \
+    label.font="$FONT:Bold:11.0" \
     label.padding_left=0 \
     label.padding_right=10 \
     background.drawing=on \
@@ -161,19 +142,16 @@ sketchybar --add item battery right \
 sketchybar --add item wifi right \
   --set wifi \
     icon="$ICON_WIFI" \
-    icon.color=$WHITE \
-    icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=10 \
     icon.padding_right=10 \
     label.drawing=off \
     background.drawing=on \
     click_script="open 'x-apple.systempreferences:com.apple.Network-Settings.extension'"
 
+# Scroll over the volume pill to adjust it (plugins/volume.sh).
 sketchybar --add item volume right \
   --set volume \
     icon="$ICON_VOLUME" \
-    icon.color=$WHITE \
-    icon.font="Hack Nerd Font:Bold:14.0" \
     icon.padding_left=10 \
     icon.padding_right=10 \
     label.drawing=off \
@@ -181,7 +159,7 @@ sketchybar --add item volume right \
     scroll_texts=off \
     script="$PLUGIN_DIR/volume.sh" \
     click_script="$PLUGIN_DIR/click_sound.sh" \
-  --subscribe volume volume_change
+  --subscribe volume volume_change mouse.scrolled
 
 ##### Initialize #####
 sketchybar --update
