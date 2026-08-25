@@ -106,8 +106,9 @@ in
   options.mcp.secretsFile = lib.mkOption {
     type = lib.types.path;
     description = "TSV of <server> <header> <keychain service> <prefix>, consumed by the activation scripts (prefix last: it may be empty)";
+    # Every line ends with \n: `while read` drops a final line without one.
     default = pkgs.writeText "mcp-secrets.tsv" (
-      lib.concatStringsSep "\n" (
+      lib.concatMapStrings (line: line + "\n") (
         lib.mapAttrsToList (name: s: "${name}\t${s.header}\t${s.service}\t${s.prefix}") secrets
       )
     );
