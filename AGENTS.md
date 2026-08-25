@@ -54,7 +54,9 @@ The `ai/` directory is a Nix flake input providing shared configuration for AI c
 
 - `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks`, `~/.claude/CLAUDE.md`
 - `codex.nix`: `~/.codex/skills`, `~/.codex/agents`, `~/.codex/hooks`, `~/.codex/AGENTS.md`, `~/.codex/rules/default.rules`, generated `~/.codex/config.toml`
-- `cursor.nix`: `~/.cursor/skills`, `~/.cursor/mcp.json`, generated Cursor settings
+- `cursor.nix`: `~/.cursor/skills`, `~/.cursor/agents`, generated `~/.cursor/mcp.json` and Cursor settings
+
+MCP servers are declared once in `mcp-servers.nix`; API keys live in the macOS Keychain and are injected into the Claude Code, Codex, and Cursor configs at activation (`keychain-mcp sync` seeds them from 1Password).
 
 Cursor's Agents Window reads project instructions from the active workspace, such as root `AGENTS.md` and `.cursor/rules/*.mdc`. Global personal rules are Cursor User Rules configured through Cursor Settings > Rules; home-level `~/.cursor/rules/*.mdc` files are not a reliable injected prompt source for the Agents Window.
 

@@ -30,6 +30,7 @@ let
   managedCursorSettingsFile = pkgs.writeText "cursor-managed-settings.json" (
     builtins.toJSON managedCursorSettings
   );
+  # Keyless server list; Keychain-backed headers are injected at activation (cursorMcp below).
   cursorMcpServers = lib.mapAttrs (
     _: server: if server ? type then server else server // { type = "stdio"; }
   ) config.mcp.servers;
@@ -39,13 +40,13 @@ let
     }
   );
   cursorAgentSources = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".toml" name) (
-    builtins.readDir "${ai}/agents"
+    builtins.readDir "${ai}/agents/codex"
   );
   cursorAgentFiles = lib.mapAttrs' (
     filename: _:
     let
       agentName = lib.removeSuffix ".toml" filename;
-      agent = builtins.fromTOML (builtins.readFile "${ai}/agents/${filename}");
+      agent = builtins.fromTOML (builtins.readFile "${ai}/agents/codex/${filename}");
       readonly = (agent.sandbox_mode or "") == "read-only";
     in
     {
@@ -115,7 +116,6 @@ let
 in
 {
   home.file = {
-    ".cursor/mcp.json".source = cursorMcpConfigFile;
     ".cursor/skills".source = "${ai}/skills";
     ".cursor/rules/core.mdc" = {
       force = true;
@@ -131,6 +131,16 @@ in
   }
   // cursorAgentFiles
   // builtins.listToAttrs extensionLinks;
+
+  # MCP servers with Keychain-backed headers (same merge as ~/.claude.json).
+  home.activation.cursorMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.cursor"
+    run ${../scripts/merge-mcp-servers.sh} \
+      "$HOME/.cursor/mcp.json" \
+      "${cursorMcpConfigFile}" \
+      "${config.mcp.secretsFile}" \
+      "${pkgs.jq}/bin/jq"
+  '';
 
   # Keep Cursor settings mutable while applying Nix-managed settings on switch.
   home.activation.cursorSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
