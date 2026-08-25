@@ -4,7 +4,6 @@
   lib,
   stdenv,
   fetchurl,
-  autoPatchelfHook,
   makeWrapper,
   procps,
 }:
@@ -33,10 +32,7 @@ stdenv.mkDerivation {
 
   dontUnpack = true;
 
-  nativeBuildInputs = [
-    makeWrapper
-  ]
-  ++ lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
+  nativeBuildInputs = [ makeWrapper ];
 
   installPhase = ''
     runHook preInstall

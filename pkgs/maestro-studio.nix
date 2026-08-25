@@ -13,7 +13,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/mobile-dev-inc/maestro-studio/releases/download/v${version}/Maestro-Studio-mac-universal.zip";
-    sha256 = "54f311e2e377ca27e43d818068cadbb4490b96c681e3e5c107a10f7edb5a681c";
+    hash = "sha256-VPMR4uN3yifkPYGAaMrbtEkLlsaB4+XBB6EPfttaaBw=";
   };
 
   nativeBuildInputs = [ unzip ];

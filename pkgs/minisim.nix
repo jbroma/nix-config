@@ -1,30 +1,36 @@
 {
   stdenv,
-  lib,
   fetchurl,
   unzip,
 }:
-
-stdenv.mkDerivation rec {
-  name = "minisim";
+let
   version = "0.10.0";
+in
+stdenv.mkDerivation {
+  pname = "minisim";
+  inherit version;
 
   src = fetchurl {
     url = "https://github.com/okwasniewski/MiniSim/releases/download/v${version}/MiniSim.app.zip";
-    sha256 = "b6af5775f0afb1b3c12a438fc35c1f4207a87341fbd39e256e6d3fbfa5aca64d";
+    hash = "sha256-tq9XdfCvsbPBKkOPw1wfQgeoc0H7054lbm0/v6Wspk0=";
   };
 
-  buildInputs = [ unzip ];
+  nativeBuildInputs = [ unzip ];
 
   sourceRoot = ".";
+
   installPhase = ''
+    runHook preInstall
+
     mkdir -p "$out/Applications"
-    cp -r "MiniSim.app" "$out/Applications/MiniSim.app"
+    cp -R MiniSim.app "$out/Applications/"
+
+    runHook postInstall
   '';
 
-  meta = with lib; {
-    homepage = "https://www.minisim.app/";
+  meta = {
     description = "App for launching iOS and Android simulators";
-    platforms = platforms.darwin;
+    homepage = "https://www.minisim.app/";
+    platforms = [ "aarch64-darwin" ];
   };
 }

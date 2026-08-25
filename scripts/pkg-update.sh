@@ -46,10 +46,6 @@ prefetch_sri() {
   prefetch_json "$url" "$@" | jq -r '.hash'
 }
 
-sri_to_hex() {
-  nix hash convert --from sri --to base16 "$1"
-}
-
 replace_in_file() {
   local file=$1
   local script=$2
@@ -96,28 +92,6 @@ update_simple_sri() {
   log_status "$name" "$before" "$latest"
 }
 
-update_simple_hex() {
-  local name=$1
-  local file=$2
-  local latest=$3
-  local url=$4
-  local sri
-  local hash
-  local before
-
-  prepare_update "$name" "$file" "$latest" "$url" || return 0
-  before=$_pkg_update_before
-  sri=$(prefetch_sri "$url")
-  hash=$(sri_to_hex "$sri")
-
-  VERSION="$latest" SHA256="$hash" replace_in_file "$file" '
-    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
-    s/sha256 = "[^"]+";/sha256 = "$ENV{SHA256}";/;
-  '
-
-  log_status "$name" "$before" "$latest"
-}
-
 update_claude_code() {
   local file="pkgs/claude-code.nix"
   local latest url
@@ -143,33 +117,16 @@ update_minisim() {
 
   latest=$(gh api repos/okwasniewski/MiniSim/releases/latest --jq '.tag_name' | sed 's/^v//')
   url="https://github.com/okwasniewski/MiniSim/releases/download/v${latest}/MiniSim.app.zip"
-  update_simple_hex "minisim" "$file" "$latest" "$url"
+  update_simple_sri "minisim" "$file" "$latest" "$url"
 }
 
 update_maestro_studio() {
   local file="pkgs/maestro-studio.nix"
-  local release_json latest url digest sha256 before
+  local latest url
 
-  release_json=$(gh api repos/mobile-dev-inc/maestro-studio/releases/latest)
-  latest=$(printf '%s' "$release_json" | jq -r '.tag_name' | sed 's/^v//')
-  url=$(printf '%s' "$release_json" | jq -r '.assets[] | select(.name=="Maestro-Studio-mac-universal.zip") | .browser_download_url')
-  digest=$(printf '%s' "$release_json" | jq -r '.assets[] | select(.name=="Maestro-Studio-mac-universal.zip") | .digest')
-
-  if [[ -z "$latest" || "$latest" == "null" || -z "$url" || "$url" == "null" || -z "$digest" || "$digest" == "null" ]]; then
-    echo "error: failed to resolve Maestro Studio release metadata" >&2
-    exit 1
-  fi
-
-  sha256=${digest#sha256:}
-  prepare_update "maestro-studio" "$file" "$latest" "$url" || return 0
-  before=$_pkg_update_before
-
-  VERSION="$latest" SHA256="$sha256" replace_in_file "$file" '
-    s/version = "[^"]+";/version = "$ENV{VERSION}";/;
-    s/sha256 = "[^"]+";/sha256 = "$ENV{SHA256}";/;
-  '
-
-  log_status "maestro-studio" "$before" "$latest"
+  latest=$(gh api repos/mobile-dev-inc/maestro-studio/releases/latest --jq '.tag_name' | sed 's/^v//')
+  url="https://github.com/mobile-dev-inc/maestro-studio/releases/download/v${latest}/Maestro-Studio-mac-universal.zip"
+  update_simple_sri "maestro-studio" "$file" "$latest" "$url"
 }
 
 update_vite_plus() {
