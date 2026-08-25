@@ -1,4 +1,4 @@
-_:
+{ lib, ... }:
 
 {
   programs.aerospace = {
@@ -6,6 +6,14 @@ _:
     package = null;
 
     settings = {
+      # Config version for compatibility and deprecations
+      # See: https://nikitabobko.github.io/AeroSpace/guide#config-version
+      config-version = 2;
+
+      # Workspaces that stay alive even when empty and invisible.
+      # config-version = 2 no longer infers them from the key bindings.
+      persistent-workspaces = map toString (lib.range 1 9);
+
       # You can use it to add commands that run after login to macOS user session.
       # 'start-at-login' needs to be 'true' for 'after-login-command' to work
       # Available commands: https://nikitabobko.github.io/AeroSpace/commands
@@ -66,6 +74,8 @@ _:
           "if".window-title-regex-substring =
             ".*(preferences|settings).*|^(open|save|export|import|print|share|about|rename|delete).*";
           run = "layout floating";
+          # Keep matching so the app-id rules below still move the window.
+          check-further-callbacks = true;
         }
         {
           "if".app-name-regex-substring =
@@ -104,8 +114,8 @@ _:
           run = "move-node-to-workspace 3";
         }
         {
-          # ChatGPT
-          "if".app-id = "com.openai.chat";
+          # ChatGPT: the desktop app auto-updated onto the Codex bundle id.
+          "if".app-id = "com.openai.codex";
           run = "move-node-to-workspace 3";
         }
         {
