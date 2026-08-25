@@ -151,4 +151,16 @@ in
   };
 
   config.home.packages = [ keychainMcp ];
+
+  # Warn (never prompt) when a configured API key is missing from the Keychain.
+  config.home.activation.checkMcpKeys = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    missing=""
+    for service in ${lib.escapeShellArgs (builtins.attrNames keychainKeys)}; do
+      /usr/bin/security find-generic-password -s "$service" -a "$USER" >/dev/null 2>&1 || missing="$missing $service"
+    done
+    if [ -n "$missing" ]; then
+      warnEcho "Keychain is missing MCP API keys:$missing"
+      warnEcho "Run: keychain-mcp sync   (then keychain-mcp repin if the desktop apps prompt)"
+    fi
+  '';
 }
