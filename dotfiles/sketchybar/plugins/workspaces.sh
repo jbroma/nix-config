@@ -1,7 +1,7 @@
 #!/bin/bash
 # Refresh every workspace item in one sketchybar call.
 # Each pill: the workspace number, then the icons of the apps open in it.
-# focused: bright outline; non-empty: hairline outline; empty: dim number only.
+# focused: bright outline; non-empty: hairline outline; empty: dim number and purpose icon.
 
 source "$CONFIG_DIR/theme.sh"
 source "$(command -v icon_map.sh)"
@@ -30,9 +30,9 @@ for sid in "${WORKSPACES[@]}"; do
   fi
 
   if [ -n "$icons" ]; then
-    args+=(--set "space.$sid" label="$icons" label.drawing=on)
+    args+=(--set "space.$sid" label="$icons" label.font="$APP_FONT")
   else
-    args+=(--set "space.$sid" label.drawing=off)
+    args+=(--set "space.$sid" label="${WORKSPACE_ICONS[$sid]}" label.font="$ICON_FONT")
   fi
   args+=(icon.color=$color label.color=$color background.border_color=$outline)
 done

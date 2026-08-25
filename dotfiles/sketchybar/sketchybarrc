@@ -8,21 +8,28 @@ export CONFIG_DIR
 source "$CONFIG_DIR/theme.sh"
 
 ##### Bar Appearance #####
-# Nothing goes in the centre: the MacBook notch lives there.
+# The bar itself is invisible. Two glass islands float on it, left and right,
+# so the centre stays empty for the MacBook notch.
 sketchybar --bar \
   position=top \
   topmost=window \
-  height=32 \
-  color=$BAR_BG \
-  border_color=$BAR_BORDER \
-  border_width=1 \
+  height=40 \
+  color=0x00000000 \
   shadow=off \
-  padding_left=4 \
-  padding_right=4 \
-  margin=8 \
-  y_offset=0 \
-  corner_radius=12 \
+  padding_left=8 \
+  padding_right=8 \
+  margin=0 \
+  y_offset=0
+
+island=(
+  background.drawing=on
+  background.color=$BAR_BG
+  background.border_color=$BAR_BORDER
+  background.border_width=1
+  background.height=32
+  background.corner_radius=12
   blur_radius=64
+)
 
 # Helpers that outlive this script: restart them on every (re)load.
 if command -v sketchybar-toggle >/dev/null 2>&1; then
@@ -59,7 +66,7 @@ sketchybar --add item apple left \
   --set apple \
     icon="$ICON_APPLE" \
     icon.font="$FONT:Bold:16.0" \
-    icon.padding_left=8 \
+    icon.padding_left=10 \
     icon.padding_right=8 \
     label.drawing=off \
     background.drawing=off \
@@ -79,8 +86,9 @@ for sid in "${WORKSPACES[@]}"; do
       icon.color=$WHITE_50 \
       icon.padding_left=7 \
       icon.padding_right=4 \
-      label.font="$APP_FONT" \
-      label.drawing=off \
+      label="${WORKSPACE_ICONS[$sid]}" \
+      label.font="$ICON_FONT" \
+      label.color=$WHITE_50 \
       label.padding_right=6 \
       background.border_color=$OUTLINE_DIM \
       click_script="aerospace workspace $sid"
@@ -100,8 +108,12 @@ sketchybar --add item front_app left \
     icon.font="$APP_FONT" \
     icon.padding_left=8 \
     icon.padding_right=5 \
+    padding_right=8 \
     script="$PLUGIN_DIR/front_app.sh" \
   --subscribe front_app front_app_switched
+
+sketchybar --add bracket island.left apple "${WORKSPACES[@]/#/space.}" front_app \
+  --set island.left "${island[@]}"
 
 ##### Right (added right-to-left) #####
 sketchybar --add item calendar right \
@@ -109,6 +121,7 @@ sketchybar --add item calendar right \
     update_freq=10 \
     icon.drawing=off \
     label.padding_left=8 \
+    padding_right=8 \
     script="$PLUGIN_DIR/calendar.sh" \
     click_script="$PLUGIN_DIR/click_calendar.sh"
 
@@ -147,8 +160,12 @@ sketchybar --add graph cpu right 40 \
     graph.color=$WHITE_70 \
     graph.fill_color=$OUTLINE \
     graph.line_width=1.0 \
+    padding_left=8 \
     script="$PLUGIN_DIR/cpu.sh" \
     click_script="open -a 'Activity Monitor'"
+
+sketchybar --add bracket island.right cpu volume wifi battery calendar \
+  --set island.right "${island[@]}"
 
 ##### Initialize #####
 sketchybar --update
