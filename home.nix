@@ -23,20 +23,14 @@ in
       # dev
       agent-browser
       agent-device
-      bat
       bun
-      delta
       fd
       fontconfig
-      fzf
       gh
       jq
       htop
-      eza
-      mise
       maestro
       pnpm
-      ripgrep
       sd
       # sketchybar # gets installed on it's own when using home-manager integration
       tree
@@ -47,7 +41,6 @@ in
       uv
       watchman
       wsmancli
-      zellij
     ]
     ++ lib.optionals (type == "personal") [
       railway

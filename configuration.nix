@@ -58,8 +58,8 @@ in
         lmstudio
         _1password-gui
         minisim
+        # root needs git for the git+ssh flake input during darwin-rebuild
         git
-        oh-my-posh
         nixfmt
         cmake
         ninja

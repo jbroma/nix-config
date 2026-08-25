@@ -6,14 +6,6 @@
 }:
 
 {
-  # install plugin packages
-  home.packages = with pkgs; [
-    zsh-fzf-tab
-    zsh-autosuggestions
-    zsh-fast-syntax-highlighting
-    zsh-you-should-use
-  ];
-
   home.file.".zsh/mise-project-config.zsh".source = ../dotfiles/zsh/mise-project-config.zsh;
 
   programs.zsh = {
