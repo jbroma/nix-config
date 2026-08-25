@@ -26,12 +26,8 @@
         "exec-and-forget /opt/homebrew/bin/sketchybar --reload"
       ];
 
-      # Notify Sketchybar about workspace change
-      exec-on-workspace-change = [
-        "/bin/bash"
-        "-c"
-        "/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
-      ];
+      # Sketchybar follows workspace and window changes through `aerospace subscribe`
+      # (dotfiles/sketchybar/plugins/aerospace_events.sh), so no callback is needed here.
 
       # nix-darwin launches the Homebrew-managed app bundle.
       start-at-login = false;
@@ -214,6 +210,12 @@
           # See: https://nikitabobko.github.io/AeroSpace/commands#resize
           alt-shift-minus = "resize smart -50";
           alt-shift-equal = "resize smart +50";
+
+          # See: https://nikitabobko.github.io/AeroSpace/commands#fullscreen
+          alt-f = "fullscreen";
+
+          # New terminal window (open -a only focuses an existing one)
+          alt-enter = "exec-and-forget open -na WezTerm";
 
           # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
           alt-1 = "workspace 1";
