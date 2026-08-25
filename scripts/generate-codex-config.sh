@@ -51,6 +51,17 @@ fi
   '. as $item ireduce ({}; . * $item)' \
   "${merge_inputs[@]}" > "$merged_config"
 
+# Servers declared in the base config replace the existing entry wholesale. The deep
+# merge above would keep stale keys (an old stdio `command` next to a new `url`),
+# which Codex rejects. Servers the Codex app adds on its own are left untouched.
+base_json="$(mktemp "${config_file}.base.XXXXXX")"
+"$yq_bin" eval -p=toml -o=json '.' "$base_config" > "$base_json"
+for name in $("$yq_bin" eval -p=json -o=yaml '.mcp_servers // {} | keys | .[]' "$base_json"); do
+  name="$name" base_json="$base_json" "$yq_bin" eval -i -p=json -o=json \
+    '.mcp_servers[strenv(name)] = load(strenv(base_json)).mcp_servers[strenv(name)]' "$merged_config"
+done
+rm -f "$base_json"
+
 # Keychain-backed MCP headers: <server> <header> <keychain service> <prefix> (tab-separated, prefix may be empty).
 while IFS=$'\t' read -r server header service prefix; do
   [ -n "$server" ] || continue
