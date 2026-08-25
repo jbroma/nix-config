@@ -43,12 +43,13 @@ default=(
   label.padding_right=5
   padding_left=2
   padding_right=2
-  background.drawing=off
   background.height=30
   background.corner_radius=10
   background.color=$PILL_BG
   background.border_color=$PILL_BORDER
   background.border_width=1
+  # Last on purpose: setting background.color switches drawing back on.
+  background.drawing=off
 )
 sketchybar --default "${default[@]}"
 
@@ -99,7 +100,6 @@ sketchybar --add item front_app left \
     icon.padding_right=4 \
     label.font="$FONT:Bold:12.0" \
     label.padding_right=10 \
-    background.drawing=on \
     script="$PLUGIN_DIR/front_app.sh" \
   --subscribe front_app front_app_switched
 
