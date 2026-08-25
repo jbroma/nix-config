@@ -12,39 +12,9 @@ let
   codexMcpServers = lib.mapAttrs (
     _: server: lib.filterAttrs (k: _: k != "type") server
   ) config.mcp.servers;
-  integrationConfig = builtins.fromJSON (builtins.readFile "${ai}/integrations/plugins.json");
-  codexIntegrations = integrationConfig.codex;
-  codexMarketplaces =
-    lib.mapAttrs (
-      _: marketplace: builtins.removeAttrs marketplace [ "add" ]
-    ) codexIntegrations.marketplaces
-    // {
-      openai-bundled = {
-        source_type = "local";
-        source = "/Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled";
-      };
-    };
-  codexPlugins = lib.mapAttrs (_: plugin: {
-    enabled = plugin.enabled or false;
-  }) codexIntegrations.plugins;
-  installPlugins = builtins.attrNames (
-    lib.filterAttrs (
-      _: plugin: (plugin.enabled or false) && (plugin.install or true)
-    ) codexIntegrations.plugins
-  );
-  installPluginCommands = lib.concatStringsSep "\n" (
-    map (plugin: ''
-      if ${pkgs.codex-cli}/bin/codex plugin list --json | ${pkgs.jq}/bin/jq -e --arg plugin ${lib.escapeShellArg plugin} '.installed[]? | select(.pluginId == $plugin)' >/dev/null; then
-        echo "Skipping ${plugin} (already installed)"
-      else
-        run ${pkgs.codex-cli}/bin/codex plugin add ${lib.escapeShellArg plugin} >/dev/null || \
-          echo "warning: failed to install Codex plugin: ${plugin}" >&2
-      fi
-    '') installPlugins
-  );
   codeFontFamily = ''"Hack Nerd Font Mono", "FiraCode Nerd Font Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace'';
+  # Managed keys. `model` is deliberately absent: the app owns the model choice.
   codexSettings = {
-    model = "gpt-5.5";
     personality = "pragmatic";
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
@@ -53,8 +23,7 @@ let
     model_reasoning_summary = "concise";
     hide_agent_reasoning = true;
     model_verbosity = "low";
-    # Built-in web search is off; web access goes through the exa/firecrawl/context7
-    # MCP servers (ai-sauce skills/web-research).
+    # Built-in web search is off; web access goes through the MCP servers (ai-sauce CORE.md "Web Access").
     web_search = "disabled";
     file_opener = "cursor";
 
@@ -91,8 +60,6 @@ let
     };
 
     mcp_servers = codexMcpServers;
-    marketplaces = codexMarketplaces;
-    plugins = codexPlugins;
   };
   codexBaseConfig = tomlFormat.generate "config.toml" codexSettings;
   codexConfigScript = ../scripts/generate-codex-config.sh;
@@ -112,12 +79,5 @@ in
   # discovered dynamically without deleting Codex-managed plugin/app state.
   home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${codexConfigScript}" "${codexBaseConfig}" "${config.mcp.secretsFile}" "${pkgs.yq-go}/bin/yq"
-  '';
-
-  home.activation.codexPlugins = lib.hm.dag.entryAfter [ "codexConfig" ] ''
-    mkdir -p \
-      "${config.home.homeDirectory}/.codex/plugins/.marketplace-plugin-source-staging" \
-      "${config.home.homeDirectory}/.codex/plugins/.remote-plugin-install-staging"
-    ${installPluginCommands}
   '';
 }
