@@ -12,6 +12,20 @@ focused="${FOCUSED_WORKSPACE:-$(aerospace list-workspaces --focused)}"
 focused_app=$(aerospace list-windows --focused --format '%{app-name}' 2>/dev/null)
 windows=$(aerospace list-windows --all --format '%{workspace}|%{app-name}')
 
+# "+2" -> "⁺²": the only way to get a small raised suffix into a single label.
+superscript() {
+  local out="" c
+  while IFS= read -r -n1 c; do
+    case "$c" in
+      +) out+="⁺" ;;
+      0) out+="⁰" ;; 1) out+="¹" ;; 2) out+="²" ;; 3) out+="³" ;; 4) out+="⁴" ;;
+      5) out+="⁵" ;; 6) out+="⁶" ;; 7) out+="⁷" ;; 8) out+="⁸" ;; 9) out+="⁹" ;;
+      *) out+="$c" ;;
+    esac
+  done < <(printf '%s' "$1")
+  printf '%s' "$out"
+}
+
 args=()
 for sid in "${!WORKSPACE_ICONS[@]}"; do
   apps=()
@@ -28,7 +42,7 @@ for sid in "${!WORKSPACE_ICONS[@]}"; do
     [ "$sid" = "$focused" ] && [ -n "$focused_app" ] && main="$focused_app"
     app_icon "$main"
     icons="$icon_result"
-    [ "${#apps[@]}" -gt 1 ] && extra=" +$((${#apps[@]} - 1))"
+    [ "${#apps[@]}" -gt 1 ] && extra=$(superscript "+$((${#apps[@]} - 1))")
   fi
 
   if [ "$sid" = "$focused" ]; then
