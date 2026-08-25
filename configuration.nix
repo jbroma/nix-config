@@ -4,7 +4,6 @@
   type,
   user,
   ai,
-  enableAi,
   ...
 }:
 
@@ -157,12 +156,7 @@ in
     useUserPackages = true;
     users.${user.username} = import ./home.nix;
     extraSpecialArgs = {
-      inherit
-        type
-        user
-        ai
-        enableAi
-        ;
+      inherit type user ai;
     };
   };
 

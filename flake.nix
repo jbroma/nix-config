@@ -60,16 +60,16 @@
         inputs.nix-homebrew.darwinModules.nix-homebrew
       ];
 
+      # ai = null builds a bootstrap profile without the private AI tool config.
       configuration =
         {
-          type ? "personal",
-          enableAi ? true,
+          type,
+          ai ? inputs.ai,
         }:
         inputs.darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
-            inherit type user enableAi;
-            ai = if enableAi then inputs.ai else null;
+            inherit type user ai;
           };
           modules = darwinModules ++ [
             {
@@ -114,11 +114,11 @@
         personal = configuration { type = "personal"; };
         work-bootstrap = configuration {
           type = "work";
-          enableAi = false;
+          ai = null;
         };
         personal-bootstrap = configuration {
           type = "personal";
-          enableAi = false;
+          ai = null;
         };
       };
 

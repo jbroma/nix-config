@@ -4,10 +4,13 @@
   pkgs,
   type,
   ai,
-  enableAi,
   ...
 }:
 
+let
+  # Bootstrap profiles pass ai = null: no AI tool config until the private input is reachable.
+  enableAi = ai != null;
+in
 {
   # Symlink ai flake input to ~/.nix/ai for visibility
   home.file.".nix/ai" = lib.mkIf enableAi {
