@@ -38,14 +38,6 @@ let
         "chrome-devtools-mcp@latest"
       ];
     };
-    shadcn = {
-      command = "npx";
-      args = [
-        "-y"
-        "shadcn@latest"
-        "mcp"
-      ];
-    };
   };
 
   personalMcpServers = {
