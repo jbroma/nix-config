@@ -3,14 +3,28 @@
   pkgs,
   type,
   user,
-  utils,
-  allowedUnfreePackages,
   ai,
-  enableAi ? true,
+  enableAi,
   ...
 }:
 
 let
+  allowedUnfreePackages = [
+    # "Xcode.app"
+    "1password"
+    "1password-gui"
+    "claude-code"
+    "codex-cli"
+    "google-chrome"
+    "lmstudio"
+    "maestro-studio"
+    "obsidian"
+    "orbstack"
+    "raycast"
+    "slack"
+    "vscode-extension-mhutchie-git-graph"
+  ];
+
   mkLaunchAgent = path: {
     serviceConfig = {
       Disabled = false;
@@ -150,7 +164,6 @@ in
       inherit
         type
         user
-        utils
         ai
         enableAi
         ;

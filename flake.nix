@@ -43,26 +43,7 @@
     let
       lib = inputs.nixpkgs.lib;
       system = "aarch64-darwin";
-      allowedUnfreePackages = [
-        # "Xcode.app"
-        "1password"
-        "1password-gui"
-        "claude-code"
-        "codex-cli"
-        "google-chrome"
-        "lmstudio"
-        "maestro-studio"
-        "obsidian"
-        "orbstack"
-        "raycast"
-        "slack"
-        "vscode-extension-mhutchie-git-graph"
-      ];
-      allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfreePackages;
-      pkgs = import inputs.nixpkgs {
-        inherit system;
-        config.allowUnfreePredicate = allowUnfreePredicate;
-      };
+      pkgs = inputs.nixpkgs.legacyPackages.${system};
 
       treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
@@ -70,13 +51,6 @@
       };
 
       user = import ./user.nix;
-      utils = import ./lib.nix;
-
-      # Automatically call all packages in ./pkgs
-      customPkgs = pkgs.lib.attrsets.mapAttrs' (name: _: {
-        name = pkgs.lib.strings.removeSuffix ".nix" name;
-        value = pkgs.callPackage (./pkgs + "/${name}") { };
-      }) (builtins.readDir ./pkgs);
 
       darwinModules = [
         ./configuration.nix
@@ -92,13 +66,7 @@
         inputs.darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
-            inherit
-              type
-              user
-              utils
-              allowedUnfreePackages
-              enableAi
-              ;
+            inherit type user enableAi;
             ai = if enableAi then inputs.ai else null;
           };
           modules = darwinModules ++ [
@@ -124,26 +92,26 @@
             }
             {
               nixpkgs.overlays = [
-                (_: super: {
-                  # xcode = pkgs.darwin.xcode_26;
-                  agent-browser = customPkgs.agent-browser;
-                  agent-device = customPkgs.agent-device;
-                  minisim = customPkgs.minisim;
-                  claude-code = customPkgs.claude-code;
-                  codex-cli = customPkgs.codex-cli;
-                  lmstudio = super.lmstudio.overrideAttrs (old: {
-                    # nixpkgs' darwin.sigtool-provided codesign does not support --deep, but LM
-                    # Studio needs a recursive re-sign after patching its bundled JavaScript.
-                    installPhase =
-                      builtins.replaceStrings
-                        [ "codesign --force --deep --sign -" ]
-                        [ "/usr/bin/codesign --force --deep --sign -" ]
-                        old.installPhase;
-                  });
-                  maestro-studio = customPkgs.maestro-studio;
-                  wsmancli = customPkgs.wsmancli;
-                  vite-plus = customPkgs.vite-plus;
-                })
+                (
+                  final: prev:
+                  # Every file or directory in ./pkgs is a package of the same name.
+                  lib.mapAttrs' (name: _: {
+                    name = lib.removeSuffix ".nix" name;
+                    value = final.callPackage (./pkgs + "/${name}") { };
+                  }) (builtins.readDir ./pkgs)
+                  // {
+                    # xcode = final.darwin.xcode_26;
+                    lmstudio = prev.lmstudio.overrideAttrs (old: {
+                      # nixpkgs' darwin.sigtool-provided codesign does not support --deep, but LM
+                      # Studio needs a recursive re-sign after patching its bundled JavaScript.
+                      installPhase =
+                        builtins.replaceStrings
+                          [ "codesign --force --deep --sign -" ]
+                          [ "/usr/bin/codesign --force --deep --sign -" ]
+                          old.installPhase;
+                    });
+                  }
+                )
                 inputs.nix-vscode-extensions.overlays.default
               ];
             }

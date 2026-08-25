@@ -4,7 +4,7 @@
   pkgs,
   type,
   ai,
-  enableAi ? true,
+  enableAi,
   ...
 }:
 
