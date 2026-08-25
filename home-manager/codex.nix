@@ -65,10 +65,6 @@ let
   codexConfigScript = ../scripts/generate-codex-config.sh;
 in
 {
-  home.sessionVariables = {
-    CODEX_HOME = "$HOME/.codex";
-  };
-
   # Symlinks from ai submodule
   home.file.".codex/AGENTS.md".text = config.ai.instructions;
   home.file.".codex/agents".source = "${ai}/agents/codex";
