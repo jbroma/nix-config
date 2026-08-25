@@ -3,8 +3,10 @@
 
 BAR_BG=0x4a181a22
 BAR_BORDER=0x2ab0b8cc
-PILL_BG=0x5a363537
-PILL_BORDER=0x2ab0b8cc
+# Pills are outlines on the glass, not fills.
+OUTLINE=0x40b0b8cc
+OUTLINE_DIM=0x1fb0b8cc
+OUTLINE_FOCUS=0xd9f7f1ff
 WHITE=0xfff7f1ff
 WHITE_70=0xb3f7f1ff
 WHITE_50=0x998b888f
@@ -13,9 +15,10 @@ YELLOW=0xfffce566
 RED=0xfffc618d
 
 FONT="Hack Nerd Font"
-ICON_FONT="$FONT:Bold:16.0"
+ICON_FONT="$FONT:Bold:13.0"
+LABEL_FONT="$FONT:Bold:11.0"
 # Ligature font: ":google_chrome:" renders as the Chrome logo (sketchybar-app-font).
-APP_FONT="sketchybar-app-font:Regular:16.0"
+APP_FONT="sketchybar-app-font:Regular:14.0"
 
 # App name -> app font ligature. Needs icon_map.sh sourced (it defines __icon_map).
 app_icon() {
@@ -27,19 +30,9 @@ app_icon() {
 }
 
 # Nerd Font Font Awesome icons (literal unicode)
+ICON_CPU="" # U+F2DB
 ICON_APPLE="" # U+F179
 ICON_VOLUME="" # U+F028
 ICON_WIFI="" # U+F1EB
 
-# What each workspace is for; shown while the workspace is empty.
-WORKSPACE_ICONS=(
-  [1]="" # U+F108 terminal
-  [2]="" # U+F0AC browser
-  [3]="" # U+F120 ChatGPT / Zed
-  [4]="" # U+F121 Cursor
-  [5]="" # U+F07B misc
-  [6]="" # U+F249 Notes
-  [7]="" # U+F198 Slack
-  [8]="" # U+F1FF Discord
-  [9]="" # U+F1BC Spotify
-)
+WORKSPACES=(1 2 3 4 5 6 7 8 9)
