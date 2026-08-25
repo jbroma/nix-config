@@ -1,36 +1,39 @@
 ---
 name: pkg-update
-description: Update local Nix packages in pkgs/ - fetches latest versions, updates hashes, verifies builds
-allowed-tools: Bash, Read, Edit, Grep, Glob, WebFetch, WebSearch
+description: Update local Nix packages in pkgs/ - fetches latest versions, updates hashes, verifies builds without applying the system
+allowed-tools: Bash, Read, Edit, Grep, Glob
 ---
 
 # Package Update Skill
 
-Updates local packages in `~/.nix/pkgs/`.
-
-**Never run `mise run switch` - only build and verify.**
-
-## Package Reference
-
-| Package | Source Type | Version Check |
-|---------|-------------|---------------|
-| claude-code | npm registry | `curl -s "https://registry.npmjs.org/@anthropic-ai/claude-code/latest" \| jq -r '.version'` |
-| minisim | GitHub releases | `gh api repos/okwasniewski/MiniSim/releases/latest --jq '.tag_name'` |
-| cleanshot-x | Direct URL | WebFetch `https://cleanshot.com/changelog` |
-| android-studio | Google redirector | WebFetch `https://developer.android.com/studio/releases` + verify |
-| codex-app | Static URL | `nix-prefetch-url` the URL, compare hash. Version extracted from `Info.plist` post-build (build fails on mismatch) |
+Updates local packages in `~/.nix/pkgs/`. Build and verify only; never apply the system.
 
 ## Workflow
 
-1. Read all `pkgs/*.nix` files to get current versions
-2. Run version checks in parallel (first 4 packages above)
-3. For packages needing update: `nix-prefetch-url`, edit file, verify build
-4. Build: `nix build .#darwinConfigurations.personal.system --no-link`
+1. Run the repo updater first: `mise run pkg-update-script` (`./scripts/pkg-update.sh`). It covers claude-code, codex-cli, maestro-studio, minisim and vite-plus, and skips a package when the pinned version already matches upstream.
+2. For the packages the script does not cover, or when it fails, update by hand: bump `version` and any URL segment tied to it, then prefetch the hash:
+   - SRI: `nix store prefetch-file --json "$url" | jq -r '.hash'`
+   - hex: `nix hash convert --from sri --to base16 "$sri"`
+3. Verify both configs:
+   - `nix build .#darwinConfigurations.personal.system --no-link`
+   - `nix build .#darwinConfigurations.work.system --no-link`
+
+## Package Reference
+
+| Package | Upstream check | Hash format | Notes |
+|---------|----------------|-------------|-------|
+| `agent-browser` | `gh api repos/vercel-labs/agent-browser/releases/latest --jq '.tag_name' \| sed 's/^v//'` | SRI (`hash`) | Manual. Prebuilt `agent-browser-darwin-arm64` release asset. |
+| `agent-device` | `curl -fsSL https://registry.npmjs.org/agent-device/latest \| jq -r '.version'` | SRI (`hash`, `npmDeps.hash`) | Manual. Regenerate `package-lock.json` as described in the file header, then `nix run nixpkgs#prefetch-npm-deps -- pkgs/agent-device/package-lock.json` for `npmDeps.hash`. |
+| `claude-code` | `curl -fsSL https://registry.npmjs.org/@anthropic-ai/claude-code/latest \| jq -r '.version'` | SRI (`hash`) | Script. Native binary from the GCS bucket, npm version is only the candidate; the script checks the binary URL exists. |
+| `codex-cli` | `gh api repos/openai/codex/releases/latest --jq '.tag_name' \| sed 's/^rust-v//'` | SRI (`hash`) | Script. Release tag is `rust-v${version}`; asset is `codex-package-aarch64-apple-darwin.tar.gz`. |
+| `maestro-studio` | `gh api repos/mobile-dev-inc/maestro-studio/releases/latest` | hex (`sha256`) | Script (reads the asset digest from the release). Build fails with the real version if `Info.plist` disagrees. |
+| `minisim` | `gh api repos/okwasniewski/MiniSim/releases/latest --jq '.tag_name' \| sed 's/^v//'` | hex (`sha256`) | Script. Asset is `MiniSim.app.zip`. |
+| `vite-plus` | `curl -fsSL 'https://registry.npmjs.org/@voidzero-dev%2Fvite-plus-cli-darwin-arm64/latest' \| jq -r '.version'` | SRI (`hash`) | Script. Platform tarball from npm; `home-manager/vite-plus.nix` bootstraps the matching global install on switch. |
+| `wsmancli` | `gh api repos/Openwsman/wsmancli/tags --jq '.[0].name'` (and `Openwsman/openwsman` for the bundled lib) | SRI (`hash`) | Manual, rarely changes. Built from source; two versions in one file. |
 
 ## Gotchas
 
-- **claude-code**: Old manifest.json URL is dead. Use npm registry.
-- **android-studio**: HEAD returns 302 even for non-existent versions. Must verify actual download works. Canary builds have "Android Studio Preview.app" - reject these. The releases page doesn't expose version numbers reliably via WebFetch - if current URL works, keep it.
-- **Build verification**: Packages are overlays, use `.#darwinConfigurations.personal.system` not `.#<package>`
-- **Hash format**: Match existing format in file (base32, hex, or SRI). To convert nix32 → hex: `nix hash convert --from nix32 --to base16 --hash-algo sha256 "<hash>"`
-- **curl not curlie**: curlie defaults to POST which breaks APIs
+- Packages are overlays: build `.#darwinConfigurations.<profile>.system`, not `.#<package>`.
+- Match the hash format already used in each file (`hash` SRI vs `sha256` hex).
+- Use `curl`, not `curlie`, for version lookups (curlie defaults to POST).
+- A brand-new, untracked package file needs a `path:` flake reference (or `git add`) before Nix sees it.
