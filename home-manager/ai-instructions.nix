@@ -13,7 +13,10 @@ let
     in
     lib.concatStringsSep "---\n" (lib.drop 2 parts);
 
-  alwaysApply = [ "unslop" ];
+  alwaysApply = [
+    "unslop"
+    "principle-minimize-reader-load"
+  ];
 in
 {
   options.ai.instructions = lib.mkOption {
