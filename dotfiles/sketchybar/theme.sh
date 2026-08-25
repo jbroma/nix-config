@@ -13,8 +13,18 @@ YELLOW=0xfffce566
 RED=0xfffc618d
 
 FONT="Hack Nerd Font"
+ICON_FONT="$FONT:Bold:16.0"
 # Ligature font: ":google_chrome:" renders as the Chrome logo (sketchybar-app-font).
 APP_FONT="sketchybar-app-font:Regular:16.0"
+
+# App name -> app font ligature. Needs icon_map.sh sourced (it defines __icon_map).
+app_icon() {
+  case "$1" in
+    # The font's wezterm glyph is a wide "$W" wordmark; use the plain terminal one.
+    WezTerm) icon_result=":terminal:" ;;
+    *) __icon_map "$1" ;;
+  esac
+}
 
 # Nerd Font Font Awesome icons (literal unicode)
 ICON_APPLE="" # U+F179

@@ -13,7 +13,7 @@ for sid in "${!WORKSPACE_ICONS[@]}"; do
   icons=""
   while IFS='|' read -r ws app; do
     [ "$ws" = "$sid" ] || continue
-    __icon_map "$app"
+    app_icon "$app"
     icons+="$icon_result"
   done <<<"$windows"
 
@@ -31,7 +31,7 @@ for sid in "${!WORKSPACE_ICONS[@]}"; do
   if [ -n "$icons" ]; then
     args+=(--set "space.$sid" icon="$icons" icon.font="$APP_FONT")
   else
-    args+=(--set "space.$sid" icon="${WORKSPACE_ICONS[$sid]}" icon.font="$FONT:Bold:14.0")
+    args+=(--set "space.$sid" icon="${WORKSPACE_ICONS[$sid]}" icon.font="$ICON_FONT")
   fi
   args+=(icon.color=$color label.color=$color background.drawing=$pill)
 done
