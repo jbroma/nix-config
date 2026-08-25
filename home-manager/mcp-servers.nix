@@ -31,13 +31,6 @@ let
       url = "https://mcp.grep.app";
     };
 
-    chrome-devtools = {
-      command = "npx";
-      args = [
-        "-y"
-        "chrome-devtools-mcp@latest"
-      ];
-    };
   };
 
   personalMcpServers = {
