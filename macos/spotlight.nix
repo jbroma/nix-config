@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   # Hide Spotlight from menu bar
@@ -11,6 +11,6 @@
   # Disable Spotlight indexing on all volumes
   system.activationScripts.postActivation.text = ''
     echo "Disabling Spotlight indexing..."
-    sudo mdutil -a -i off &>/dev/null || true
+    mdutil -a -i off &>/dev/null || true
   '';
 }
