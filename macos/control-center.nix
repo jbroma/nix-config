@@ -13,9 +13,5 @@ _:
     ShowSeconds = false;
   };
 
-  system.defaults.CustomUserPreferences = {
-    "com.apple.controlcenter" = {
-      BatteryShowPercentage = false;
-    };
-  };
+  system.defaults.controlcenter.BatteryShowPercentage = false;
 }
