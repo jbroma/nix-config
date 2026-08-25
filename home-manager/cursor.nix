@@ -125,12 +125,26 @@ in
 {
   # Cursor is kept on its own copies (skills, agents, hooks); the IDE toggle
   # "Include third-party Plugins, Skills, and other configs" stays off so it
-  # never reads ~/.claude or ~/.codex. Global rules have no file form: paste
-  # CORE.md into Cursor Settings > Rules (User Rules) by hand.
+  # never reads ~/.claude or ~/.codex. Global rules come from a local Cursor
+  # plugin (the documented file-based route: ~/.cursor/plugins/local/<name>
+  # with .cursor-plugin/plugin.json and rules/*.mdc); User Rules in the
+  # Settings UI are account-synced text and are not managed here.
   home.file = {
     ".cursor/skills".source = "${ai}/skills";
     ".cursor/hooks".source = "${ai}/hooks";
     ".cursor/hooks.json".source = cursorHooks;
+    ".cursor/plugins/local/ai-sauce/.cursor-plugin/plugin.json".text = builtins.toJSON {
+      name = "ai-sauce";
+      description = "Personal rules from ai-sauce CORE.md";
+    };
+    ".cursor/plugins/local/ai-sauce/rules/core.mdc".text = ''
+      ---
+      description: Shared personal instructions from ai-sauce CORE.md
+      alwaysApply: true
+      ---
+
+      ${builtins.readFile "${ai}/CORE.md"}
+    '';
   }
   // cursorAgentFiles
   // builtins.listToAttrs extensionLinks;
