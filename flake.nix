@@ -85,34 +85,22 @@
                 };
               };
             }
-            {
-              homebrew.taps = [
-                "felixkratz/formulae"
-                "nikitabobko/tap"
-                "malpern/tap"
-              ];
-            }
+            (
+              { config, ... }:
+              {
+                # Immutable taps: the Brewfile must list the same taps nix-homebrew provisions.
+                homebrew.taps = builtins.attrNames config.nix-homebrew.taps;
+              }
+            )
             {
               nixpkgs.overlays = [
                 (
-                  final: prev:
+                  final: _:
                   # Every file or directory in ./pkgs is a package of the same name.
                   lib.mapAttrs' (name: _: {
                     name = lib.removeSuffix ".nix" name;
                     value = final.callPackage (./pkgs + "/${name}") { };
                   }) (builtins.readDir ./pkgs)
-                  // {
-                    # xcode = final.darwin.xcode_26;
-                    lmstudio = prev.lmstudio.overrideAttrs (old: {
-                      # nixpkgs' darwin.sigtool-provided codesign does not support --deep, but LM
-                      # Studio needs a recursive re-sign after patching its bundled JavaScript.
-                      installPhase =
-                        builtins.replaceStrings
-                          [ "codesign --force --deep --sign -" ]
-                          [ "/usr/bin/codesign --force --deep --sign -" ]
-                          old.installPhase;
-                    });
-                  }
                 )
                 inputs.nix-vscode-extensions.overlays.default
               ];
