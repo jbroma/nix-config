@@ -39,9 +39,6 @@ EOF
 # Skip tracking user.nix changes from git
 git -C ~/.nix update-index --skip-worktree user.nix
 
-# Delete nix.conf since it's managed by nix-darwin
-sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin
-
 # Hide Nix Store from root
 sudo chflags hidden /nix
 
