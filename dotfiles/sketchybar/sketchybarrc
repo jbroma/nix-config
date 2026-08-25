@@ -29,6 +29,10 @@ island=(
   background.height=32
   background.corner_radius=12
   blur_radius=64
+  background.shadow.drawing=on
+  background.shadow.color=0x66000000
+  background.shadow.angle=90
+  background.shadow.distance=3
 )
 
 # Helpers that outlive this script: restart them on every (re)load.
@@ -40,7 +44,7 @@ pkill -f aerospace_events.sh 2>/dev/null || true
 "$PLUGIN_DIR/aerospace_events.sh" >/dev/null 2>&1 &
 
 ##### Defaults #####
-# Every item is a hairline-outlined pill on the glass, no fill.
+# Every item is a frosted pill on the island: faint white fill, light rim, soft shadow.
 default=(
   icon.font="$ICON_FONT"
   label.font="$LABEL_FONT"
@@ -54,9 +58,13 @@ default=(
   padding_right=3
   background.height=22
   background.corner_radius=7
-  background.color=0x00000000
+  background.color=$GLASS_FILL
   background.border_color=$OUTLINE
   background.border_width=1
+  background.shadow.drawing=on
+  background.shadow.color=0x40000000
+  background.shadow.angle=90
+  background.shadow.distance=1
   background.drawing=on
 )
 sketchybar --default "${default[@]}"
@@ -90,6 +98,7 @@ for sid in "${WORKSPACES[@]}"; do
       label.font="$ICON_FONT" \
       label.color=$WHITE_50 \
       label.padding_right=6 \
+      background.color=$GLASS_FILL_DIM \
       background.border_color=$OUTLINE_DIM \
       click_script="aerospace workspace $sid"
 done

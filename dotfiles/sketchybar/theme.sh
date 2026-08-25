@@ -1,12 +1,16 @@
 #!/bin/bash
 # Palette, fonts and workspace icons shared by sketchybarrc and the plugins.
 
+# Islands: tinted, blurred glass slabs with a light rim.
 BAR_BG=0x4a181a22
-BAR_BORDER=0x2ab0b8cc
-# Pills are outlines on the glass, not fills.
-OUTLINE=0x40b0b8cc
-OUTLINE_DIM=0x1fb0b8cc
-OUTLINE_FOCUS=0xd9f7f1ff
+BAR_BORDER=0x33ffffff
+# Pills inside them: frosted white, lit from the rim. Alpha is the whole effect.
+GLASS_FILL=0x12ffffff
+GLASS_FILL_DIM=0x08ffffff
+GLASS_FILL_FOCUS=0x30ffffff
+OUTLINE=0x2effffff
+OUTLINE_DIM=0x14ffffff
+OUTLINE_FOCUS=0x8cffffff
 WHITE=0xfff7f1ff
 WHITE_70=0xb3f7f1ff
 WHITE_50=0x998b888f

@@ -19,14 +19,11 @@ for sid in "${WORKSPACES[@]}"; do
   done <<<"$windows"
 
   if [ "$sid" = "$focused" ]; then
-    color=$WHITE
-    outline=$OUTLINE_FOCUS
+    color=$WHITE fill=$GLASS_FILL_FOCUS outline=$OUTLINE_FOCUS
   elif [ -n "$icons" ]; then
-    color=$WHITE_70
-    outline=$OUTLINE
+    color=$WHITE_70 fill=$GLASS_FILL outline=$OUTLINE
   else
-    color=$WHITE_50
-    outline=$OUTLINE_DIM
+    color=$WHITE_50 fill=$GLASS_FILL_DIM outline=$OUTLINE_DIM
   fi
 
   if [ -n "$icons" ]; then
@@ -34,7 +31,7 @@ for sid in "${WORKSPACES[@]}"; do
   else
     args+=(--set "space.$sid" label="${WORKSPACE_ICONS[$sid]}" label.font="$ICON_FONT")
   fi
-  args+=(icon.color=$color label.color=$color background.border_color=$outline)
+  args+=(icon.color=$color label.color=$color background.color=$fill background.border_color=$outline)
 done
 
 sketchybar --animate tanh 10 "${args[@]}"
