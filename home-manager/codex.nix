@@ -70,6 +70,8 @@ in
   home.file.".codex/agents".source = "${ai}/agents/codex";
   home.file.".codex/skills".source = "${ai}/skills";
   home.file.".codex/rules/default.rules".source = "${ai}/rules/codex.rules";
+  # Same PreToolUse Bash hook (dcg) as Claude Code; Codex reads this file since 0.125.
+  home.file.".codex/hooks.json".text = builtins.toJSON { hooks = config.ai.hooks; };
 
   # Merge ~/.codex/config.toml at activation time so trusted projects can be
   # discovered dynamically without deleting Codex-managed plugin/app state.

@@ -24,6 +24,7 @@ in
       agent-browser
       agent-device
       bun
+      dcg
       fd
       fontconfig
       gh
