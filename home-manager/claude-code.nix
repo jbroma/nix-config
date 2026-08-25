@@ -92,6 +92,10 @@ let
     alwaysThinkingEnabled = true;
     # Built-in style: result first, no narration, short by default; full detail on request.
     outputStyle = "Concise";
+    # Less on screen: focus view hides tool-call noise; no thinking summaries or turn timer.
+    viewMode = "focus";
+    showThinkingSummaries = false;
+    showTurnDuration = false;
     # Native completion/permission notifications: OSC 9, which WezTerm shows as a macOS notification.
     preferredNotifChannel = "iterm2";
     # Claude-specific environment configuration belongs in settings.json.

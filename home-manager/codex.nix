@@ -51,6 +51,7 @@ let
     sandbox_mode = "workspace-write";
     model_reasoning_effort = "high";
     model_reasoning_summary = "concise";
+    hide_agent_reasoning = true;
     model_verbosity = "low";
     # Built-in web search is off; web access goes through the exa/firecrawl/context7
     # MCP servers (ai-sauce skills/web-research).
