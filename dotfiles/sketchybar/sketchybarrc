@@ -128,7 +128,7 @@ sketchybar --add item clock right \
 
 sketchybar --add item battery right \
   --set battery \
-    update_freq=120 \
+    update_freq=10 \
     icon.font="$FONT:Bold:16.0" \
     icon.padding_left=10 \
     icon.padding_right=4 \
