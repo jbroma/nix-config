@@ -20,21 +20,14 @@ let
   };
 in
 {
-  # use Determinate Nix daemon
+  # Determinate Nix owns /etc/nix/nix.conf and the daemon, so `nix.settings` is
+  # ignored; user settings go in the nix.custom.conf it includes.
   nix.enable = false;
-
-  nix.settings = {
-    experimental-features = "nix-command flakes";
-    trusted-users = [
-      "root"
-      user.username
-    ];
-    keep-going = true;
-    keep-failed = true;
-    keep-outputs = true;
-    show-trace = true;
-    sandbox = true;
-  };
+  environment.etc."nix/nix.custom.conf".text = ''
+    trusted-users = root ${user.username}
+    keep-going = true
+    show-trace = true
+  '';
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfreePackages;
 
