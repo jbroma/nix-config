@@ -50,7 +50,7 @@ let
     approvals_reviewer = "auto_review";
     sandbox_mode = "workspace-write";
     model_reasoning_effort = "high";
-    model_reasoning_summary = "auto";
+    model_reasoning_summary = "concise";
     model_verbosity = "low";
     # Built-in web search is off; web access goes through the exa/firecrawl/context7
     # MCP servers (ai-sauce skills/web-research).
