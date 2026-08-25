@@ -135,7 +135,7 @@ in
   home.activation.setupMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run ${../scripts/merge-mcp-servers.sh} \
       "${config.home.homeDirectory}/.claude.json" \
-      '${mcpServersJson}' \
+      "${pkgs.writeText "mcp-servers.json" mcpServersJson}" \
       "${pkgs.jq}/bin/jq"
   '';
 
