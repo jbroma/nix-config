@@ -51,7 +51,6 @@ in
       with pkgs;
       [
         # xcode
-        claude-code
         codex-cli
         maestro-studio
         openscreen
@@ -62,13 +61,10 @@ in
         minisim
         git
         oh-my-posh
-        nerd-fonts.fira-code
-        nerd-fonts.hack
         nixfmt
         cmake
         ninja
         mkcert
-        vim
         gnupg
         dnsmasq
         exiftool
