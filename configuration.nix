@@ -208,57 +208,6 @@ in
     if ! xcode-select --version 2>/dev/null; then
       xcode-select --install
     fi
-
-    remove_nix_app_link() {
-      app_link="/Applications/$1.app"
-
-      if [ -L "$app_link" ]; then
-        target=$(readlink "$app_link")
-        case "$target" in
-          "/Applications/Nix Apps/"*)
-            rm -f "$app_link"
-            ;;
-        esac
-      fi
-    }
-
-    remove_nix_app_link "Android Studio"
-    remove_nix_app_link "ChatGPT"
-    remove_nix_app_link "Claude"
-    remove_nix_app_link "CleanShot X"
-    remove_nix_app_link "Codex"
-    remove_nix_app_link "Cursor"
-    remove_nix_app_link "WezTerm"
-    remove_nix_app_link "Zed"
-
-    spotify_update_dir="/Users/${user.username}/Library/Application Support/Spotify/PersistentCache/Update"
-    if [ -e "$spotify_update_dir" ]; then
-      /usr/bin/chflags -R nouchg "$spotify_update_dir" 2>/dev/null || true
-    fi
-
-    sketchybar_homebrew_bin="/opt/homebrew/bin/sketchybar"
-    if [ -L "$sketchybar_homebrew_bin" ]; then
-      case "$(readlink "$sketchybar_homebrew_bin")" in
-        /etc/profiles/per-user/*/bin/sketchybar)
-          rm -f "$sketchybar_homebrew_bin"
-          ;;
-      esac
-    fi
-
-    brew_as_user() {
-      sudo --user=${user.username} --set-home /opt/homebrew/bin/brew "$@"
-    }
-
-    if [ -x /opt/homebrew/bin/brew ] \
-      && brew_as_user list --cask codex-app >/dev/null 2>&1; then
-      brew_as_user uninstall --cask codex-app
-    fi
-
-    if [ -x /opt/homebrew/bin/brew ] \
-      && brew_as_user list --cask wezterm >/dev/null 2>&1 \
-      && ! brew_as_user list --cask wezterm@nightly >/dev/null 2>&1; then
-      brew_as_user uninstall --cask wezterm
-    fi
   '';
 
   system.activationScripts.postActivation.text = lib.mkAfter (
