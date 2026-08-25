@@ -6,11 +6,7 @@
   ...
 }:
 let
-  cursorSettingsPath = builtins.path {
-    path = ../dotfiles/vscode/settings.json;
-    name = "source";
-  };
-  cursorSettingsJson = builtins.fromJSON (builtins.readFile cursorSettingsPath);
+  cursorSettingsJson = builtins.fromJSON (builtins.readFile ../dotfiles/vscode/settings.json);
 
   managedCursorSettings = cursorSettingsJson // {
     "nix.serverPath" = "${pkgs.nil}/bin/nil";

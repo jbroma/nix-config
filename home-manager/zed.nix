@@ -4,17 +4,8 @@
   ...
 }:
 let
-  zedSettingsPath = builtins.path {
-    path = ../dotfiles/zed/settings.json;
-    name = "source";
-  };
-  zedSettingsJson = builtins.fromJSON (builtins.readFile zedSettingsPath);
-
-  zedKeymapPath = builtins.path {
-    path = ../dotfiles/zed/keymap.json;
-    name = "source";
-  };
-  zedKeymapJson = builtins.fromJSON (builtins.readFile zedKeymapPath);
+  zedSettingsJson = builtins.fromJSON (builtins.readFile ../dotfiles/zed/settings.json);
+  zedKeymapJson = builtins.fromJSON (builtins.readFile ../dotfiles/zed/keymap.json);
 in
 {
   programs.zed-editor = {
