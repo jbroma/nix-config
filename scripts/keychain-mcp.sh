@@ -52,7 +52,11 @@ status() {
 }
 
 sync() {
-  command -v op >/dev/null || { echo "1Password CLI (op) not found in PATH" >&2; exit 1; }
+  command -v op >/dev/null || {
+    echo "1Password CLI (op) not found in PATH. One-shot via nix:" >&2
+    echo "  NIXPKGS_ALLOW_UNFREE=1 nix shell --impure 'nixpkgs#_1password-cli' -c keychain-mcp sync" >&2
+    exit 1
+  }
   parse "$KEYCHAIN_MCP_KEYS"
   for i in "${!names[@]}"; do
     key="$(op read "${values[$i]}")"
