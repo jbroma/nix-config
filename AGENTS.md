@@ -52,9 +52,9 @@ flake.nix                    # Entry point - two configs: work, personal
 
 The `ai/` directory is a Nix flake input providing shared configuration for AI coding tools. Each tool has its own home-manager module that symlinks relevant parts:
 
-- `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks`, `~/.claude/CLAUDE.md`
-- `codex.nix`: `~/.codex/skills`, `~/.codex/agents`, `~/.codex/hooks`, `~/.codex/AGENTS.md`, `~/.codex/rules/default.rules`, generated `~/.codex/config.toml`
-- `cursor.nix`: `~/.cursor/skills`, `~/.cursor/agents`, `~/.cursor/hooks` + `hooks.json`, a local plugin `~/.cursor/plugins/local/ai-sauce` carrying CORE.md as an always-applied rule, generated `~/.cursor/mcp.json` and Cursor settings. Cursor keeps its own copies: the IDE toggle "Include third-party Plugins, Skills, and other configs" must stay off (activation warns otherwise)
+- `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks` (command blocking only), `~/.claude/agents`, `~/.claude/CLAUDE.md`
+- `codex.nix`: `~/.codex/skills`, `~/.codex/agents`, `~/.codex/AGENTS.md`, `~/.codex/rules/default.rules`, generated `~/.codex/config.toml`
+- `cursor.nix`: `~/.cursor/skills`, `~/.cursor/agents`, a local plugin `~/.cursor/plugins/local/ai-sauce` carrying CORE.md as an always-applied rule, generated `~/.cursor/mcp.json` and Cursor settings. Cursor keeps its own copies: the IDE toggle "Include third-party Plugins, Skills, and other configs" must stay off (activation warns otherwise)
 
 MCP servers are declared once in `mcp-servers.nix`; API keys live in the macOS Keychain and are injected into the Claude Code, Codex, and Cursor configs at activation (`keychain-mcp sync` seeds them from 1Password).
 

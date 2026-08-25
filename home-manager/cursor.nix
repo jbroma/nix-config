@@ -25,6 +25,8 @@ let
     "[nix]" = {
       "editor.defaultFormatter" = "jnoortheen.nix-ide";
     };
+    # Native agent-finished chime (plays when the window is not focused).
+    "cursor.composer.shouldChimeAfterChatFinishes" = true;
   };
 
   managedCursorSettingsFile = pkgs.writeText "cursor-managed-settings.json" (
@@ -36,12 +38,6 @@ let
     _: server:
     if server ? url then builtins.removeAttrs server [ "type" ] else server // { type = "stdio"; }
   ) config.mcp.servers;
-  cursorHooks = pkgs.writeText "cursor-hooks.json" (
-    builtins.toJSON {
-      version = 1;
-      hooks.stop = [ { command = "${config.home.homeDirectory}/.cursor/hooks/on-cursor-stop.sh"; } ];
-    }
-  );
   cursorMcpConfigFile = pkgs.writeText "cursor-mcp.json" (
     builtins.toJSON {
       mcpServers = cursorMcpServers;
@@ -123,7 +119,7 @@ let
   ) cursorExtensions;
 in
 {
-  # Cursor is kept on its own copies (skills, agents, hooks); the IDE toggle
+  # Cursor is kept on its own copies (skills, agents); the IDE toggle
   # "Include third-party Plugins, Skills, and other configs" stays off so it
   # never reads ~/.claude or ~/.codex. Global rules come from a local Cursor
   # plugin (the documented file-based route: ~/.cursor/plugins/local/<name>
@@ -131,8 +127,6 @@ in
   # Settings UI are account-synced text and are not managed here.
   home.file = {
     ".cursor/skills".source = "${ai}/skills";
-    ".cursor/hooks".source = "${ai}/hooks";
-    ".cursor/hooks.json".source = cursorHooks;
     ".cursor/plugins/local/ai-sauce/.cursor-plugin/plugin.json".text = builtins.toJSON {
       name = "ai-sauce";
       description = "Personal rules from ai-sauce CORE.md";

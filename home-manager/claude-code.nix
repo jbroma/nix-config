@@ -90,6 +90,8 @@ let
     switchModelsOnFlag = false;
     # Keep extended thinking enabled.
     alwaysThinkingEnabled = true;
+    # Native completion/permission notifications: OSC 9, which WezTerm shows as a macOS notification.
+    preferredNotifChannel = "iterm2";
     # Claude-specific environment configuration belongs in settings.json.
     env = {
       DISABLE_AUTOUPDATER = "1";

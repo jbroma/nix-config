@@ -9,8 +9,6 @@
 let
   # Codex: TOML format, mcp_servers key, strip "type" field for HTTP servers
   tomlFormat = pkgs.formats.toml { };
-  codexHooksDir = "${config.home.homeDirectory}/.codex/hooks";
-  codexNotifyScript = "${codexHooksDir}/on-codex-notify.sh";
   codexMcpServers = lib.mapAttrs (
     _: server: lib.filterAttrs (k: _: k != "type") server
   ) config.mcp.servers;
@@ -77,12 +75,13 @@ let
     };
 
     history.persistence = "save-all";
-    notify = [ codexNotifyScript ];
 
     tui = {
       animations = true;
       show_tooltips = false;
+      # Native turn-complete/approval notifications: OSC 9, which WezTerm shows as a macOS notification.
       notifications = true;
+      notification_method = "osc9";
     };
 
     desktop = {
@@ -105,7 +104,6 @@ in
   # Symlinks from ai submodule
   home.file.".codex/AGENTS.md".source = "${ai}/CORE.md";
   home.file.".codex/agents".source = "${ai}/agents/codex";
-  home.file.".codex/hooks".source = "${ai}/hooks";
   home.file.".codex/skills".source = "${ai}/skills";
   home.file.".codex/rules/default.rules".source = "${ai}/rules/codex.rules";
 
