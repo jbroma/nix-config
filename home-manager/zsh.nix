@@ -40,9 +40,6 @@
     '';
 
     profileExtra = ''
-      source "${config.home.homeDirectory}/.zsh/mise-project-config.zsh"
-      eval "$(${pkgs.mise}/bin/mise hook-env -s zsh)"
-
       source "$HOME/.orbstack/shell/init.zsh" 2>/dev/null || :
     '';
 
