@@ -18,6 +18,7 @@
     with pkgs;
     [
       # dev
+      agent-browser
       bat
       bun
       delta

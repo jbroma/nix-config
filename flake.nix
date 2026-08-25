@@ -123,6 +123,7 @@
               nixpkgs.overlays = [
                 (_: super: {
                   # xcode = pkgs.darwin.xcode_26;
+                  agent-browser = customPkgs.agent-browser;
                   minisim = customPkgs.minisim;
                   claude-code = customPkgs.claude-code;
                   codex-cli = customPkgs.codex-cli;
