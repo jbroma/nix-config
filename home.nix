@@ -94,7 +94,6 @@
   ++ lib.optionals enableAi [
     ./home-manager/cursor.nix
     ./home-manager/claude-code.nix
-    ./home-manager/gemini.nix
     ./home-manager/codex.nix
   ];
 }
