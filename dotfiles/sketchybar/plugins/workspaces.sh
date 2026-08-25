@@ -1,7 +1,6 @@
 #!/bin/bash
 # Refresh every workspace item in one sketchybar call.
-# Each pill: the workspace number, then the icons of the apps open in it.
-# focused: lighter capsule; non-empty: bright text; empty: dim number and purpose icon.
+# focused: highlighted pill; non-empty: icons of the apps in it; empty: dimmed purpose icon.
 
 source "$CONFIG_DIR/theme.sh"
 source "$(command -v icon_map.sh)"
@@ -10,7 +9,7 @@ focused="${FOCUSED_WORKSPACE:-$(aerospace list-workspaces --focused)}"
 windows=$(aerospace list-windows --all --format '%{workspace}|%{app-name}' | sort -u)
 
 args=()
-for sid in "${WORKSPACES[@]}"; do
+for sid in "${!WORKSPACE_ICONS[@]}"; do
   icons=""
   while IFS='|' read -r ws app; do
     [ "$ws" = "$sid" ] || continue
@@ -19,19 +18,22 @@ for sid in "${WORKSPACES[@]}"; do
   done <<<"$windows"
 
   if [ "$sid" = "$focused" ]; then
-    color=$WHITE capsule=on
+    color=$WHITE
+    pill=on
   elif [ -n "$icons" ]; then
-    color=$WHITE_90 capsule=off
+    color=$WHITE_70
+    pill=off
   else
-    color=$WHITE_50 capsule=off
+    color=$WHITE_50
+    pill=off
   fi
 
   if [ -n "$icons" ]; then
-    args+=(--set "space.$sid" label="$icons" label.font="$APP_FONT")
+    args+=(--set "space.$sid" icon="$icons" icon.font="$APP_FONT")
   else
-    args+=(--set "space.$sid" label="${WORKSPACE_ICONS[$sid]}" label.font="$ICON_FONT")
+    args+=(--set "space.$sid" icon="${WORKSPACE_ICONS[$sid]}" icon.font="$ICON_FONT")
   fi
-  args+=(icon.color=$color label.color=$color background.drawing=$capsule)
+  args+=(icon.color=$color label.color=$color background.drawing=$pill)
 done
 
-sketchybar --animate tanh 10 "${args[@]}"
+sketchybar "${args[@]}"

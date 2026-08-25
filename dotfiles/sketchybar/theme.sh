@@ -1,28 +1,21 @@
 #!/bin/bash
 # Palette, fonts and workspace icons shared by sketchybarrc and the plugins.
 
-# Liquid glass islands (see glass_island in sketchybarrc): a frosted base, two
-# translucent layers hugging the top edge for a top-to-bottom gradient, a bright
-# hairline rim nudged up and a dark one nudged down for a lit top / shaded bottom.
-ISLAND_FILL=0x1fffffff
-ISLAND_GLOW=0x0fffffff
-ISLAND_RIM_HI=0x8cffffff
-ISLAND_RIM_LO=0x33000000
-ISLAND_SHADOW=0x66000000
-# The focused workspace's capsule inside the island.
-FOCUS_FILL=0x47ffffff
-WHITE=0xffffffff
-WHITE_90=0xe6ffffff
-WHITE_50=0x80ffffff
+BAR_BG=0x4a181a22
+BAR_BORDER=0x2ab0b8cc
+PILL_BG=0x5a363537
+PILL_BORDER=0x2ab0b8cc
+WHITE=0xfff7f1ff
+WHITE_70=0xb3f7f1ff
+WHITE_50=0x998b888f
 GREEN=0xff7bd88f
 YELLOW=0xfffce566
 RED=0xfffc618d
 
 FONT="Hack Nerd Font"
-ICON_FONT="$FONT:Bold:13.0"
-LABEL_FONT="$FONT:Bold:11.0"
+ICON_FONT="$FONT:Bold:16.0"
 # Ligature font: ":google_chrome:" renders as the Chrome logo (sketchybar-app-font).
-APP_FONT="sketchybar-app-font:Regular:14.0"
+APP_FONT="sketchybar-app-font:Regular:16.0"
 
 # App name -> app font ligature. Needs icon_map.sh sourced (it defines __icon_map).
 app_icon() {
@@ -38,9 +31,7 @@ ICON_APPLE="" # U+F179
 ICON_VOLUME="" # U+F028
 ICON_WIFI="" # U+F1EB
 
-WORKSPACES=(1 2 3 4 5 6 7 8 9)
-
-# What each workspace is for; shown while it is empty.
+# What each workspace is for; shown while the workspace is empty.
 WORKSPACE_ICONS=(
   [1]="" # U+F108 terminal
   [2]="" # U+F0AC browser
