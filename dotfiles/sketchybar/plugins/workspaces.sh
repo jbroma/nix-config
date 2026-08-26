@@ -1,67 +1,25 @@
 #!/bin/bash
 # Refresh every workspace item in one sketchybar call.
-# focused: highlighted pill; non-empty: icon of its main app, "+N" for the other
-# apps in it; empty: dimmed purpose icon.
-# The main app is the focused window's app on the focused workspace, otherwise
-# the first window AeroSpace lists there.
+# focused: highlighted pill; non-empty: bright icon; empty: dimmed icon.
 
 source "$CONFIG_DIR/theme.sh"
-source "$(command -v icon_map.sh)"
 
 focused="${FOCUSED_WORKSPACE:-$(aerospace list-workspaces --focused)}"
-focused_app=$(aerospace list-windows --focused --format '%{app-name}' 2>/dev/null)
-windows=$(aerospace list-windows --all --format '%{workspace}|%{app-name}')
-
-# "+2" -> "⁺²": the only way to get a small raised suffix into a single label.
-superscript() {
-  local out="" c
-  while IFS= read -r -n1 c; do
-    case "$c" in
-      +) out+="⁺" ;;
-      0) out+="⁰" ;; 1) out+="¹" ;; 2) out+="²" ;; 3) out+="³" ;; 4) out+="⁴" ;;
-      5) out+="⁵" ;; 6) out+="⁶" ;; 7) out+="⁷" ;; 8) out+="⁸" ;; 9) out+="⁹" ;;
-      *) out+="$c" ;;
-    esac
-  done < <(printf '%s' "$1")
-  printf '%s' "$out"
-}
+occupied=$(aerospace list-workspaces --monitor all --empty no)
 
 args=()
 for sid in "${!WORKSPACE_ICONS[@]}"; do
-  apps=()
-  while IFS='|' read -r ws app; do
-    [ "$ws" = "$sid" ] || continue
-    case " ${apps[*]} " in *" $app "*) continue ;; esac
-    apps+=("$app")
-  done <<<"$windows"
-
-  icons=""
-  extra=""
-  if [ "${#apps[@]}" -gt 0 ]; then
-    main="${apps[0]}"
-    [ "$sid" = "$focused" ] && [ -n "$focused_app" ] && main="$focused_app"
-    app_icon "$main"
-    icons="$icon_result"
-    [ "${#apps[@]}" -gt 1 ] && extra=$(superscript "+$((${#apps[@]} - 1))")
-  fi
-
   if [ "$sid" = "$focused" ]; then
     color=$WHITE
     pill=on
-  elif [ -n "$icons" ]; then
+  elif grep -qx "$sid" <<<"$occupied"; then
     color=$WHITE_70
     pill=off
   else
     color=$WHITE_50
     pill=off
   fi
-
-  if [ -n "$icons" ]; then
-    args+=(--set "space.$sid" icon="$icons" icon.font="$APP_FONT")
-  else
-    args+=(--set "space.$sid" icon="${WORKSPACE_ICONS[$sid]}" icon.font="$ICON_FONT")
-  fi
-  args+=(label="$sid$extra" icon.color=$color label.color=$color background.drawing=$pill)
+  args+=(--set "space.$sid" icon.color=$color label.color=$color background.drawing=$pill)
 done
 
 sketchybar "${args[@]}"

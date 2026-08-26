@@ -19,8 +19,6 @@ in
       source = ../dotfiles/sketchybar;
       recursive = true;
     };
-    # icon_map.sh: app name -> sketchybar-app-font ligature, used by the plugins.
-    extraPackages = [ pkgs.sketchybar-app-font ];
     service = {
       enable = true;
     };

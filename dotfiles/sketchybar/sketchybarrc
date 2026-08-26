@@ -90,7 +90,7 @@ sketchybar --add item workspaces_observer left \
     updates=on \
     update_freq=30 \
     script="$PLUGIN_DIR/workspaces.sh" \
-  --subscribe workspaces_observer aerospace_change front_app_switched
+  --subscribe workspaces_observer aerospace_change
 
 ##### Right: Status Pills #####
 sketchybar --add item date right \
