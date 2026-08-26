@@ -41,7 +41,7 @@ if [ -d "$developer_dir" ]; then
 fi
 
 if [ -f "$config_file" ] && "$yq_bin" eval -p=toml '.' "$config_file" >/dev/null 2>&1; then
-  "$yq_bin" eval -p=toml -o=toml 'del(.projects)' "$config_file" > "$existing_config"
+  "$yq_bin" eval -p=toml -o=toml 'del(.projects, .agents.max_threads)' "$config_file" > "$existing_config"
   merge_inputs=("$existing_config" "$base_config" "$projects_config")
 else
   merge_inputs=("$base_config" "$projects_config")
