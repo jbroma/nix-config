@@ -40,6 +40,25 @@ let
     [ -x /opt/homebrew/bin/ollama ] || { echo "ollama: /opt/homebrew/bin/ollama missing (brew install ollama)" >&2; exit 1; }
     exec /opt/homebrew/bin/ollama "$@"
   '';
+
+  # Pulls the models from flake.nix (a no-op once they are present) after the server is up.
+  # Waits up to 10 minutes: the first rebuild installs the formula and starts the server in the
+  # same activation. Run by hand: launchctl kickstart gui/$(id -u)/org.nix-community.home.ollama-models
+  ollama-models = pkgs.writeShellApplication {
+    name = "ollama-models";
+    runtimeInputs = [ ollama ];
+    text = ''
+      for _ in $(seq 120); do
+        ollama list >/dev/null 2>&1 && break
+        sleep 5
+      done
+      for model in ${lib.escapeShellArgs llm.models}; do
+        ollama pull "$model"
+      done
+    '';
+  };
+
+  logDir = "${config.home.homeDirectory}/.ollama/logs";
 in
 lib.mkMerge [
   {
@@ -83,12 +102,21 @@ lib.mkMerge [
     # a reboot needs someone at the screen anyway); `mise run homebrew-upgrade` restarts it after
     # an ollama upgrade, since the running server keeps paths into the removed keg.
     launchd.agents.ollama.config = {
-      StandardOutPath = "${config.home.homeDirectory}/.ollama/logs/server.log";
-      StandardErrorPath = "${config.home.homeDirectory}/.ollama/logs/server.log";
+      StandardOutPath = "${logDir}/server.log";
+      StandardErrorPath = "${logDir}/server.log";
       ThrottleInterval = 60;
       # The module's "Background" would clamp the inference server (and the MLX runner it
       # spawns) to background QoS: efficiency cores and throttled I/O.
       ProcessType = lib.mkForce "Interactive";
+    };
+    launchd.agents.ollama-models = {
+      enable = true;
+      config = {
+        ProgramArguments = [ "${ollama-models}/bin/ollama-models" ];
+        RunAtLoad = true;
+        StandardOutPath = "${logDir}/models.log";
+        StandardErrorPath = "${logDir}/models.log";
+      };
     };
     home.file.".ollama/logs/.keep".text = "";
   })

@@ -56,15 +56,19 @@
 
       # Local-LLM role, from user.nix (never committed): `llmServer = true;` on the machine that
       # runs Ollama, with `llmClients = [ "<cidr>" ... ];` naming who may reach its API;
-      # `llmServerAddress = "<ip>";` on clients. Containers reach a local Ollama at the vmnet
-      # gateway. Consumed by macos/llm-*.nix and home-manager/llm.nix.
+      # `llmServerAddress = "<ip or hostname>";` on clients. Containers reach a local Ollama at
+      # the vmnet gateway. Consumed by macos/llm-*.nix and home-manager/llm.nix.
       llmRole =
         let
           server = user.llmServer or false;
-          # Ollama's port and the default model, shared by the service, the firewall, the
-          # clients' OLLAMA_HOST and the sandbox's Pi config.
+          # Ollama's port and the models the server pulls at login (first one is the default),
+          # shared by the service, the firewall, the clients' OLLAMA_HOST and the sandbox's Pi config.
           port = 11434;
-          model = "qwen3.8:27b-mlx";
+          models = [
+            "qwen3.8:27b-mlx"
+            "gemma4:26b-mlx"
+          ];
+          model = builtins.head models;
           # The sandbox runs on its own host-only container network; its gateway is the host.
           sandboxSubnet = "10.171.71.0/24";
           sandboxGateway = "10.171.71.1";
@@ -72,19 +76,21 @@
           host = user.llmServerAddress or null;
           clients = user.llmClients or [ ];
           octet = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])";
-          isIPv4 = s: builtins.isString s && builtins.match "(${octet}\\.){3}${octet}" s != null;
+          label = "[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?";
+          # A DNS name (the router's <name>.internal records) or an IPv4 literal.
+          isHost = s: builtins.isString s && builtins.match "${label}(\\.${label})*" s != null;
           isCidr =
             s:
             builtins.isString s && builtins.match "(${octet}\\.){3}${octet}(/([12]?[0-9]|3[0-2]))?" s != null;
         in
-        # Containers resolve nothing and pf tables load at boot: addresses must be IP literals.
         assert
           !(server && host != null)
           || throw "user.nix: llmServerAddress is ignored when llmServer = true; remove one";
         assert
           host == null
-          || isIPv4 host
-          || throw "user.nix: llmServerAddress must be an IPv4 address string, got ${builtins.toJSON host}";
+          || isHost host
+          || throw "user.nix: llmServerAddress must be a hostname or IPv4 address string, got ${builtins.toJSON host}";
+        # pf tables load at boot with no resolver: the client allowlist must be IP literals.
         assert
           (builtins.isList clients && builtins.all isCidr clients)
           || throw "user.nix: llmClients must be a list of IPv4 address or CIDR strings, got ${builtins.toJSON clients}";
@@ -94,6 +100,7 @@
             host
             clients
             port
+            models
             model
             sandboxSubnet
             sandboxGateway

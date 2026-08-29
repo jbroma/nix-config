@@ -29,6 +29,7 @@ flake.nix                    # Entry point - two configs: work, personal
 ├── configuration.nix        # System-level (nix-darwin): packages, services, security
 ├── home.nix                 # User-level entry: imports home-manager modules
 ├── user.nix                 # User identity (git skip-worktree, not committed)
+├── ssh-keys.nix             # Public keys per identity: git signing keys and LLM-server authorized keys
 │
 ├── home-manager/            # Home-manager modules
 │   ├── claude-code.nix      # Claude Code: settings, hooks, skills, agents
