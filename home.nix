@@ -16,6 +16,9 @@ in
   home.file.".nix/ai" = lib.mkIf enableAi {
     source = ai;
   };
+  # ~/vault -> the stock iCloud Obsidian vault, so `cd ~/vault` works without remembering the path.
+  home.file."vault".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault";
   # List packages you want to install for your user only.
   home.packages =
     with pkgs;
