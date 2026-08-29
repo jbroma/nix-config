@@ -4,8 +4,10 @@
   type,
   user,
   ai,
+  llm,
   ...
 }:
+# `llm` is only passed through to home-manager here; see home-manager/llm.nix and macos/llm-*.nix.
 
 let
   allowedUnfreePackages = [
@@ -156,7 +158,12 @@ in
     useUserPackages = true;
     users.${user.username} = import ./home.nix;
     extraSpecialArgs = {
-      inherit type user ai;
+      inherit
+        type
+        user
+        ai
+        llm
+        ;
     };
   };
 
@@ -183,6 +190,8 @@ in
     ./macos/desktop.nix
     ./macos/finder.nix
     ./macos/keyboard.nix
+    ./macos/llm-server.nix
+    ./macos/llm-sandbox.nix
     ./macos/siri.nix
     ./macos/spotlight.nix
     ./macos/system.nix

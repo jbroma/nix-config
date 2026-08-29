@@ -85,7 +85,7 @@ in
     ./home-manager/sketchybar.nix
     ./home-manager/aerospace.nix
     ./home-manager/mcp-servers.nix
-    ./home-manager/ollama.nix
+    ./home-manager/llm.nix
     ./home-manager/vite-plus.nix
     ./home-manager/zed.nix
   ]

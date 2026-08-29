@@ -4,7 +4,7 @@ This file provides guidance to AI coding assistants when working with code in th
 
 ## Repository Purpose
 
-Personal macOS dotfiles configuration using Nix Flakes, nix-darwin, and home-manager. Scope is strictly dotfiles management - all development environments use Docker Compose (see `devops-patterns` skill).
+Personal macOS configuration using Nix Flakes, nix-darwin, and home-manager: dotfiles, tools, and the machine roles that live with them (the local-LLM server and its sandboxed harness under `macos/llm-*.nix`, `home-manager/llm.nix`, `containers/`). Project development environments themselves still use Docker Compose (see `devops-patterns` skill), not this repo.
 
 ## Commands
 
@@ -12,6 +12,7 @@ Personal macOS dotfiles configuration using Nix Flakes, nix-darwin, and home-man
 # Primary workflow
 mise run check-personal      # Build the personal config without applying
 mise run check-work          # Build the work config without applying
+mise run check-llm-server    # Build with the LLM server role forced on (server-only code never evaluates otherwise)
 mise run update              # Update flake inputs
 
 # Manual shell aliases (human use only; agents must not apply config)
@@ -36,15 +37,17 @@ flake.nix                    # Entry point - two configs: work, personal
 │   ├── zsh.nix              # Shell config with modern CLI aliases
 │   └── [tool].nix           # Per-tool configurations
 │
-├── macos/                   # macOS system preferences modules
+├── macos/                   # macOS system preferences and roles (llm-server, llm-sandbox pf policy)
 ├── pkgs/                    # Custom package derivations (auto-loaded by flake)
+├── scripts/                 # Shell scripts packaged or run by modules (pi-sandbox launcher, helpers)
+├── containers/              # Image build contexts (pi-sandbox: Dockerfile + entrypoint)
 ├── dotfiles/                # Non-Nix config files (sketchybar, oh-my-posh, vscode)
 └── ai/                      # Nix flake input (ai-sauce) - skills, agents, rules
 ```
 
 **Key patterns:**
 
-- `specialArgs = { inherit type user; }` passes profile type (work/personal) and user info to all modules
+- `specialArgs = { inherit type user ai llm; }` passes profile type (work/personal), user info, the private AI input and the local-LLM role (`llm.server`, `llm.host`, `llm.clients`, derived from `user.nix`) to all modules
 - Custom packages in `./pkgs/` are auto-loaded via `mapAttrs'` over the directory
 - Overlays substitute custom packages such as Claude Code and Codex CLI
 
@@ -73,7 +76,7 @@ The `ai` input is also symlinked to `~/.nix/ai` for visibility (in `home.nix`).
 - Format with `nix fmt` (uses treefmt-nix with nixfmt)
 - Two configurations: `personal` and `work` (selected via hostname or explicit `--flake .#work`)
 - Most of the module graph is shared across `personal` and `work`; even if a change looks profile-specific, run both build checks to protect repo integrity
-- Verification commands are `mise run check-personal` and `mise run check-work`
+- Verification commands are `mise run check-personal`, `mise run check-work` and `mise run check-llm-server` (the last one is the only build that evaluates the server-only modules)
 - Build-only verification is the maximum allowed agent action; applying the configuration is human-only
 - `user.nix` is git skip-worktree'd - edit locally for identity changes
 - Unfree packages must be allowlisted in `flake.nix` `allowUnfreePredicate`
