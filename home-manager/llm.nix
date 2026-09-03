@@ -41,20 +41,19 @@ let
     exec /opt/homebrew/bin/ollama "$@"
   '';
 
-  # Pulls the models from flake.nix (a no-op once they are present) after the server is up.
-  # Waits up to 10 minutes: the first rebuild installs the formula and starts the server in the
-  # same activation. Run by hand: launchctl kickstart gui/$(id -u)/org.nix-community.home.ollama-models
+  # Pulls the models from flake.nix in the foreground, with ollama's own progress bars (a no-op
+  # once they are present). Run after a rebuild; a stale Homebrew ollama rejects new model
+  # formats with a 412, hence the version line and the upgrade hint.
   ollama-models = pkgs.writeShellApplication {
     name = "ollama-models";
     runtimeInputs = [ ollama ];
     text = ''
-      for _ in $(seq 120); do
-        ollama list >/dev/null 2>&1 && break
-        sleep 5
-      done
+      echo "server version: $(ollama -v 2>/dev/null || echo "not answering (launchctl kickstart -k gui/$(id -u)/org.nix-community.home.ollama)")"
+      echo "on a 412 'newer version' error: mise run homebrew-upgrade"
       for model in ${lib.escapeShellArgs llm.models}; do
         ollama pull "$model"
       done
+      ollama list
     '';
   };
 
@@ -78,6 +77,7 @@ lib.mkMerge [
   (lib.mkIf llm.server {
     home.packages = [
       pi-sandbox
+      ollama-models
       pkgs.apple-container # the `container` CLI itself, for network/image/volume housekeeping
     ];
 
@@ -108,15 +108,6 @@ lib.mkMerge [
       # The module's "Background" would clamp the inference server (and the MLX runner it
       # spawns) to background QoS: efficiency cores and throttled I/O.
       ProcessType = lib.mkForce "Interactive";
-    };
-    launchd.agents.ollama-models = {
-      enable = true;
-      config = {
-        ProgramArguments = [ "${ollama-models}/bin/ollama-models" ];
-        RunAtLoad = true;
-        StandardOutPath = "${logDir}/models.log";
-        StandardErrorPath = "${logDir}/models.log";
-      };
     };
     home.file.".ollama/logs/.keep".text = "";
   })
