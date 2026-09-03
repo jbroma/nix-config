@@ -22,6 +22,10 @@ description = "Upgrade installed Homebrew packages"
 run = """
 before=$(readlink /opt/homebrew/opt/ollama 2>/dev/null || true)
 status=0
+# The config sets onActivation.autoUpdate = false, so without an explicit update the local
+# formula index never moves and `brew upgrade` is a silent no-op (bit us: ollama stuck at
+# 0.30.10, rejecting new model formats with a 412).
+brew update || status=$?
 brew upgrade --greedy || status=$?  # mise runs this with errexit; keep going to the restart
 # A running `ollama serve` keeps paths into the keg brew just removed; restart it only if the keg moved.
 after=$(readlink /opt/homebrew/opt/ollama 2>/dev/null || true)
