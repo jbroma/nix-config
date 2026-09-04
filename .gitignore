@@ -5,3 +5,4 @@ ai
 # nix build output links
 result
 result-*
+.scratch/
