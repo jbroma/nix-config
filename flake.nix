@@ -69,9 +69,14 @@
             "gemma4:26b-mlx"
           ];
           model = builtins.head models;
-          # The sandbox runs on its own host-only container network; its gateway is the host.
+          # Each running sandbox reserves a separate /29 from this pool. /30 is too small
+          # for Apple's allocator. The proxy and pf use the enclosing /24.
           sandboxSubnet = "10.171.71.0/24";
-          sandboxGateway = "10.171.71.1";
+          sandboxNetworks = lib.genList (slot: {
+            name = "llm-sandbox-${toString slot}";
+            subnet = "${lib.removeSuffix ".0/24" sandboxSubnet}.${toString (slot * 8)}/29";
+            gateway = "${lib.removeSuffix ".0/24" sandboxSubnet}.${toString (slot * 8 + 1)}";
+          }) 32;
           # A client's server address; null on the server itself and on machines with no role.
           host = user.llmServerAddress or null;
           clients = user.llmClients or [ ];
@@ -103,7 +108,7 @@
             models
             model
             sandboxSubnet
-            sandboxGateway
+            sandboxNetworks
             ;
         };
 

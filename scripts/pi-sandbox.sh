@@ -1,4 +1,4 @@
-# pi-sandbox: Pi coding agent in an Apple container on a host-only network. Only $PWD (as
+# pi-sandbox: Pi coding agent with a host-only network reserved for this run. Only $PWD (as
 # /workspace) and this project's Pi state are visible inside; the network reaches
 # this host and nothing else (pf narrows that to Ollama's port), the resolver is loopback so any
 # lookup fails in milliseconds, and Pi runs offline. The image builds on the default network.
@@ -6,8 +6,8 @@
 #   pi-sandbox -p "explain this repo"
 #   pi-sandbox --mount type=bind,source=$HOME/data,target=/data,readonly -- -p "summarize /data"
 # LLM_MODEL=<tag> picks another model for this run only.
-# Wrapped by home-manager/llm.nix, which sets LLM_SERVER, LLM_PORT, LLM_MODEL_DEFAULT, LLM_CONTEXT,
-# SANDBOX_NETWORK, SANDBOX_SUBNET and PI_SANDBOX_CONTEXT.
+# Wrapped by home-manager/llm.nix, which sets LLM_PORT, LLM_MODEL_DEFAULT, LLM_CONTEXT,
+# SANDBOX_NETWORKS_FILE and PI_SANDBOX_CONTEXT. The reserved network supplies LLM_SERVER.
 run_args=()
 pi_args=("$@")
 for ((i = 1; i <= $#; i++)); do
@@ -17,10 +17,12 @@ for ((i = 1; i <= $#; i++)); do
     break
   fi
 done
-# A fixed runtime identity excludes another sandbox even if its launcher has disconnected.
+# The launcher owns network selection and waits for the guest before releasing its network.
 for arg in "${run_args[@]}"; do
   case $arg in
-    --name | --name=*) echo "pi-sandbox: --name is reserved to prevent concurrent sandboxes" >&2; exit 1 ;;
+    --network | --network=* | --detach | --detach=* | -d | --rm | --rm=*)
+      echo "pi-sandbox: network and lifecycle flags are managed by the launcher; use shell backgrounding for parallel jobs" >&2
+      exit 1 ;;
   esac
 done
 
@@ -34,17 +36,6 @@ project_id=$(printf '%s' "$project" | /usr/bin/shasum -a 256 | cut -c1-32)
 
 container system start --enable-kernel-install >/dev/null 2>&1 \
   || { echo "pi-sandbox: 'container system start' failed; run it by hand to see why" >&2; exit 1; }
-
-# Host-only network on the subnet the pf rules are written for; created once, checked every run
-# for both properties. (inspect exits non-zero for a missing network; under pipefail that must
-# not abort the script.)
-net=$(container network inspect "$SANDBOX_NETWORK" 2>/dev/null | jq -r '"\(.[0].configuration.mode) \(.[0].status.ipv4Subnet)"' || true)
-if [ -z "$net" ]; then
-  container network create --internal --subnet "$SANDBOX_SUBNET" "$SANDBOX_NETWORK" >/dev/null
-elif [ "$net" != "hostOnly $SANDBOX_SUBNET" ]; then
-  echo "pi-sandbox: network $SANDBOX_NETWORK is '$net', expected 'hostOnly $SANDBOX_SUBNET'; 'container network delete $SANDBOX_NETWORK' and rerun" >&2
-  exit 1
-fi
 
 # Tag by the build context's store hash so a changed Dockerfile or entrypoint rebuilds.
 image="pi-sandbox:$(basename "$PI_SANDBOX_CONTEXT" | cut -c1-32)"
@@ -60,14 +51,33 @@ if ! container image inspect "$image" >/dev/null 2>&1; then
   done
 fi
 
+# Network creation atomically claims a slot, including against concurrent launchers. Never
+# attach to an existing network: it may still have a guest after its launcher was interrupted.
+network=""
+create_error="no network slots configured"
+while IFS=$'\t' read -r candidate subnet gateway; do
+  if create_error=$(container network create --internal --subnet "$subnet" "$candidate" 2>&1); then
+    network=$candidate
+    LLM_SERVER=$gateway
+    break
+  fi
+done < <(jq -r '.[] | [.name, .subnet, .gateway] | @tsv' "$SANDBOX_NETWORKS_FILE")
+[ -n "$network" ] || { echo "pi-sandbox: no isolated network available: $create_error" >&2; exit 1; }
+cleanup_network() {
+  # The runtime refuses deletion while a guest is attached. Retain that reservation on an
+  # interrupted run rather than let another sandbox join it.
+  container network delete "$network" >/dev/null 2>&1 \
+    || echo "pi-sandbox: retained network $network; delete it after its container exits" >&2
+}
+trap cleanup_network EXIT
+
 # -t only with a terminal on stdin: `container run -t` fails with ENOTTY otherwise, and Pi's
 # print mode (-p) works fine on a pipe.
 tty=(); [ -t 0 ] && tty=(-t)
 # Check live rules after network/image preparation, immediately before starting guest code.
 /usr/bin/sudo -n /run/current-system/sw/bin/llm-sandbox-check \
   || { echo "pi-sandbox: firewall protection is not ready; refusing to start" >&2; exit 1; }
-# Container creation reserves this name atomically; a second launch fails until it is removed.
-exec container run -i "${tty[@]}" --rm --name pi-sandbox --network "$SANDBOX_NETWORK" --dns 127.0.0.1 \
+container run -i "${tty[@]}" --rm --network "$network" --dns 127.0.0.1 \
   --kernel-arg ipv6.disable=1 --cap-drop CAP_NET_RAW --cap-drop CAP_NET_ADMIN \
   --mount "type=bind,source=$project,target=/workspace" --volume "pi-sandbox-home-$project_id:/root/.pi" \
   -e LLM_SERVER="$LLM_SERVER" -e LLM_PORT="$LLM_PORT" -e LLM_CONTEXT="$LLM_CONTEXT" \

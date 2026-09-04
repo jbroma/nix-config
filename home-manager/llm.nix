@@ -57,12 +57,12 @@ let
       pkgs.jq
     ];
     runtimeEnv = {
-      LLM_SERVER = llm.sandboxGateway;
       LLM_PORT = toString llm.port;
       LLM_MODEL_DEFAULT = llm.model;
       LLM_CONTEXT = toString contextLength;
-      SANDBOX_NETWORK = "llm-sandbox";
-      SANDBOX_SUBNET = llm.sandboxSubnet;
+      SANDBOX_NETWORKS_FILE = pkgs.writeText "llm-sandbox-networks.json" (
+        builtins.toJSON llm.sandboxNetworks
+      );
       # Interpolated so the directory is copied to the store: its hash is the image tag.
       PI_SANDBOX_CONTEXT = "${../containers/pi-sandbox}";
     };

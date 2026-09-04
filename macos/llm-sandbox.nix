@@ -24,7 +24,9 @@ let
   rules = pkgs.writeText "llm-sandbox.pf" ''
     table <llm_clients> { ${clients} }
     pass in quick on lo0 proto tcp to any port ${port}
-    pass in quick inet proto tcp from ${llm.sandboxSubnet} to any port ${port}
+    pass in quick inet proto tcp from ${llm.sandboxSubnet} to { ${
+      lib.concatMapStringsSep ", " (network: network.gateway) llm.sandboxNetworks
+    } } port ${port}
     block drop in quick inet from ${llm.sandboxSubnet} to any
     pass in quick inet proto tcp from <llm_clients> to any port ${port}
     block drop in quick proto tcp from any to any port ${port}
