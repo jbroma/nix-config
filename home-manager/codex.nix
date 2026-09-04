@@ -21,7 +21,7 @@ let
     sandbox_mode = "workspace-write";
     model_context_window = 1000000;
     model_auto_compact_token_limit = 900000;
-    model_reasoning_effort = "high";
+    model_reasoning_effort = "medium";
     model_reasoning_summary = "concise";
     hide_agent_reasoning = true;
     model_verbosity = "low";

@@ -41,7 +41,18 @@ if [ -d "$developer_dir" ]; then
 fi
 
 if [ -f "$config_file" ] && "$yq_bin" eval -p=toml '.' "$config_file" >/dev/null 2>&1; then
-  "$yq_bin" eval -p=toml -o=toml 'del(.projects, .agents.max_threads)' "$config_file" > "$existing_config"
+  "$yq_bin" eval -p=toml -o=toml \
+    'del(.projects, .agents.max_threads, .features.js_repl, .model_personality)' \
+    "$config_file" > "$existing_config"
+
+  # Drop the retired hook from the computer-use notification chain. The app
+  # may JSON-escape slashes in this argument; keep its handler and other args.
+  previous_notify="$("$yq_bin" eval -p=toml '.notify[3] // ""' "$existing_config")"
+  if [ "$("$yq_bin" eval -p=toml '.notify[2] // ""' "$existing_config")" = "--previous-notify" ] &&
+    [ "${previous_notify//\\/}" = "[\"$config_dir/hooks/on-codex-notify.sh\"]" ]; then
+    "$yq_bin" eval -i -p=toml -o=toml '.notify = .notify[0:2] + .notify[4:]' "$existing_config"
+  fi
+
   merge_inputs=("$existing_config" "$base_config" "$projects_config")
 else
   merge_inputs=("$base_config" "$projects_config")
