@@ -13,7 +13,9 @@
 }:
 
 let
-  anchor = "com.apple/llm-sandbox"; # sub-anchor of com.apple/*, which /etc/pf.conf already evaluates
+  # The wildcard evaluates children alphabetically. Run before Apple's service anchors;
+  # llm-sandbox-check refuses startup if another anchor precedes this one.
+  anchor = "com.apple/000.llm-sandbox";
   clients = lib.concatStringsSep ", " llm.clients;
   port = toString llm.port;
   # No interface names: vmnet numbers bridges by creation order and sometimes uses none at all.

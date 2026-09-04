@@ -34,10 +34,10 @@ if sys.argv[1:3] == ["network", "inspect"]:
         "PI_SANDBOX_CONTEXT": "/nix/store/01234567890123456789012345678901-pi",
     }
 
-    def launch(project, firewall_status="0"):
+    def launch(project, firewall_status="0", arguments=None):
         calls.write_text("")
         result = subprocess.run(
-            ["bash", "-euo", "pipefail", str(script), "-p", "hello"], cwd=project,
+            ["bash", "-euo", "pipefail", str(script), *(arguments or ["-p", "hello"])], cwd=project,
             env={**env, "TEST_FIREWALL_STATUS": firewall_status}, capture_output=True, text=True,
         )
         commands = [json.loads(line) for line in calls.read_text().splitlines()]
@@ -58,6 +58,7 @@ if sys.argv[1:3] == ["network", "inspect"]:
     assert volumes[0] == volumes[2], "a symlink creates a different project identity"
     assert all(volume != "pi-sandbox-home:/root/.pi" for volume in volumes)
     for args in runs:
+        assert args[args.index("--name") + 1] == "pi-sandbox"
         assert args[args.index("--kernel-arg") + 1] == "ipv6.disable=1"
         for capability in ("CAP_NET_RAW", "CAP_NET_ADMIN"):
             assert any(args[i:i + 2] == ["--cap-drop", capability] for i in range(len(args)))
@@ -65,3 +66,7 @@ if sys.argv[1:3] == ["network", "inspect"]:
     result, commands = launch(first, "1")
     assert result.returncode != 0 and not commands, "container started without firewall protection"
     print("firewall failure blocks launch: passed")
+    for override in (["--name", "another"], ["--name=another"]):
+        result, commands = launch(first, arguments=[*override, "--", "-p", "hello"])
+        assert result.returncode != 0 and not commands, "caller bypassed the single-sandbox name"
+    print("reserved container identity: passed")

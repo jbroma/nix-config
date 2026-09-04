@@ -17,6 +17,12 @@ for ((i = 1; i <= $#; i++)); do
     break
   fi
 done
+# A fixed runtime identity excludes another sandbox even if its launcher has disconnected.
+for arg in "${run_args[@]}"; do
+  case $arg in
+    --name | --name=*) echo "pi-sandbox: --name is reserved to prevent concurrent sandboxes" >&2; exit 1 ;;
+  esac
+done
 
 project=$(pwd -P)
 case $project in
@@ -60,7 +66,8 @@ tty=(); [ -t 0 ] && tty=(-t)
 # Check live rules after network/image preparation, immediately before starting guest code.
 /usr/bin/sudo -n /run/current-system/sw/bin/llm-sandbox-check \
   || { echo "pi-sandbox: firewall protection is not ready; refusing to start" >&2; exit 1; }
-exec container run -i "${tty[@]}" --rm --network "$SANDBOX_NETWORK" --dns 127.0.0.1 \
+# Container creation reserves this name atomically; a second launch fails until it is removed.
+exec container run -i "${tty[@]}" --rm --name pi-sandbox --network "$SANDBOX_NETWORK" --dns 127.0.0.1 \
   --kernel-arg ipv6.disable=1 --cap-drop CAP_NET_RAW --cap-drop CAP_NET_ADMIN \
   --mount "type=bind,source=$project,target=/workspace" --volume "pi-sandbox-home-$project_id:/root/.pi" \
   -e LLM_SERVER="$LLM_SERVER" -e LLM_PORT="$LLM_PORT" -e LLM_CONTEXT="$LLM_CONTEXT" \

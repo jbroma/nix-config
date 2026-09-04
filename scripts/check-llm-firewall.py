@@ -32,6 +32,7 @@ printf '%s\\n' "$*" >> "$PF_TEST_CALLS"
 case " $* " in
   *" -f "*) exit "$PF_TEST_LOAD_STATUS" ;;
   *" -E "*) exit "$PF_TEST_ENABLE_STATUS" ;;
+  *" -s Anchors "*) printf '%s\\n' "$PF_TEST_ANCHORS" ;;
   *" -a "*) printf '%s\\n' "$PF_TEST_RULES"; exit "$PF_TEST_READ_STATUS" ;;
   *" -s info "*) printf '%s\\n' "$PF_TEST_STATUS" ;;
   *" -sr "*) printf '%s\\n' "$PF_TEST_MAIN" ;;
@@ -53,6 +54,7 @@ esac
         "PF_TEST_ENABLE_STATUS": "0", "PF_TEST_READ_STATUS": "0",
         "PF_TEST_RULES": "block drop in quick inet from 10.171.71.0/24 to any",
         "PF_TEST_STATUS": "Status: Enabled for 0 days", "PF_TEST_MAIN": 'anchor "com.apple/*" all',
+        "PF_TEST_ANCHORS": "  000.llm-sandbox\n  200.AirDrop\n  250.ApplicationFirewall",
     }
     for name, changes, expected_exit, expected_calls in (
         ("rule load fails", {"PF_TEST_LOAD_STATUS": "23"}, 23, 1),
@@ -72,8 +74,16 @@ esac
     checker.chmod(0o755)
     for name, changes, expected in (
         ("active protection", {}, 0),
+        ("standard scrub anchor", {"PF_TEST_MAIN": 'scrub-anchor "com.apple/*" all fragment reassemble\nanchor "com.apple/*" all'}, 0),
+        ("unsorted qualified anchors", {"PF_TEST_ANCHORS": "  com.apple/250.ApplicationFirewall\n  com.apple/000.llm-sandbox"}, 0),
         ("pf disabled", {"PF_TEST_STATUS": "Status: Disabled"}, 1),
         ("main anchor missing", {"PF_TEST_MAIN": ""}, 1),
+        ("early quick pass", {"PF_TEST_MAIN": 'pass in quick all\nanchor "com.apple/*" all'}, 1),
+        ("extra main anchor", {"PF_TEST_MAIN": 'anchor "other" all\nanchor "com.apple/*" all'}, 1),
+        ("late main pass", {"PF_TEST_MAIN": 'anchor "com.apple/*" all\npass all'}, 1),
+        ("earlier sibling anchor", {"PF_TEST_ANCHORS": "  000.bypass\n  000.llm-sandbox"}, 1),
+        ("qualified earlier sibling", {"PF_TEST_ANCHORS": "  com.apple/000.llm-sandbox\n  com.apple/000.bypass"}, 1),
+        ("anchor list empty", {"PF_TEST_ANCHORS": ""}, 1),
         ("sandbox anchor empty", {"PF_TEST_RULES": ""}, 1),
         ("sandbox rules changed", {"PF_TEST_RULES": "pass all"}, 1),
         ("pf read failed", {"PF_TEST_READ_STATUS": "31"}, 31),
