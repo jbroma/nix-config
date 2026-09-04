@@ -17,7 +17,12 @@ daemon = json.loads(subprocess.check_output([
     ".#darwinConfigurations.personal-llm-server.config.launchd.daemons.llm-sandbox-pf",
 ], text=True))
 source = Path(daemon["command"]).read_text()
-assert source.count("/sbin/pfctl") == 2, "review test substitution when startup changes"
+assert source.count("/sbin/pfctl") == 3, "review test substitution when startup changes"
+system_path = subprocess.check_output([
+    "nix", "eval", "--raw", "--option", "eval-cache", "false",
+    ".#darwinConfigurations.personal-llm-server.config.system.path",
+], text=True)
+check_source = (Path(system_path) / "bin/llm-sandbox-check").read_text()
 
 with tempfile.TemporaryDirectory(prefix="llm-firewall-check-") as directory:
     root = Path(directory)
@@ -27,29 +32,65 @@ printf '%s\\n' "$*" >> "$PF_TEST_CALLS"
 case " $* " in
   *" -f "*) exit "$PF_TEST_LOAD_STATUS" ;;
   *" -E "*) exit "$PF_TEST_ENABLE_STATUS" ;;
+  *" -a "*) printf '%s\\n' "$PF_TEST_RULES"; exit "$PF_TEST_READ_STATUS" ;;
+  *" -s info "*) printf '%s\\n' "$PF_TEST_STATUS" ;;
+  *" -sr "*) printf '%s\\n' "$PF_TEST_MAIN" ;;
   *) exit 99 ;;
 esac
 ''')
     stub.chmod(0o755)
     script = root / "startup"
-    script.write_text(source.replace("/sbin/pfctl", shlex.quote(str(stub))))
+    def substitute(text):
+        return text.replace("/sbin/pfctl", shlex.quote(str(stub))).replace(
+            "/var/run/llm-sandbox-pf", str(root / "snapshot"),
+        )
+
+    script.write_text(substitute(source))
     script.chmod(0o755)
     calls = root / "calls"
-    for name, load_status, enable_status, expected_exit, expected_calls in (
-        ("rule load fails", 23, 0, 23, 1),
-        ("enable fails", 0, 29, 29, 2),
-        ("startup succeeds", 0, 0, 0, 2),
+    env = {
+        **os.environ, "PF_TEST_CALLS": str(calls), "PF_TEST_LOAD_STATUS": "0",
+        "PF_TEST_ENABLE_STATUS": "0", "PF_TEST_READ_STATUS": "0",
+        "PF_TEST_RULES": "block drop in quick inet from 10.171.71.0/24 to any",
+        "PF_TEST_STATUS": "Status: Enabled for 0 days", "PF_TEST_MAIN": 'anchor "com.apple/*" all',
+    }
+    for name, changes, expected_exit, expected_calls in (
+        ("rule load fails", {"PF_TEST_LOAD_STATUS": "23"}, 23, 1),
+        ("rule read fails", {"PF_TEST_READ_STATUS": "31"}, 31, 2),
+        ("empty rules", {"PF_TEST_RULES": ""}, 1, 2),
+        ("enable fails", {"PF_TEST_ENABLE_STATUS": "29"}, 29, 3),
+        ("startup succeeds", {}, 0, 3),
     ):
         calls.write_text("")
-        result = subprocess.run([str(script)], env={
-            **os.environ,
-            "PF_TEST_CALLS": str(calls),
-            "PF_TEST_LOAD_STATUS": str(load_status),
-            "PF_TEST_ENABLE_STATUS": str(enable_status),
-        })
+        result = subprocess.run([str(script)], env={**env, **changes})
         assert result.returncode == expected_exit, (name, result.returncode, expected_exit)
         assert len(calls.read_text().splitlines()) == expected_calls, (name, calls.read_text())
         print(f"{name}: passed")
+
+    checker = root / "checker"
+    checker.write_text(substitute(check_source))
+    checker.chmod(0o755)
+    for name, changes, expected in (
+        ("active protection", {}, 0),
+        ("pf disabled", {"PF_TEST_STATUS": "Status: Disabled"}, 1),
+        ("main anchor missing", {"PF_TEST_MAIN": ""}, 1),
+        ("sandbox anchor empty", {"PF_TEST_RULES": ""}, 1),
+        ("sandbox rules changed", {"PF_TEST_RULES": "pass all"}, 1),
+        ("pf read failed", {"PF_TEST_READ_STATUS": "31"}, 31),
+    ):
+        calls.write_text("")
+        result = subprocess.run([str(checker)], env={**env, **changes}, capture_output=True, text=True)
+        assert result.returncode == expected, (name, result.returncode, result.stderr)
+        assert all(" -f " not in line and " -E" not in line for line in calls.read_text().splitlines())
+        print(f"checker {name}: passed")
+    snapshot = root / "snapshot.rules"
+    assert snapshot.stat().st_mode & 0o777 == 0o600
+    snapshot.write_text("old configuration\n" + env["PF_TEST_RULES"] + "\n")
+    assert subprocess.run([str(checker)], env=env, capture_output=True).returncode == 1
+    snapshot.unlink()
+    assert subprocess.run([str(checker)], env=env, capture_output=True).returncode == 1
+    assert subprocess.run([str(checker), "unexpected-argument"], env=env, capture_output=True).returncode == 1
+    print("checker stale/missing snapshot and unexpected arguments: passed")
 
 service = daemon["serviceConfig"]
 assert service["RunAtLoad"] is True

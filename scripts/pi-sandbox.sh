@@ -1,5 +1,5 @@
 # pi-sandbox: Pi coding agent in an Apple container on a host-only network. Only $PWD (as
-# /workspace) and Pi's own state (volume pi-sandbox-home) are visible inside; the network reaches
+# /workspace) and this project's Pi state are visible inside; the network reaches
 # this host and nothing else (pf narrows that to Ollama's port), the resolver is loopback so any
 # lookup fails in milliseconds, and Pi runs offline. The image builds on the default network.
 # Arguments go to Pi; to pass `container run` flags put them first and separate with `--`:
@@ -18,9 +18,13 @@ for ((i = 1; i <= $#; i++)); do
   fi
 done
 
-case $PWD in
+project=$(pwd -P)
+case $project in
   *,* | *=*) echo "pi-sandbox: the working directory path contains ',' or '=', which the container mount syntax cannot carry" >&2; exit 1 ;;
 esac
+# Canonical paths keep symlink aliases together without sharing trust, sessions or extensions
+# between projects. Do not migrate the old shared volume: it may contain executable extensions.
+project_id=$(printf '%s' "$project" | /usr/bin/shasum -a 256 | cut -c1-32)
 
 container system start --enable-kernel-install >/dev/null 2>&1 \
   || { echo "pi-sandbox: 'container system start' failed; run it by hand to see why" >&2; exit 1; }
@@ -53,8 +57,12 @@ fi
 # -t only with a terminal on stdin: `container run -t` fails with ENOTTY otherwise, and Pi's
 # print mode (-p) works fine on a pipe.
 tty=(); [ -t 0 ] && tty=(-t)
+# Check live rules after network/image preparation, immediately before starting guest code.
+/usr/bin/sudo -n /run/current-system/sw/bin/llm-sandbox-check \
+  || { echo "pi-sandbox: firewall protection is not ready; refusing to start" >&2; exit 1; }
 exec container run -i "${tty[@]}" --rm --network "$SANDBOX_NETWORK" --dns 127.0.0.1 \
-  --mount "type=bind,source=$PWD,target=/workspace" --volume pi-sandbox-home:/root/.pi \
+  --kernel-arg ipv6.disable=1 --cap-drop CAP_NET_RAW --cap-drop CAP_NET_ADMIN \
+  --mount "type=bind,source=$project,target=/workspace" --volume "pi-sandbox-home-$project_id:/root/.pi" \
   -e LLM_SERVER="$LLM_SERVER" -e LLM_PORT="$LLM_PORT" -e LLM_CONTEXT="$LLM_CONTEXT" \
   -e LLM_MODEL_DEFAULT="$LLM_MODEL_DEFAULT" ${LLM_MODEL:+-e LLM_MODEL="$LLM_MODEL"} -e PI_OFFLINE=1 \
   "${run_args[@]}" "$image" "${pi_args[@]}"

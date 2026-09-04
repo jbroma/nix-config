@@ -23,6 +23,10 @@ description = "Test firewall startup failures and launchd retry policy without c
 depends = ["check-llm-server"]
 run = "python3 scripts/check-llm-firewall.py"
 
+[tasks.check-pi-sandbox]
+description = "Test project state isolation and refusal to start without firewall protection"
+run = "python3 scripts/check-pi-sandbox.py"
+
 [tasks.update]
 description = "Update flake inputs"
 run = "nix flake update"

@@ -8,6 +8,7 @@
   lib,
   pkgs,
   llm,
+  user,
   ...
 }:
 
@@ -16,8 +17,8 @@ let
   clients = lib.concatStringsSep ", " llm.clients;
   port = toString llm.port;
   # No interface names: vmnet numbers bridges by creation order and sometimes uses none at all.
-  # Rules without an address family cover IPv6 too (Ollama's wildcard listener is dual-stack,
-  # and localhost resolves to ::1 first for some clients).
+  # pi-sandbox disables guest IPv6 and raw packets. The proxy port rule also covers IPv6
+  # on the host, where localhost may resolve to ::1.
   rules = pkgs.writeText "llm-sandbox.pf" ''
     table <llm_clients> { ${clients} }
     pass in quick on lo0 proto tcp to any port ${port}
@@ -26,15 +27,40 @@ let
     pass in quick inet proto tcp from <llm_clients> to any port ${port}
     block drop in quick proto tcp from any to any port ${port}
   '';
+  snapshot = "/var/run/llm-sandbox-pf.rules";
+  check = pkgs.writeShellApplication {
+    name = "llm-sandbox-check";
+    runtimeInputs = [ pkgs.gnugrep ];
+    runtimeEnv = {
+      PF_RULES = rules;
+      PF_ANCHOR = anchor;
+      PF_SNAPSHOT = snapshot;
+    };
+    text = builtins.readFile ../scripts/llm-sandbox-check.sh;
+  };
 in
 lib.mkIf llm.server {
+  environment.systemPackages = [ check ];
+  # The sole passwordless operation reads pf state. No arguments, rule loading or enabling.
+  security.sudo.extraConfig = ''
+    ${user.username} ALL=(root) NOPASSWD: /run/current-system/sw/bin/llm-sandbox-check ""
+  '';
   # `script` runs under nix-darwin's wait4path wrapper (no race with the /nix volume mount) as a
   # real shell script, so both steps run (`command` would exec the first one). -E takes a pf
   # reference so other components releasing theirs cannot disable pf underneath.
   launchd.daemons.llm-sandbox-pf = {
     script = ''
-      set -e
+      set -euo pipefail
       /sbin/pfctl -q -a ${anchor} -f ${rules}
+      active=$(/sbin/pfctl -a ${anchor} -sr)
+      test -n "$active"
+      # Root-owned, atomic snapshot of the rules just loaded, tied to this configuration.
+      # Write it before -E so a filesystem failure cannot leak enable references on retries.
+      umask 077
+      tmp=$(/usr/bin/mktemp /var/run/llm-sandbox-pf.XXXXXX)
+      trap '/bin/rm -f "$tmp"' EXIT
+      printf '%s\n%s\n' ${rules} "$active" > "$tmp"
+      /bin/mv "$tmp" ${snapshot}
       /sbin/pfctl -q -E
     '';
     serviceConfig = {
