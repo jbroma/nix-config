@@ -126,6 +126,7 @@ in
       "zed"
     ]
     ++ lib.optionals (type == "personal") [
+      "home-assistant"
       "nordvpn"
     ];
     onActivation = {
