@@ -68,6 +68,8 @@ The `ai` input is also symlinked to `~/.nix/ai` for visibility (in `home.nix`).
 
 ## Git Workflow
 
+- Work directly on `main`; create a branch only when the user explicitly requests one.
+- This repository is public. Never commit secrets, local `user.nix` values, or runtime audit output.
 - Before committing, inspect recent history and match the existing subject style.
 - Commit messages use `area: short summary`, such as `homebrew: move apps to Homebrew`; do not default to Conventional Commits (`chore:`, `fix:`, etc.) unless the local history has already moved to that style.
 - Keep commits signed. If signing fails, retry with escalation rather than bypassing signing.
