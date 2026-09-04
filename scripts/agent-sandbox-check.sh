@@ -7,12 +7,12 @@ case $status in
   "Status: Enabled"*) ;;
   *) fail "pf is disabled" ;;
 esac
-# Only the default main dispatcher is supported. Scrub rules normalize packets but cannot
-# pass them. Reject extra filtering rules/anchors, including an earlier quick pass.
+# Our dispatcher must be the first filtering rule. Scrub rules only normalize packets.
+# Later rules, including Internet Sharing, cannot override our matching quick rules.
 main=$(/sbin/pfctl -sr)
 main=$(printf '%s\n' "$main" | grep -Ev '^($|scrub(-anchor)? )' || true)
-[ "$main" = 'anchor "com.apple/*" all' ] \
-  || fail "unexpected main filter rules could bypass sandbox protection"
+[ "${main%%$'\n'*}" = 'anchor "com.apple/*" all' ] \
+  || fail "filter rules before the sandbox dispatcher could bypass protection"
 # Wildcard children execute alphabetically. No sibling may run before our quick rules.
 anchors=$(/sbin/pfctl -a com.apple -s Anchors)
 read -r first_anchor _ <<< "$(printf '%s\n' "$anchors" | LC_ALL=C /usr/bin/sort)"
