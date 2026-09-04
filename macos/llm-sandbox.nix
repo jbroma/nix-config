@@ -33,11 +33,15 @@ lib.mkIf llm.server {
   # reference so other components releasing theirs cannot disable pf underneath.
   launchd.daemons.llm-sandbox-pf = {
     script = ''
+      set -e
       /sbin/pfctl -q -a ${anchor} -f ${rules}
       /sbin/pfctl -q -E
     '';
     serviceConfig = {
       RunAtLoad = true;
+      # Retry failed loads/enables, but stop after success so -E takes only one reference.
+      KeepAlive.SuccessfulExit = false;
+      ThrottleInterval = 30;
       StandardErrorPath = "/var/log/llm-sandbox-pf.log";
       StandardOutPath = "/var/log/llm-sandbox-pf.log";
     };

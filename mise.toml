@@ -18,6 +18,11 @@ description = "Test sandbox API restrictions and streaming through the built pro
 depends = ["check-llm-server"]
 run = "python3 scripts/check-llm-proxy.py"
 
+[tasks.check-llm-firewall]
+description = "Test firewall startup failures and launchd retry policy without changing pf"
+depends = ["check-llm-server"]
+run = "python3 scripts/check-llm-firewall.py"
+
 [tasks.update]
 description = "Update flake inputs"
 run = "nix flake update"
