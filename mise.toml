@@ -18,13 +18,24 @@ description = "Test sandbox API restrictions and streaming through the built pro
 depends = ["check-llm-server"]
 run = "python3 scripts/check-llm-proxy.py"
 
-[tasks.check-llm-firewall]
-description = "Test firewall startup failures and launchd retry policy without changing pf"
+[tasks.check-agent-sandbox]
+description = "Build the standalone sandbox role and run harmless host-file and lifecycle tests"
+run = [
+  "nix build --no-link --option eval-cache false .#darwinConfigurations.personal-agent-sandbox.system",
+  "python3 scripts/check-agent-sandbox.py",
+]
+
+[tasks.check-agent-sandbox-firewall]
+description = "Test sandbox firewall startup failures without changing pf"
 depends = ["check-llm-server"]
-run = "python3 scripts/check-llm-firewall.py"
+run = "python3 scripts/check-agent-sandbox-firewall.py"
+
+[tasks.check-agent-sandbox-live]
+description = "After manual activation, edit tiny fixtures in two sandboxes and verify the host files stay unchanged"
+run = "python3 scripts/check-agent-sandbox-live.py"
 
 [tasks.check-pi-sandbox]
-description = "Test project state isolation and refusal to start without firewall protection"
+description = "Test Pi's use of the shared disposable sandbox interface"
 run = "python3 scripts/check-pi-sandbox.py"
 
 [tasks.update]
@@ -35,12 +46,17 @@ run = "nix flake update"
 description = "Upgrade installed Homebrew packages"
 run = """
 before=$(readlink /opt/homebrew/opt/ollama 2>/dev/null || true)
+before_squid=$(readlink /opt/homebrew/opt/squid 2>/dev/null || true)
 status=0
 brew upgrade --greedy || status=$?  # mise runs this with errexit; keep going to the restart
 # A running `ollama serve` keeps paths into the keg brew just removed; restart it only if the keg moved.
 after=$(readlink /opt/homebrew/opt/ollama 2>/dev/null || true)
 if [ "$before" != "$after" ]; then
   launchctl kickstart -k "gui/$(id -u)/org.nix-community.home.ollama" || { echo "ollama moved to $after but the agent did not restart; run: launchctl kickstart -k gui/$(id -u)/org.nix-community.home.ollama" >&2; status=1; }
+fi
+after_squid=$(readlink /opt/homebrew/opt/squid 2>/dev/null || true)
+if [ "$before_squid" != "$after_squid" ]; then
+  launchctl kickstart -k "gui/$(id -u)/org.nix-community.home.agent-sandbox-proxy" || { echo "squid moved but the sandbox proxy did not restart" >&2; status=1; }
 fi
 exit $status
 """

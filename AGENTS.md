@@ -13,6 +13,7 @@ Personal macOS configuration using Nix Flakes, nix-darwin, and home-manager: dot
 mise run check-personal      # Build the personal config without applying
 mise run check-work          # Build the work config without applying
 mise run check-llm-server    # Build with the LLM server role forced on (server-only code never evaluates otherwise)
+mise run check-agent-sandbox # Build the standalone sandbox role and run harmless fixture tests
 mise run update              # Update flake inputs
 
 # Manual shell aliases (human use only; agents must not apply config)
@@ -38,7 +39,7 @@ flake.nix                    # Entry point - two configs: work, personal
 │   ├── zsh.nix              # Shell config with modern CLI aliases
 │   └── [tool].nix           # Per-tool configurations
 │
-├── macos/                   # macOS system preferences and roles (llm-server, llm-sandbox pf policy)
+├── macos/                   # macOS system preferences and roles (llm-server, agent-sandbox pf policy)
 ├── pkgs/                    # Custom package derivations (auto-loaded by flake)
 ├── scripts/                 # Shell scripts packaged or run by modules (pi-sandbox launcher, helpers)
 ├── containers/              # Image build contexts (pi-sandbox: Dockerfile + entrypoint)
@@ -53,6 +54,8 @@ flake.nix                    # Entry point - two configs: work, personal
 - Overlays substitute custom packages such as Claude Code and Codex CLI
 
 ## AI Integration
+
+Generic Apple container sandboxes live in `scripts/agent-sandbox.py`, `home-manager/agent-sandbox.nix` and `macos/agent-sandbox.nix`. Pi is a consumer of that runner. See `docs/agent-sandbox.md` for the disposable workspace and export contract. Sandbox tests must use harmless fixtures, never destructive host-isolation probes.
 
 The `ai/` directory is a Nix flake input providing shared configuration for AI coding tools. Each tool has its own home-manager module that symlinks relevant parts:
 

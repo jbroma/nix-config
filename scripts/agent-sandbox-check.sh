@@ -1,5 +1,5 @@
 # Invoked through sudo with no arguments. All paths and the anchor are fixed by Nix.
-fail() { echo "llm-sandbox-check: $*" >&2; exit 1; }
+fail() { echo "agent-sandbox-check: $*" >&2; exit 1; }
 [ "$#" -eq 0 ] || fail "arguments are not accepted"
 [ -s "$PF_SNAPSHOT" ] || fail "firewall startup has not recorded its rules"
 status=$(/sbin/pfctl -s info)

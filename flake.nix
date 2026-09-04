@@ -69,14 +69,6 @@
             "gemma4:26b-mlx"
           ];
           model = builtins.head models;
-          # Each running sandbox reserves a separate /29 from this pool. /30 is too small
-          # for Apple's allocator. The proxy and pf use the enclosing /24.
-          sandboxSubnet = "10.171.71.0/24";
-          sandboxNetworks = lib.genList (slot: {
-            name = "llm-sandbox-${toString slot}";
-            subnet = "${lib.removeSuffix ".0/24" sandboxSubnet}.${toString (slot * 8)}/29";
-            gateway = "${lib.removeSuffix ".0/24" sandboxSubnet}.${toString (slot * 8 + 1)}";
-          }) 32;
           # A client's server address; null on the server itself and on machines with no role.
           host = user.llmServerAddress or null;
           clients = user.llmClients or [ ];
@@ -107,10 +99,28 @@
             port
             models
             model
-            sandboxSubnet
-            sandboxNetworks
             ;
         };
+
+      # Independent of the model server. Profiles have distinct source ranges so setting
+      # HTTP_PROXY inside an offline guest cannot grant it internet or model access.
+      sandboxRole = rec {
+        enable = user.agentSandbox or false;
+        proxyPort = 11436;
+        subnets = {
+          offline = "10.171.71.0/24";
+          model = "10.171.72.0/24";
+          internet = "10.171.73.0/24";
+        };
+        networks = lib.mapAttrs (
+          profile: subnet:
+          lib.genList (slot: {
+            name = "agent-sandbox-${profile}-${toString slot}";
+            subnet = "${lib.removeSuffix ".0/24" subnet}.${toString (slot * 8)}/29";
+            gateway = "${lib.removeSuffix ".0/24" subnet}.${toString (slot * 8 + 1)}";
+          }) 32
+        ) subnets;
+      };
 
       # The server-only code paths never evaluate on a machine whose user.nix has no role;
       # `personal-llm-server` builds them with the role forced on (mise run check-llm-server).
@@ -132,6 +142,9 @@
           type,
           ai ? inputs.ai,
           llm ? llmRole,
+          sandbox ? sandboxRole // {
+            enable = sandboxRole.enable || llm.server;
+          },
         }:
         inputs.darwin.lib.darwinSystem {
           inherit system;
@@ -141,6 +154,7 @@
               user
               ai
               llm
+              sandbox
               ;
           };
           modules = darwinModules ++ [
@@ -195,6 +209,16 @@
         personal-llm-server = configuration {
           type = "personal";
           llm = llmServerForced;
+        };
+        personal-agent-sandbox = configuration {
+          type = "personal";
+          llm = llmRole // {
+            server = false;
+            host = null;
+          };
+          sandbox = sandboxRole // {
+            enable = true;
+          };
         };
       };
 

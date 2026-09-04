@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Point Pi at the Ollama server (LLM_SERVER, LLM_PORT, LLM_CONTEXT), then run pi. Pi's own state
-# in ~/.pi/agent (theme, thinking level, packages, sessions, models the user added) is kept: the
-# Ollama provider entry is upserted by model id and the default model is only seeded when missing.
+# Configure Pi in the private home supplied by agent-sandbox, then run it. State in ~/.pi/agent
+# stays inside this sandbox across repeated exec calls. The Ollama provider entry is upserted
+# by model id and the default model is only seeded when missing.
 # LLM_MODEL, when set, is used for this run only via Pi's --provider/--model flags.
 set -euo pipefail
-: "${LLM_SERVER:?set LLM_SERVER to the Ollama host}"
+LLM_SERVER="${SANDBOX_GATEWAY:?set SANDBOX_GATEWAY to the model gateway}"
 : "${LLM_PORT:?set LLM_PORT to the Ollama port}"
 : "${LLM_CONTEXT:?set LLM_CONTEXT to the context window}"
 : "${LLM_MODEL_DEFAULT:?set LLM_MODEL_DEFAULT to the default model tag}"

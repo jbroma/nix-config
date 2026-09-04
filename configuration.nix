@@ -5,9 +5,10 @@
   user,
   ai,
   llm,
+  sandbox,
   ...
 }:
-# `llm` is only passed through to home-manager here; see home-manager/llm.nix and macos/llm-*.nix.
+# Role settings are passed through to home-manager and the corresponding macOS modules.
 
 let
   allowedUnfreePackages = [
@@ -162,6 +163,7 @@ in
         user
         ai
         llm
+        sandbox
         ;
     };
   };
@@ -190,7 +192,7 @@ in
     ./macos/finder.nix
     ./macos/keyboard.nix
     ./macos/llm-server.nix
-    ./macos/llm-sandbox.nix
+    ./macos/agent-sandbox.nix
     ./macos/siri.nix
     ./macos/spotlight.nix
     ./macos/system.nix

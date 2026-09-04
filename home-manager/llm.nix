@@ -6,6 +6,7 @@
   lib,
   pkgs,
   llm,
+  sandbox,
   ...
 }:
 
@@ -26,7 +27,7 @@ let
     }
     http://:${toString llm.port} {
       route {
-        @sandbox remote_ip ${llm.sandboxSubnet}
+        @sandbox remote_ip ${sandbox.subnets.model}
         handle @sandbox {
           @chat {
             method POST
@@ -54,15 +55,12 @@ let
     name = "pi-sandbox";
     runtimeInputs = [
       pkgs.apple-container
-      pkgs.jq
+      pkgs.agent-sandbox
     ];
     runtimeEnv = {
       LLM_PORT = toString llm.port;
       LLM_MODEL_DEFAULT = llm.model;
       LLM_CONTEXT = toString contextLength;
-      SANDBOX_NETWORKS_FILE = pkgs.writeText "llm-sandbox-networks.json" (
-        builtins.toJSON llm.sandboxNetworks
-      );
       # Interpolated so the directory is copied to the store: its hash is the image tag.
       PI_SANDBOX_CONTEXT = "${../containers/pi-sandbox}";
     };
@@ -114,7 +112,6 @@ lib.mkMerge [
     home.packages = [
       pi-sandbox
       ollama-models
-      pkgs.apple-container # the `container` CLI itself, for network/image/volume housekeeping
     ];
 
     services.ollama = {

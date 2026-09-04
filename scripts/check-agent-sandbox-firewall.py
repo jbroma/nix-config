@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Test the built firewall startup script without touching the host firewall.
 
-Run with `mise run check-llm-firewall`. Only pfctl is replaced with a test command.
+Run with `mise run check-agent-sandbox-firewall`. Only pfctl is replaced with a test command.
 """
 
 import json
@@ -14,7 +14,7 @@ import tempfile
 
 daemon = json.loads(subprocess.check_output([
     "nix", "eval", "--json", "--option", "eval-cache", "false",
-    ".#darwinConfigurations.personal-llm-server.config.launchd.daemons.llm-sandbox-pf",
+    ".#darwinConfigurations.personal-llm-server.config.launchd.daemons.agent-sandbox-pf",
 ], text=True))
 source = Path(daemon["command"]).read_text()
 assert source.count("/sbin/pfctl") == 3, "review test substitution when startup changes"
@@ -22,7 +22,7 @@ system_path = subprocess.check_output([
     "nix", "eval", "--raw", "--option", "eval-cache", "false",
     ".#darwinConfigurations.personal-llm-server.config.system.path",
 ], text=True)
-check_source = (Path(system_path) / "bin/llm-sandbox-check").read_text()
+check_source = (Path(system_path) / "bin/agent-sandbox-check").read_text()
 
 with tempfile.TemporaryDirectory(prefix="llm-firewall-check-") as directory:
     root = Path(directory)
@@ -43,7 +43,7 @@ esac
     script = root / "startup"
     def substitute(text):
         return text.replace("/sbin/pfctl", shlex.quote(str(stub))).replace(
-            "/var/run/llm-sandbox-pf", str(root / "snapshot"),
+            "/var/run/agent-sandbox-pf", str(root / "snapshot"),
         )
 
     script.write_text(substitute(source))
@@ -54,7 +54,7 @@ esac
         "PF_TEST_ENABLE_STATUS": "0", "PF_TEST_READ_STATUS": "0",
         "PF_TEST_RULES": "block drop in quick inet from 10.171.71.0/24 to any",
         "PF_TEST_STATUS": "Status: Enabled for 0 days", "PF_TEST_MAIN": 'anchor "com.apple/*" all',
-        "PF_TEST_ANCHORS": "  000.llm-sandbox\n  200.AirDrop\n  250.ApplicationFirewall",
+        "PF_TEST_ANCHORS": "  000.agent-sandbox\n  200.AirDrop\n  250.ApplicationFirewall",
     }
     for name, changes, expected_exit, expected_calls in (
         ("rule load fails", {"PF_TEST_LOAD_STATUS": "23"}, 23, 1),
@@ -75,14 +75,14 @@ esac
     for name, changes, expected in (
         ("active protection", {}, 0),
         ("standard scrub anchor", {"PF_TEST_MAIN": 'scrub-anchor "com.apple/*" all fragment reassemble\nanchor "com.apple/*" all'}, 0),
-        ("unsorted qualified anchors", {"PF_TEST_ANCHORS": "  com.apple/250.ApplicationFirewall\n  com.apple/000.llm-sandbox"}, 0),
+        ("unsorted qualified anchors", {"PF_TEST_ANCHORS": "  com.apple/250.ApplicationFirewall\n  com.apple/000.agent-sandbox"}, 0),
         ("pf disabled", {"PF_TEST_STATUS": "Status: Disabled"}, 1),
         ("main anchor missing", {"PF_TEST_MAIN": ""}, 1),
         ("early quick pass", {"PF_TEST_MAIN": 'pass in quick all\nanchor "com.apple/*" all'}, 1),
         ("extra main anchor", {"PF_TEST_MAIN": 'anchor "other" all\nanchor "com.apple/*" all'}, 1),
         ("late main pass", {"PF_TEST_MAIN": 'anchor "com.apple/*" all\npass all'}, 1),
-        ("earlier sibling anchor", {"PF_TEST_ANCHORS": "  000.bypass\n  000.llm-sandbox"}, 1),
-        ("qualified earlier sibling", {"PF_TEST_ANCHORS": "  com.apple/000.llm-sandbox\n  com.apple/000.bypass"}, 1),
+        ("earlier sibling anchor", {"PF_TEST_ANCHORS": "  000.aaa-bypass\n  000.agent-sandbox"}, 1),
+        ("qualified earlier sibling", {"PF_TEST_ANCHORS": "  com.apple/000.agent-sandbox\n  com.apple/000.aaa-bypass"}, 1),
         ("anchor list empty", {"PF_TEST_ANCHORS": ""}, 1),
         ("sandbox anchor empty", {"PF_TEST_RULES": ""}, 1),
         ("sandbox rules changed", {"PF_TEST_RULES": "pass all"}, 1),
