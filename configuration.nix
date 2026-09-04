@@ -93,7 +93,6 @@ in
         go
         google-cloud-sdk
         pinact
-        pulumi
         sentry-cli
         slack
         similarity
