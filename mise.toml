@@ -13,6 +13,11 @@ run = "nix build --no-link --option eval-cache false .#darwinConfigurations.work
 description = "Build the personal configuration with the LLM server role forced on (never true in this machine's user.nix)"
 run = "nix build --no-link --option eval-cache false .#darwinConfigurations.personal-llm-server.system"
 
+[tasks.check-llm-proxy]
+description = "Test sandbox API restrictions and streaming through the built proxy"
+depends = ["check-llm-server"]
+run = "python3 scripts/check-llm-proxy.py"
+
 [tasks.update]
 description = "Update flake inputs"
 run = "nix flake update"

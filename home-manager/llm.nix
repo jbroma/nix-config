@@ -13,6 +13,42 @@ let
   # Coding agents need 64k+; Ollama's default is 4k. Shared with the sandbox's Pi config.
   contextLength = 131072;
   client = llm.host != null;
+  ollamaPort = if llm.server then llm.port + 1 else llm.port;
+
+  # The sandbox must never reach model management: /api/pull can make the host fetch URLs.
+  # Keep the raw API on loopback, and check the socket peer, never forwarded client headers.
+  # Sandbox rules come first even if llm.clients includes its subnet. Everything else is denied.
+  proxyConfig = pkgs.writeText "llm-proxy.Caddyfile" ''
+    {
+      admin off
+      auto_https off
+      persist_config off
+    }
+    http://:${toString llm.port} {
+      route {
+        @sandbox remote_ip ${llm.sandboxSubnet}
+        handle @sandbox {
+          @chat {
+            method POST
+            path /v1/chat/completions
+          }
+          handle @chat {
+            reverse_proxy 127.0.0.1:${toString ollamaPort} {
+              header_up Host {upstream_hostport}
+            }
+          }
+          respond 403
+        }
+        @trusted remote_ip 127.0.0.1 ::1 ${lib.concatStringsSep " " llm.clients}
+        handle @trusted {
+          reverse_proxy 127.0.0.1:${toString ollamaPort} {
+            header_up Host {upstream_hostport}
+          }
+        }
+        respond 403
+      }
+    }
+  '';
 
   pi-sandbox = pkgs.writeShellApplication {
     name = "pi-sandbox";
@@ -64,7 +100,7 @@ lib.mkMerge [
     # Local-only service where nothing else is configured; the server overrides it below.
     services.ollama = {
       enable = !client;
-      inherit (llm) port;
+      port = ollamaPort;
     };
   }
 
@@ -83,7 +119,7 @@ lib.mkMerge [
 
     services.ollama = {
       package = ollama;
-      host = "0.0.0.0";
+      host = "127.0.0.1";
       environmentVariables = {
         OLLAMA_CONTEXT_LENGTH = toString contextLength;
         OLLAMA_KEEP_ALIVE = "24h";
@@ -94,6 +130,25 @@ lib.mkMerge [
         OLLAMA_NUM_PARALLEL = "1";
         # Local only: no cloud models, no Ollama web search.
         OLLAMA_NO_CLOUD = "1";
+      };
+    };
+
+    launchd.agents.llm-proxy = {
+      enable = true;
+      config = {
+        ProgramArguments = [
+          "${pkgs.caddy}/bin/caddy"
+          "run"
+          "--config"
+          "${proxyConfig}"
+          "--adapter"
+          "caddyfile"
+        ];
+        RunAtLoad = true;
+        KeepAlive = true;
+        ThrottleInterval = 5;
+        StandardOutPath = "${logDir}/proxy.log";
+        StandardErrorPath = "${logDir}/proxy.log";
       };
     };
 

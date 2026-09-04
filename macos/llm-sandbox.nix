@@ -1,7 +1,8 @@
 # pf policy on the LLM server (llm from flake.nix). Vault note: Homelab/LLM Server.md
 # - The pi-sandbox harness runs on a host-only container network, so LAN and internet are out of
-#   reach by construction; pf limits what it may reach on the host itself to Ollama's port.
-# - Ollama's unauthenticated API (0.0.0.0:11434) accepts only llm.clients, the sandbox and loopback.
+#   reach by construction; pf limits host access to the proxy's port.
+# - The proxy also checks llm.clients and restricts the sandbox to chat completions.
+#   Raw Ollama listens only on loopback. See home-manager/llm.nix.
 # Loaded at every boot (pf anchors do not persist); nothing toggles it at run time.
 {
   lib,
