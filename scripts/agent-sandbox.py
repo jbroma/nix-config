@@ -94,11 +94,100 @@ def snapshot(project, output, limit):
 
 
 class Runner:
-    def __init__(self, config):
+    def __init__(self, config, initialize_state=True):
         self.config = config
         self.state = Path(config["stateDir"])
-        self.state.mkdir(mode=0o700, parents=True, exist_ok=True)
-        self.state.chmod(0o700)
+        if initialize_state:
+            self.state.mkdir(mode=0o700, parents=True, exist_ok=True)
+            self.state.chmod(0o700)
+
+    def status(self):
+        """Read runtime metrics without starting services, changing permissions, or cleaning up."""
+        issues = []
+        def read_json(*args):
+            try:
+                result = self.container(*args, capture=True, check=False, stderr=subprocess.PIPE, timeout=10)
+                if result.returncode == 0:
+                    return json.loads(result.stdout)
+            except (OSError, ValueError, subprocess.SubprocessError):
+                pass
+            issues.append(f"{' '.join(args[:2])} unavailable")
+            return None
+
+        def number(value):
+            return value if type(value) is int and 0 <= value < 2**64 else None
+
+        def by_id(value):
+            return {item["id"]: item for item in value
+                    if isinstance(item, dict) and isinstance(item.get("id"), str)} if isinstance(value, list) else {}
+
+        def sysctl(key):
+            try:
+                result = subprocess.run(["/usr/sbin/sysctl", "-n", key], capture_output=True, timeout=2, text=True)
+                return int(result.stdout) if result.returncode == 0 else None
+            except (OSError, ValueError, subprocess.SubprocessError):
+                return None
+
+        inventory = read_json("list", "--all", "--format", "json")
+        available = isinstance(inventory, list)
+        containers = by_id(inventory)
+        sessions = []
+        for path in sorted(self.state.glob("asb-*.json")):
+            try:
+                record = self.record(path.stem)
+            except FileNotFoundError:
+                continue  # Cleanup may have just finished.
+            except (SandboxError, OSError, ValueError, TypeError):
+                issues.append("invalid sandbox record")
+                continue
+            entry = containers.get(path.stem, {})
+            native_state = entry.get("status")
+            state = native_state.get("state") if isinstance(native_state, dict) else ("missing" if available and not entry else "unknown")
+            if state not in ("running", "stopped", "starting", "stopping", "created", "missing"):
+                state = "unknown"
+            mode = record.get("mode")
+            sessions.append({
+                "id": path.stem, "mode": mode if isinstance(mode, str) and mode in self.config["networks"] else "unknown",
+                "state": state, "cpuPercent": None, "memoryUsageBytes": None, "memoryLimitBytes": None,
+            })
+        running = [session["id"] for session in sessions if session["state"] == "running"]
+        if running:
+            first = read_json("stats", *running, "--no-stream", "--format", "json")
+            started = time.monotonic()
+            time.sleep(1)
+            last = read_json("stats", *running, "--no-stream", "--format", "json")
+            elapsed = time.monotonic() - started
+            first, last = by_id(first), by_id(last)
+            for session in sessions:
+                before, current = first.get(session["id"], {}), last.get(session["id"], {})
+                old_cpu, new_cpu = number(before.get("cpuUsageUsec")), number(current.get("cpuUsageUsec"))
+                if old_cpu is not None and new_cpu is not None and new_cpu >= old_cpu and elapsed > 0:
+                    session["cpuPercent"] = round((new_cpu - old_cpu) / (elapsed * 10000), 1)
+                for key in ("memoryUsageBytes", "memoryLimitBytes"):
+                    session[key] = number(current.get(key))
+        raw_disk = read_json("system", "df", "--format", "json") if available else None
+        disk = {}
+        for kind in ("containers", "images", "volumes"):
+            entry = raw_disk.get(kind, {}) if isinstance(raw_disk, dict) else {}
+            if not isinstance(entry, dict):
+                entry = {}
+            disk[kind] = {key: number(entry.get(key)) for key in ("total", "active", "sizeInBytes", "reclaimable")}
+        exports = {"count": 0, "sizeInBytes": 0}
+        for path in (self.state / "exports").glob("*.tar"):
+            try:
+                info = path.lstat()
+                if stat.S_ISREG(info.st_mode):
+                    exports["count"] += 1
+                    exports["sizeInBytes"] += info.st_size
+            except FileNotFoundError:
+                continue
+        return {
+            "runtimeAvailable": available, "sessions": sessions, "disk": disk, "exports": exports,
+            "host": {"load1m": round(os.getloadavg()[0], 2), "logicalCpus": os.cpu_count(),
+                     "memoryTotalBytes": sysctl("hw.memsize"),
+                     "memoryPressure": {1: "normal", 2: "warning", 4: "critical"}.get(sysctl("kern.memorystatus_vm_pressure_level"), "unknown")},
+            "issues": issues,
+        }
 
     @contextlib.contextmanager
     def lifecycle_lock(self):
@@ -350,6 +439,31 @@ class Runner:
             self.require_protection(session)
 
 
+def print_status(report):
+    def size(value):
+        if value is None:
+            return "?"
+        for unit in ("B", "KiB", "MiB", "GiB", "TiB"):
+            if value < 1024 or unit == "TiB":
+                return f"{value:.1f}{unit}"
+            value /= 1024
+    host = report["host"]
+    print(f"Host: 1m load {host['load1m']}; {host['logicalCpus']} logical CPUs; total RAM {size(host['memoryTotalBytes'])}; memory pressure {host['memoryPressure']}")
+    print(f"Runtime: {'available' if report['runtimeAvailable'] else 'unavailable'}; retained sandboxes: {len(report['sessions'])}")
+    if report["sessions"]:
+        print(f"{'ID':36} {'MODE':8} {'STATE':8} {'CPU':>7}  GUEST MEMORY / LIMIT")
+        for session in report["sessions"]:
+            cpu = f"{session['cpuPercent']:.1f}%" if session["cpuPercent"] is not None else "?"
+            print(f"{session['id']:36} {session['mode']:8} {session['state']:8} {cpu:>7}  {size(session['memoryUsageBytes'])} / {size(session['memoryLimitBytes'])}")
+        print("CPU: 100% is one core. ? means unavailable, not zero.")
+    print("All Apple Container storage:")
+    for kind, entry in report["disk"].items():
+        print(f"  {kind}: {size(entry['sizeInBytes'])}; reported reclaimable {size(entry['reclaimable'])}")
+    print(f"Retained export archives: {report['exports']['count']}, {size(report['exports']['sizeInBytes'])}")
+    if report["issues"]:
+        print("Incomplete data: " + "; ".join(sorted(set(report["issues"]))))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="action", required=True)
@@ -373,10 +487,12 @@ def main():
     start.add_argument("session")
     commands.add_parser("guard", help="stop managed sandboxes when firewall protection is unavailable")
     commands.add_parser("list", help="list retained sandbox IDs")
+    status = commands.add_parser("status", help="read sandbox CPU, memory, disk and retained export usage")
+    status.add_argument("--json", action="store_true", help="emit a machine-readable snapshot")
     commands.add_parser("image", help="build the base image and print its name")
     args = parser.parse_args()
     config_path = os.environ.get("AGENT_SANDBOX_CONFIG", str(Path.home() / ".config/agent-sandbox/config.json"))
-    runner = Runner(json.loads(Path(config_path).read_text()))
+    runner = Runner(json.loads(Path(config_path).read_text()), initialize_state=args.action != "status")
     if args.action == "create":
         print(runner.create(args))
     elif args.action == "exec":
@@ -392,6 +508,12 @@ def main():
     elif args.action == "list":
         for path in sorted(runner.state.glob("asb-*.json")):
             print(path.stem)
+    elif args.action == "status":
+        report = runner.status()
+        if args.json:
+            print(json.dumps(report))
+        else:
+            print_status(report)
     elif args.action == "image":
         runner.container("system", "start", "--enable-kernel-install")
         print(runner.image())

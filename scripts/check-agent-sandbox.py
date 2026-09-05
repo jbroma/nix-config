@@ -69,6 +69,48 @@ class FakeRunner(module.Runner):
 
 
 class HostSafety(unittest.TestCase):
+    def test_status_reads_metrics_without_mutation_or_private_environment_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            state = root / "state"
+            state.mkdir(mode=0o755)
+            state.chmod(0o755)
+            session = "asb-" + "a" * 32
+            record = state / f"{session}.json"
+            record.write_text(json.dumps({"network": "offline-0", "mode": "offline"}))
+            runner = module.Runner({"stateDir": str(state), "container": "container", "networks": {"offline": [{"name": "offline-0"}]}}, initialize_state=False)
+            samples = iter([1000000, 1500000])
+            calls = []
+            def container(*args, **kwargs):
+                calls.append(args)
+                if args[0] == "list":
+                    data = [{"id": session, "status": {"state": "running"}, "configuration": {"initProcess": {"environment": ["PRIVATE_FIXTURE=do-not-emit"]}}}]
+                elif args[0] == "stats":
+                    data = [{"id": session, "cpuUsageUsec": next(samples), "memoryUsageBytes": 67108864, "memoryLimitBytes": 536870912}]
+                else:
+                    data = {"images": {"total": 2, "active": 1, "sizeInBytes": 4096, "reclaimable": 1024}}
+                return SimpleNamespace(returncode=0, stdout=json.dumps(data).encode())
+            with patch.object(runner, "container", side_effect=container), patch.object(module.time, "sleep"), patch.object(module.time, "monotonic", side_effect=[10, 11]), patch.object(module.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout="1")):
+                result = runner.status()
+            self.assertEqual(result["sessions"][0]["cpuPercent"], 50.0)
+            self.assertEqual(result["sessions"][0]["memoryUsageBytes"], 67108864)
+            self.assertNotIn("PRIVATE_FIXTURE", json.dumps(result))
+            self.assertEqual(state.stat().st_mode & 0o777, 0o755)
+            self.assertEqual(set(path.name for path in state.iterdir()), {record.name})
+            self.assertTrue(all(args[0] in ("list", "stats", "system") for args in calls))
+            self.assertTrue(all(args[1] == "df" for args in calls if args[0] == "system"))
+
+    def test_status_reports_unavailable_data_without_starting_runtime(self):
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory) / "absent"
+            runner = module.Runner({"stateDir": str(state), "container": "container", "networks": {}}, initialize_state=False)
+            with patch.object(runner, "container", side_effect=subprocess.TimeoutExpired("fixture", 10)) as calls, patch.object(module.subprocess, "run", return_value=SimpleNamespace(returncode=1, stdout="")):
+                result = runner.status()
+            self.assertFalse(state.exists())
+            self.assertFalse(result["runtimeAvailable"])
+            self.assertIsNone(result["disk"]["images"]["sizeInBytes"])
+            calls.assert_called_once()
+
     def test_commands_and_guard_do_not_wait_for_lifecycle_lock(self):
         with tempfile.TemporaryDirectory() as directory:
             runner = FakeRunner(directory)

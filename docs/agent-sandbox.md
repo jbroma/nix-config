@@ -76,6 +76,23 @@ Public internet access can transmit any data deliberately copied into that sandb
 
 ## Storage and resources
 
+Inspect usage on the machine running the sandboxes:
+
+```sh
+agent-sandbox status
+agent-sandbox status --json
+```
+
+The report is read-only. It shows retained sandbox IDs and state, CPU usage from two samples,
+guest memory usage/limits, all Apple Container disk usage, retained exports, and host load and
+memory pressure. CPU 100% means one fully used core. Metrics unavailable from a stopped runtime
+are marked unknown. Environment variables and mount paths are excluded from JSON output.
+For a continuous native CPU/memory display, use `container stats`.
+
+Cleanup remains explicit: export any results you want to keep, then run
+`agent-sandbox destroy ID`. Export archives and cached images remain. The runtime's reported
+reclaimable storage can include retained work; the status command never prunes it.
+
 The image filesystem is read-only. Each session has a private 4 GiB workspace volume,
 512 MiB home volume and 256 MiB temporary filesystem. Default CPU and memory limits are
 2 CPUs and 2 GiB; `create --cpus` and `--memory` choose other bounded values. Use a prepared
