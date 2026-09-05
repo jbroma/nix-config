@@ -42,7 +42,7 @@ fi
 
 if [ -f "$config_file" ] && "$yq_bin" eval -p=toml '.' "$config_file" >/dev/null 2>&1; then
   "$yq_bin" eval -p=toml -o=toml \
-    'del(.projects, .agents.max_threads, .features.js_repl, .model_personality)' \
+    'del(.projects, .agents.max_threads, .features.js_repl, .model_personality, .mcp_servers.homeassistant)' \
     "$config_file" > "$existing_config"
 
   # Drop the retired hook from the computer-use notification chain. The app

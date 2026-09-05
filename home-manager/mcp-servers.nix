@@ -3,7 +3,6 @@
 {
   lib,
   pkgs,
-  type,
   ...
 }:
 
@@ -12,7 +11,7 @@ let
   # Their API keys live in the macOS Keychain (service = <service>, account =
   # $USER) and are injected into the Claude Code, Codex, and Cursor configs at
   # activation from `mcp.secrets`.
-  sharedMcpServers = {
+  servers = {
     # Web access (ai-sauce CORE.md "Web Access" says which tool does what)
     context7 = {
       type = "http";
@@ -30,14 +29,6 @@ let
       type = "http";
       url = "https://mcp.grep.app";
     };
-
-  };
-
-  personalMcpServers = {
-    homeassistant = {
-      type = "http";
-      url = "http://homeassistant.internal:8123/api/mcp";
-    };
   };
 
   bearer = service: {
@@ -45,7 +36,7 @@ let
     header = "Authorization";
     prefix = "Bearer ";
   };
-  sharedSecrets = {
+  secrets = {
     context7 = bearer "context7-api-key";
     exa = {
       service = "exa-api-key";
@@ -54,13 +45,6 @@ let
     };
     firecrawl = bearer "firecrawl-api-key";
   };
-  personalSecrets = {
-    homeassistant = bearer "homeassistant-mcp-token";
-  };
-
-  personal = type == "personal";
-  servers = sharedMcpServers // lib.optionalAttrs personal personalMcpServers;
-  secrets = sharedSecrets // lib.optionalAttrs personal personalSecrets;
 
   # `keychain-mcp sync` copies these 1Password fields into the Keychain services above.
   keychainKeys = {
