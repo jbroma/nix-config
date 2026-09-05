@@ -3,20 +3,44 @@
 
 import argparse
 import contextlib
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import fcntl
 import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import selectors
 import stat
 import subprocess
 import sys
 import tarfile
 import tempfile
+import time
 import uuid
 
 
 class SandboxError(Exception):
     pass
+
+
+PROCESS_EXIT_TIMEOUT = 2
+
+
+def stop_export_process(process):
+    """Bound cleanup of the host-side export process, including a terminate-resistant child."""
+    if process.poll() is not None:
+        return
+    for action in (process.terminate, process.kill):
+        try:
+            action()
+        except ProcessLookupError:
+            pass
+        try:
+            process.wait(timeout=PROCESS_EXIT_TIMEOUT)
+            return
+        except subprocess.TimeoutExpired:
+            continue
+    raise SandboxError("export process did not exit after termination")
 
 
 def snapshot(project, output, limit):
@@ -76,6 +100,58 @@ class Runner:
         self.state.mkdir(mode=0o700, parents=True, exist_ok=True)
         self.state.chmod(0o700)
 
+    @contextlib.contextmanager
+    def lifecycle_lock(self):
+        # This file is never unlinked: all processes must lock the same inode. Commands and
+        # exports do not hold this lock, so running sandboxes remain independent.
+        fd = os.open(self.state / ".lifecycle.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(fd, "r+") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(lock, fcntl.LOCK_UN)
+
+    def protection_ready(self):
+        try:
+            return subprocess.run(
+                ["/usr/bin/sudo", "-n", self.config["firewallCheck"]],
+                capture_output=True, timeout=5,
+            ).returncode == 0
+        except (OSError, subprocess.SubprocessError):
+            return False
+
+    def stop_session(self, session):
+        result = self.container("stop", session, capture=True, check=False, stderr=subprocess.PIPE, timeout=10)
+        if result.returncode and self.exists("container", session):
+            raise SandboxError(f"could not stop {session}; its files and record are retained")
+
+    def require_protection(self, session=None):
+        if self.protection_ready():
+            return
+        if session is not None:
+            self.stop_session(session)
+        raise SandboxError("firewall protection is unavailable; guest execution refused")
+
+    def guard(self):
+        sessions = [path.stem for path in self.state.glob("asb-*.json")
+                    if re.fullmatch(r"asb-[0-9a-f]{32}", path.stem)]
+        if not sessions or self.protection_ready():
+            return
+        # Stopping immutable session IDs never deletes or reuses a network reservation and
+        # must not wait behind a create/destroy lock when protection has failed.
+        failed = []
+        with ThreadPoolExecutor(max_workers=min(8, len(sessions))) as workers:
+            pending = {workers.submit(self.stop_session, session): session for session in sessions}
+            for future in as_completed(pending):
+                try:
+                    future.result()
+                except (SandboxError, OSError, subprocess.SubprocessError):
+                    failed.append(pending[future])
+        if failed:
+            raise SandboxError("firewall unavailable; could not stop: " + ", ".join(failed))
+        raise SandboxError("firewall unavailable; managed sandboxes stopped, files retained")
+
     def container(self, *args, capture=False, check=True, **kwargs):
         result = subprocess.run(
             [self.config["container"], *map(str, args)],
@@ -87,7 +163,7 @@ class Runner:
 
     def exists(self, kind, name):
         arguments = ("inspect", name) if kind == "container" else (kind, "inspect", name)
-        result = self.container(*arguments, capture=True, check=False, stderr=subprocess.PIPE)
+        result = self.container(*arguments, capture=True, check=False, stderr=subprocess.PIPE, timeout=10)
         if result.returncode == 0:
             return True
         if name.encode() in result.stderr and re.search(rb"notFound|not found|does not exist", result.stderr, re.IGNORECASE):
@@ -128,59 +204,61 @@ class Runner:
                 snapshot(args.project, archive, self.config["transferLimit"])
             self.container("system", "start", "--enable-kernel-install")
             image = args.image or self.image()
-            network = None
-            for candidate in self.config["networks"][args.network]:
-                result = self.container(
-                    "network", "create", "--internal", "--subnet", candidate["subnet"], candidate["name"],
-                    capture=True, check=False, stderr=subprocess.DEVNULL,
-                )
-                if result.returncode == 0:
-                    network = candidate
-                    break
-            if network is None:
-                raise SandboxError("no isolated network available; inspect existing sandbox reservations")
-            session = "asb-" + uuid.uuid4().hex
-            record = {"network": network["name"], "mode": args.network}
-            journal_created = False
-            try:
-                with self.record_path(session).open("x") as journal:
-                    journal_created = True
-                    journal.write(json.dumps(record))
-            except BaseException:
-                self.container("network", "delete", network["name"], check=False)
-                if journal_created:
-                    self.record_path(session).unlink(missing_ok=True)
-                raise
-            try:
-                if subprocess.run(["/usr/bin/sudo", "-n", self.config["firewallCheck"]]).returncode:
-                    raise SandboxError("firewall protection is not ready")
-                self.container("volume", "create", "-s", "4G", session + "-work")
-                self.container("volume", "create", "-s", "512M", session + "-home")
-                environment = ["SANDBOX_GATEWAY=" + network["gateway"]]
-                if args.network == "internet":
-                    proxy = f"http://{network['gateway']}:{self.config['proxyPort']}"
-                    environment += [f"{key}={proxy}" for key in ("http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY")]
-                    environment.append("NODE_USE_ENV_PROXY=1")
-                for value in args.env:
-                    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*=.*", value, re.DOTALL):
-                        raise SandboxError("--env requires KEY=value")
-                    environment.append(value)
-                env_flags = [part for value in environment for part in ("--env", value)]
-                self.container(
-                    "run", "-d", "--name", session, "--label", "agent-sandbox.managed=true",
-                    "--network", network["name"], "--dns", "127.0.0.1", "--read-only",
-                    "--cpus", str(args.cpus), "--memory", args.memory,
-                    "--kernel-arg", "ipv6.disable=1", "--cap-drop", "CAP_NET_RAW", "--cap-drop", "CAP_NET_ADMIN", "--cap-drop", "CAP_MKNOD",
-                    "--mount", "type=tmpfs,target=/tmp,size=256M",
-                    "--volume", session + "-work:/workspace", "--volume", session + "-home:/root",
-                    *env_flags, "--entrypoint", "/bin/sleep", image, "infinity",
-                )
-                if args.project:
-                    self.container("exec", "-i", session, "/bin/tar", "-xf", "-", "-C", "/workspace", stdin=archive)
-            except BaseException:
-                self.destroy(session)
-                raise
-            return session
+            with self.lifecycle_lock():
+                network = None
+                for candidate in self.config["networks"][args.network]:
+                    result = self.container(
+                        "network", "create", "--internal", "--subnet", candidate["subnet"], candidate["name"],
+                        capture=True, check=False, stderr=subprocess.DEVNULL,
+                    )
+                    if result.returncode == 0:
+                        network = candidate
+                        break
+                if network is None:
+                    raise SandboxError("no isolated network available; inspect existing sandbox reservations")
+                session = "asb-" + uuid.uuid4().hex
+                record = {"network": network["name"], "mode": args.network}
+                journal_created = False
+                try:
+                    with self.record_path(session).open("x") as journal:
+                        journal_created = True
+                        journal.write(json.dumps(record))
+                except BaseException:
+                    self.container("network", "delete", network["name"], check=False)
+                    if journal_created:
+                        self.record_path(session).unlink(missing_ok=True)
+                    raise
+                try:
+                    self.require_protection()
+                    self.container("volume", "create", "-s", "4G", session + "-work")
+                    self.container("volume", "create", "-s", "512M", session + "-home")
+                    environment = ["SANDBOX_GATEWAY=" + network["gateway"]]
+                    if args.network == "internet":
+                        proxy = f"http://{network['gateway']}:{self.config['proxyPort']}"
+                        environment += [f"{key}={proxy}" for key in ("http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY")]
+                        environment.append("NODE_USE_ENV_PROXY=1")
+                    for value in args.env:
+                        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*=.*", value, re.DOTALL):
+                            raise SandboxError("--env requires KEY=value")
+                        environment.append(value)
+                    env_flags = [part for value in environment for part in ("--env", value)]
+                    self.container(
+                        "run", "-d", "--name", session, "--label", "agent-sandbox.managed=true",
+                        "--network", network["name"], "--dns", "127.0.0.1", "--read-only",
+                        "--cpus", str(args.cpus), "--memory", args.memory,
+                        "--kernel-arg", "ipv6.disable=1", "--cap-drop", "CAP_NET_RAW", "--cap-drop", "CAP_NET_ADMIN", "--cap-drop", "CAP_MKNOD",
+                        "--mount", "type=tmpfs,target=/tmp,size=256M",
+                        "--volume", session + "-work:/workspace", "--volume", session + "-home:/root",
+                        *env_flags, "--entrypoint", "/bin/sleep", image, "infinity",
+                    )
+                    self.require_protection(session)
+                    if args.project:
+                        self.container("exec", "-i", session, "/bin/tar", "-xf", "-", "-C", "/workspace", stdin=archive)
+                    self.require_protection(session)
+                except BaseException:
+                    self._destroy_locked(session)
+                    raise
+                return session
 
     def execute(self, args):
         self.record(args.session)
@@ -189,6 +267,7 @@ class Runner:
             command = command[1:]
         if not command:
             raise SandboxError("exec needs a command after --")
+        self.require_protection(args.session)
         tty = ["-t"] if sys.stdin.isatty() else []
         return subprocess.run([
             self.config["container"], "exec", "-i", *tty, "--workdir", "/workspace", args.session, *command,
@@ -196,41 +275,63 @@ class Runner:
 
     def export(self, args):
         self.record(args.session)
+        if not 0 < args.timeout <= 3600:
+            raise SandboxError("export timeout must be between 0 and 3600 seconds")
         selected = PurePosixPath(args.path)
         if selected.is_absolute() or ".." in selected.parts:
             raise SandboxError("export path must stay inside /workspace")
+        self.require_protection(args.session)
         directory = self.state / "exports"
         directory.mkdir(mode=0o700, exist_ok=True)
         destination = directory / f"{args.session}-{uuid.uuid4().hex[:8]}.tar"
         # Guest output is untrusted: save bounded bytes, never extract or apply it on the host.
         with destination.open("xb") as output:
-            os.chmod(destination, 0o600)
-            process = subprocess.Popen([
-                self.config["container"], "exec", args.session, "/bin/tar", "-C", "/workspace",
-                "-cf", "-", "--", str(selected),
-            ], stdout=subprocess.PIPE)
+            process = None
             try:
+                os.chmod(destination, 0o600)
+                deadline = time.monotonic() + args.timeout
+                process = subprocess.Popen([
+                    self.config["container"], "exec", args.session, "/bin/tar", "-C", "/workspace",
+                    "-cf", "-", "--", str(selected),
+                ], stdout=subprocess.PIPE)
                 total = 0
-                while chunk := process.stdout.read(65536):
-                    total += len(chunk)
-                    if total > self.config["transferLimit"]:
-                        raise SandboxError("export exceeds the transfer limit; select a smaller --path")
-                    output.write(chunk)
-                if process.wait():
+                os.set_blocking(process.stdout.fileno(), False)
+                with selectors.DefaultSelector() as ready:
+                    ready.register(process.stdout, selectors.EVENT_READ)
+                    while True:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0 or not ready.select(remaining):
+                            raise SandboxError("export timed out")
+                        chunk = os.read(process.stdout.fileno(), 65536)
+                        if not chunk:
+                            break
+                        total += len(chunk)
+                        if total > self.config["transferLimit"]:
+                            raise SandboxError("export exceeds the transfer limit; select a smaller --path")
+                        output.write(chunk)
+                if process.wait(timeout=max(0, deadline - time.monotonic())):
                     raise SandboxError("export failed")
             except BaseException:
-                process.terminate()
-                process.wait(timeout=5)
-                destination.unlink(missing_ok=True)
+                try:
+                    if process is not None:
+                        stop_export_process(process)
+                finally:
+                    destination.unlink(missing_ok=True)
                 raise
             finally:
-                process.stdout.close()
+                if process is not None:
+                    process.stdout.close()
         return destination
 
     def destroy(self, session):
+        with self.lifecycle_lock():
+            if self.record_path(session).exists():
+                self._destroy_locked(session)
+
+    def _destroy_locked(self, session):
         record = self.record(session)
         if self.exists("container", session):
-            self.container("stop", session, check=False, stderr=subprocess.DEVNULL)
+            self.stop_session(session)
             self.container("delete", session)
         # Deletion refuses live references. Keep the journal if anything remains for retry.
         remaining = []
@@ -240,6 +341,13 @@ class Runner:
         if remaining:
             raise SandboxError("resources still in use; retry destroy: " + ", ".join(remaining))
         self.record_path(session).unlink()
+
+    def start(self, session):
+        with self.lifecycle_lock():
+            self.record(session)
+            self.require_protection(session)
+            self.container("start", session)
+            self.require_protection(session)
 
 
 def main():
@@ -258,8 +366,12 @@ def main():
     export = commands.add_parser("export", help="write a new archive under the private exports directory")
     export.add_argument("session")
     export.add_argument("--path", default=".")
+    export.add_argument("--timeout", type=float, default=300, help="export deadline in seconds, at most 3600")
     destroy = commands.add_parser("destroy", help="remove this sandbox and its private storage")
     destroy.add_argument("session")
+    start = commands.add_parser("start", help="restart a retained sandbox after protection is restored")
+    start.add_argument("session")
+    commands.add_parser("guard", help="stop managed sandboxes when firewall protection is unavailable")
     commands.add_parser("list", help="list retained sandbox IDs")
     commands.add_parser("image", help="build the base image and print its name")
     args = parser.parse_args()
@@ -273,6 +385,10 @@ def main():
         print(runner.export(args))
     elif args.action == "destroy":
         runner.destroy(args.session)
+    elif args.action == "start":
+        runner.start(args.session)
+    elif args.action == "guard":
+        runner.guard()
     elif args.action == "list":
         for path in sorted(runner.state.glob("asb-*.json")):
             print(path.stem)

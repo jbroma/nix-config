@@ -9,6 +9,8 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import threading
+import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -18,6 +20,12 @@ sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location("agent_sandbox", Path(__file__).with_name("agent-sandbox.py"))
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
+REAL_POPEN = subprocess.Popen
+
+
+def fixture_process(code):
+    # Only small, locally-created fixture processes are started or terminated by these tests.
+    return REAL_POPEN([sys.executable, "-c", code], stdout=subprocess.PIPE)
 
 
 class FakeRunner(module.Runner):
@@ -61,6 +69,189 @@ class FakeRunner(module.Runner):
 
 
 class HostSafety(unittest.TestCase):
+    def test_commands_and_guard_do_not_wait_for_lifecycle_lock(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runner = FakeRunner(directory)
+            session = "asb-" + "c" * 32
+            runner.record_path(session).write_text(json.dumps({"network": "offline-0"}))
+            done, errors = threading.Event(), []
+            def work():
+                try:
+                    with patch.object(runner, "protection_ready", return_value=True), patch.object(module.subprocess, "run", return_value=SimpleNamespace(returncode=0)):
+                        runner.execute(SimpleNamespace(session=session, command=["--", "printf", "fixture"]))
+                    with patch.object(runner, "protection_ready", return_value=False):
+                        with self.assertRaises(module.SandboxError):
+                            runner.guard()
+                except Exception as error:
+                    errors.append(error)
+                finally:
+                    done.set()
+            worker = threading.Thread(target=work)
+            try:
+                with runner.lifecycle_lock():
+                    worker.start()
+                    self.assertTrue(done.wait(2), "agent commands or protection watcher waited on metadata locking")
+            finally:
+                worker.join(timeout=5)
+            self.assertFalse(errors, errors)
+
+    def test_guard_stops_sessions_and_keeps_data_for_guarded_restart(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runner = FakeRunner(directory)
+            args = SimpleNamespace(project=None, image="fixture", network="offline", env=[], cpus=1, memory="512M")
+            with patch.object(runner, "protection_ready", return_value=True):
+                first, second = runner.create(args), runner.create(args)
+            runner.calls.clear()
+            with patch.object(runner, "protection_ready", return_value=False):
+                with self.assertRaises(module.SandboxError):
+                    runner.guard()
+                with self.assertRaises(module.SandboxError):
+                    runner.start(first)
+            self.assertEqual({call[1] for call in runner.calls if call[0] == "stop"}, {first, second})
+            self.assertFalse(any(call[0] in ("start", "delete") for call in runner.calls))
+            self.assertTrue(runner.record_path(first).exists())
+            self.assertTrue(runner.record_path(second).exists())
+            with patch.object(runner, "protection_ready", return_value=True):
+                runner.start(first)
+            self.assertIn(("start", first), runner.calls)
+            attempted = []
+            def stop(session):
+                attempted.append(session)
+                if session == first:
+                    raise module.SandboxError("fixture stop failure")
+            with patch.object(runner, "protection_ready", return_value=False), patch.object(runner, "stop_session", side_effect=stop):
+                with self.assertRaisesRegex(module.SandboxError, "could not stop"):
+                    runner.guard()
+            self.assertEqual(set(attempted), {first, second})
+
+    def test_guard_checks_time_out_and_export_refuses_unprotected_execution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runner = FakeRunner(directory)
+            session = "asb-" + "e" * 32
+            runner.record_path(session).write_text(json.dumps({"network": "offline-0"}))
+            with patch.object(module.subprocess, "run", side_effect=subprocess.TimeoutExpired("fixture check", 5)):
+                self.assertFalse(runner.protection_ready())
+            with patch.object(runner, "protection_ready", return_value=False), patch.object(module.subprocess, "Popen") as popen:
+                with self.assertRaises(module.SandboxError):
+                    runner.export(SimpleNamespace(session=session, path=".", timeout=1))
+                popen.assert_not_called()
+
+    def test_exports_have_deadlines_and_kill_only_their_fixture_process(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runner = FakeRunner(directory)
+            session = "asb-" + "f" * 32
+            runner.record_path(session).write_text(json.dumps({"network": "offline-0"}))
+            for code in (
+                "import time; time.sleep(10)",
+                "import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); print('fixture', flush=True); time.sleep(10)",
+                "import os,time; os.close(1); time.sleep(10)",
+            ):
+                process = fixture_process(code)
+                started = time.monotonic()
+                try:
+                    with patch.object(runner, "protection_ready", return_value=True), patch.object(module.subprocess, "Popen", return_value=process), patch.object(module, "PROCESS_EXIT_TIMEOUT", 0.05):
+                        with self.assertRaises((module.SandboxError, subprocess.TimeoutExpired)):
+                            runner.export(SimpleNamespace(session=session, path=".", timeout=0.15))
+                    self.assertIsNotNone(process.poll())
+                    self.assertLess(time.monotonic() - started, 2)
+                    self.assertFalse(list((runner.state / "exports").iterdir()))
+                finally:
+                    if process.poll() is None:
+                        process.kill()
+                        process.wait(timeout=2)
+
+    def test_partial_export_is_removed_even_if_process_cleanup_fails(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runner = FakeRunner(directory)
+            session = "asb-" + "a" * 32
+            runner.record_path(session).write_text(json.dumps({"network": "offline-0"}))
+            process = fixture_process("import time; print('fixture', flush=True); time.sleep(10)")
+            try:
+                with patch.object(runner, "protection_ready", return_value=True), patch.object(module.subprocess, "Popen", return_value=process), patch.object(module, "stop_export_process", side_effect=subprocess.TimeoutExpired("fixture process", 2)):
+                    with self.assertRaises(subprocess.TimeoutExpired):
+                        runner.export(SimpleNamespace(session=session, path=".", timeout=0.15))
+                self.assertFalse(list((runner.state / "exports").iterdir()))
+            finally:
+                process.kill()
+                process.wait(timeout=2)
+
+    def test_failed_export_spawn_leaves_no_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runner = FakeRunner(directory)
+            session = "asb-" + "b" * 32
+            runner.record_path(session).write_text(json.dumps({"network": "offline-0"}))
+            with patch.object(runner, "protection_ready", return_value=True), patch.object(module.subprocess, "Popen", side_effect=OSError("fixture spawn failure")):
+                with self.assertRaises(OSError):
+                    runner.export(SimpleNamespace(session=session, path=".", timeout=1))
+            self.assertFalse(list((runner.state / "exports").iterdir()))
+
+    def test_export_byte_limit_still_removes_partial_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runner = FakeRunner(directory)
+            runner.config["transferLimit"] = 1
+            session = "asb-" + "a" * 32
+            runner.record_path(session).write_text(json.dumps({"network": "offline-0"}))
+            process = fixture_process("import sys; sys.stdout.buffer.write(b'xy')")
+            with patch.object(runner, "protection_ready", return_value=True), patch.object(module.subprocess, "Popen", return_value=process):
+                with self.assertRaisesRegex(module.SandboxError, "transfer limit"):
+                    runner.export(SimpleNamespace(session=session, path=".", timeout=2))
+            self.assertIsNotNone(process.poll())
+            self.assertFalse(list((runner.state / "exports").iterdir()))
+
+    def test_exec_refuses_a_failed_firewall_check(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runner = FakeRunner(directory)
+            session = "asb-" + "d" * 32
+            runner.record_path(session).write_text(json.dumps({"network": "offline-0"}))
+            calls = []
+            def run(args, **kwargs):
+                calls.append(args)
+                return SimpleNamespace(returncode=1 if args[0] == "/usr/bin/sudo" else 0)
+            with patch.object(module.subprocess, "run", side_effect=run):
+                with self.assertRaises(module.SandboxError):
+                    runner.execute(SimpleNamespace(session=session, command=["--", "printf", "fixture"]))
+            self.assertFalse(any(call[:2] == ["container", "exec"] for call in calls))
+
+    def test_overlapping_destroy_cannot_read_a_stale_record(self):
+        with tempfile.TemporaryDirectory() as directory:
+            first = FakeRunner(directory)
+            second = FakeRunner(directory)
+            second.resources = first.resources
+            args = SimpleNamespace(project=None, image="fixture", network="offline", env=[], cpus=1, memory="512M")
+            with patch.object(module.subprocess, "run", return_value=SimpleNamespace(returncode=0)):
+                session = first.create(args)
+            loaded, release, second_read = threading.Event(), threading.Event(), threading.Event()
+            original_first, original_second = first.record, second.record
+            errors = []
+            def hold_record(session):
+                record = original_first(session)
+                loaded.set()
+                if not release.wait(5):
+                    raise RuntimeError("fixture was not released")
+                return record
+            def observe_record(session):
+                second_read.set()
+                return original_second(session)
+            first.record, second.record = hold_record, observe_record
+            def destroy(runner):
+                try:
+                    runner.destroy(session)
+                except Exception as error:
+                    errors.append(error)
+            workers = [threading.Thread(target=destroy, args=(runner,)) for runner in (first, second)]
+            try:
+                workers[0].start()
+                self.assertTrue(loaded.wait(2))
+                workers[1].start()
+                self.assertFalse(second_read.wait(0.15), "overlapping cleanup read the same stale record")
+            finally:
+                release.set()
+                for worker in workers:
+                    if worker.ident is not None:
+                        worker.join(timeout=5)
+            self.assertFalse(errors, errors)
+            self.assertFalse(any(first.resources.values()))
+
     def test_image_options_and_existing_journals_cannot_be_overwritten(self):
         with tempfile.TemporaryDirectory() as directory:
             runner = FakeRunner(directory)
@@ -179,13 +370,13 @@ class HostSafety(unittest.TestCase):
                 member = tarfile.TarInfo("../../outside.txt")
                 member.size = 7
                 archive.addfile(member, io.BytesIO(b"fixture"))
-            process = SimpleNamespace(stdout=io.BytesIO(payload.getvalue()), wait=lambda **kwargs: 0)
-            with patch.object(module.subprocess, "Popen", return_value=process):
-                exported = runner.export(SimpleNamespace(session=session, path="."))
+            process = fixture_process(f"import sys; sys.stdout.buffer.write({payload.getvalue()!r})")
+            with patch.object(runner, "protection_ready", return_value=True), patch.object(module.subprocess, "Popen", return_value=process):
+                exported = runner.export(SimpleNamespace(session=session, path=".", timeout=2))
             self.assertEqual(exported.read_bytes(), payload.getvalue())
             self.assertEqual(outside.read_text(), "unchanged")
             with self.assertRaises(module.SandboxError):
-                runner.export(SimpleNamespace(session=session, path="../outside.txt"))
+                runner.export(SimpleNamespace(session=session, path="../outside.txt", timeout=2))
             with self.assertRaises(module.SandboxError):
                 runner.record_path("../../outside.txt")
 

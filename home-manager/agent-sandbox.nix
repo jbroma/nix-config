@@ -46,6 +46,20 @@ lib.mkIf sandbox.enable {
     transferLimit = 512 * 1024 * 1024;
   };
   home.file.".local/state/agent-sandbox/.keep".text = "";
+  launchd.agents.agent-sandbox-guard = {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.agent-sandbox}/bin/agent-sandbox"
+        "guard"
+      ];
+      RunAtLoad = true;
+      StartInterval = 5;
+      ThrottleInterval = 5;
+      StandardOutPath = "${config.home.homeDirectory}/.local/state/agent-sandbox/guard.log";
+      StandardErrorPath = "${config.home.homeDirectory}/.local/state/agent-sandbox/guard.log";
+    };
+  };
   launchd.agents.agent-sandbox-proxy = {
     enable = true;
     config = {

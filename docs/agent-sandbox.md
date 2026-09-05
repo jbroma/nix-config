@@ -29,6 +29,8 @@ Omit `--project` for an empty workspace. `create` prints only the sandbox ID to 
 diagnostics go to stderr. `exec` returns the guest command's exit code. `list` shows retained
 sandboxes. `destroy` removes only the resources recorded for that sandbox. If the runtime is
 unavailable or a resource is still in use, the record stays available for a retry.
+Creation, restart and destruction lock their resource changes. Repeated destruction is harmless;
+agent commands and exports remain parallel and do not hold that lock.
 
 The workspace is a snapshot, not a live mount. Host edits after creation do not appear in the
 sandbox, and guest edits do not change the source project. Ignored files and `.git` metadata
@@ -41,6 +43,9 @@ Exports are bounded, untrusted archive bytes under `~/.local/state/agent-sandbox
 The runner never extracts an archive, applies a patch, or overwrites a host project. Review
 the archive before using its contents. Select a smaller `--path` if the export exceeds 512 MiB.
 Destroying a sandbox does not remove previously exported archives.
+Exports have a five-minute deadline. `export --timeout SECONDS` can change it up to one hour.
+Timeouts, failed starts and interrupted exports remove the partial archive. Export-process
+cleanup escalates from termination to killing only that export process, with bounded waits.
 
 ## Network profiles
 
@@ -55,9 +60,18 @@ guest does not change its access. Each run reserves its own host-only network, p
 direct access to other sandboxes. IPv6 and raw-packet privileges are disabled in guests.
 There are 32 network reservations per profile.
 
+Protection is checked during creation, before every command/export, and before and after a
+restart. A user launchd job also polls every five seconds and attempts to stop all managed
+sandboxes when the check fails or times out, preserving their files. It does not delete data
+or wait for resource-management locking. Polling is not instantaneous; an unavailable runtime
+can prevent a stop. Failures are logged to `~/.local/state/agent-sandbox/guard.log` and retried.
+After restoring protection, use `agent-sandbox start ID` to restart a retained sandbox before
+continuing work or exporting its files.
+
 Internet mode sets `http_proxy`, `https_proxy`, their uppercase equivalents, and
-`NODE_USE_ENV_PROXY=1`. Tools must support an HTTP proxy. Raw TCP, UDP, SSH and direct DNS are
-not provided. API keys, SSH credentials and host environment variables are not inherited.
+`NODE_USE_ENV_PROXY=1`. Tools must support an HTTP proxy. Direct TCP, UDP, SSH and DNS are
+not provided; CONNECT tunnels on port 443 are allowed without inspecting their application
+protocol. API keys, SSH credentials and host environment variables are not inherited.
 Public internet access can transmit any data deliberately copied into that sandbox.
 
 ## Storage and resources
