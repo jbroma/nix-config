@@ -6,14 +6,14 @@
   fetchurl,
 }:
 let
-  version = "0.153.3";
+  version = "0.154.0";
 
   # codex-package bundles codex plus the codex-code-mode-host helper and
   # resources (rg, zsh) that codex resolves relative to its own binary.
   sources = {
     "aarch64-darwin" = {
       url = "https://github.com/openai/codex/releases/download/rust-v${version}/codex-package-aarch64-apple-darwin.tar.gz";
-      hash = "sha256-EQHOi3+ar1mBIL8U/yYMX1keqixhHPhzgHBSnmCugQU=";
+      hash = "sha256-QnynTAJwSeDNGjMNYR5/jR/g8etqbYWsFvYbzyy0pIU=";
     };
   };
 
