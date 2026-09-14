@@ -55,7 +55,8 @@ in
         # xcode
         codex-cli
         maestro-studio
-        openscreen
+        # nixpkgs still selects Electron 41, which is EOL.
+        (openscreen.override { electron_41 = electron_42; })
         raycast
         google-chrome
         lmstudio
