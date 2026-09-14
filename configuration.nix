@@ -16,6 +16,7 @@ let
     "1password"
     "1password-gui"
     "claude-code"
+    "cleanshot"
     "codex-cli"
     "google-chrome"
     "lmstudio"
@@ -54,6 +55,7 @@ in
       [
         # xcode
         codex-cli
+        cleanshot
         maestro-studio
         # nixpkgs still selects Electron 41, which is EOL.
         (openscreen.override { electron_41 = electron_42; })
@@ -119,7 +121,6 @@ in
       "android-studio"
       "chatgpt"
       "claude"
-      "cleanshot"
       "cursor"
       "nikitabobko/tap/aerospace"
       "spotify"
@@ -174,7 +175,7 @@ in
   launchd.user.agents = {
     aerospace = mkLaunchAgent "/Applications/AeroSpace.app/Contents/MacOS/AeroSpace";
     raycast = mkLaunchAgent "${pkgs.raycast}/Contents/Library/LoginItems/RaycastLauncher.app/Contents/MacOS/RaycastLauncher";
-    cleanshot-x = mkLaunchAgent "/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
+    cleanshot-x = mkLaunchAgent "${pkgs.cleanshot}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
   };
 
   security = {
@@ -236,6 +237,7 @@ in
       ensure_app_link "1Password"
       ensure_app_link "Slack"
       ensure_app_link "Openscreen"
+      ensure_app_link "CleanShot X"
     ''
     + lib.optionalString (type == "personal") ''
       homelab_ca=${./homelab-ca.crt}

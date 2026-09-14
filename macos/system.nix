@@ -37,6 +37,12 @@ _:
   };
 
   system.defaults.CustomUserPreferences = {
+    # The CleanShot license covers 4.x only.
+    "pl.maketheweb.cleanshotx" = {
+      SUEnableAutomaticChecks = false;
+      SUAutomaticallyUpdate = false;
+    };
+
     "com.apple.print.PrintingPrefs" = {
       # Automatically quit printer app once the print jobs complete
       "Quit When Finished" = true;

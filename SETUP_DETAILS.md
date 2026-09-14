@@ -28,6 +28,8 @@ After the automated setup completes, the following manual steps are recommended:
 
 ## Cleanshot X
 
+-   The Nix package is pinned to 4.8.10 because the license covers 4.x only. Automatic update checks are disabled.
+-   When migrating from Homebrew, quit CleanShot and run `brew uninstall --cask cleanshot` without `--zap` to preserve settings and license data, then run `darwin-rebuild-switch` to install the Nix package.
 -   Run the application manually and enter the license key
 -   Follow the setup in the app
 
