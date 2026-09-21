@@ -52,6 +52,7 @@ let
       autoAllowBashIfSandboxed = true;
       network = {
         allowLocalBinding = true;
+        allowedDomains = import ../agent-network-domains.nix;
       };
     };
   };

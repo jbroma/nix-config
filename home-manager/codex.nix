@@ -19,6 +19,7 @@ let
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
     sandbox_mode = "workspace-write";
+    sandbox_workspace_write.network_access = true;
     model_context_window = 1000000;
     model_auto_compact_token_limit = 900000;
     model_reasoning_effort = "medium";
@@ -30,6 +31,10 @@ let
     file_opener = "cursor";
 
     features = {
+      network_proxy = {
+        enabled = true;
+        domains = lib.genAttrs (import ../agent-network-domains.nix) (_: "allow");
+      };
       browser_use = true;
       browser_use_external = true;
       goals = true;
