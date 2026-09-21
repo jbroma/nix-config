@@ -238,6 +238,15 @@ in
       ensure_app_link "Slack"
       ensure_app_link "Openscreen"
       ensure_app_link "CleanShot X"
+
+      # Nix preserves fixed bundle timestamps; force LaunchServices to reread updated apps.
+      for nix_app in "/Applications/Nix Apps/"*.app; do
+        [ -d "$nix_app" ] || continue
+        /bin/launchctl asuser "$(id -u ${lib.escapeShellArg user.username})" \
+          /usr/bin/sudo -u ${lib.escapeShellArg user.username} \
+          /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister \
+          -f "$nix_app"
+      done
     ''
     + lib.optionalString (type == "personal") ''
       homelab_ca=${./homelab-ca.crt}
