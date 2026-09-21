@@ -174,7 +174,8 @@ in
   # apps to launch on login
   launchd.user.agents = {
     aerospace = mkLaunchAgent "/Applications/AeroSpace.app/Contents/MacOS/AeroSpace";
-    raycast = mkLaunchAgent "${pkgs.raycast}/Contents/Library/LoginItems/RaycastLauncher.app/Contents/MacOS/RaycastLauncher";
+    # Raycast 2.x dropped the RaycastLauncher login item; start the app itself like CleanShot.
+    raycast = mkLaunchAgent "${pkgs.raycast}/Applications/Raycast.app/Contents/MacOS/Raycast";
     cleanshot-x = mkLaunchAgent "${pkgs.cleanshot}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
   };
 
