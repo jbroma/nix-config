@@ -67,6 +67,8 @@ pstack's skills are written for Cursor, so each tool also gets ai-sauce's per-to
 
 Claude Code and Codex have one hook, `ai.pstackModeHook` from `ai-instructions.nix`. It wraps ai-sauce's `pstack/mode-hook.sh` with its own PATH, because a hook inherits the tool's PATH and Nix's bash has no default one. It runs on `UserPromptSubmit` and keeps pstack's `poteto-mode` on across turns. Claude gets the store path in its settings. Codex gets `~/.codex/hooks.json` pointing at the stable `~/.codex/hooks/pstack-mode`, because Codex trusts a hook by the hash of its definition. After the first switch, trust it once through `/hooks` in Codex.
 
+Cursor's permissions come from the same `rules/rules.json` Claude Code uses. `cursor.nix` turns the allow rules into `~/.cursor/permissions.json` (`terminalAllowlist`, `mcpAllowlist`). Cursor has no deny list, so `~/.cursor/hooks.json` runs a deny hook on `beforeShellExecution` and `beforeReadFile` for the deny rules. `~/.cursor/sandbox.json` takes its network allowlist from `agent-network-domains.nix`, like Claude's sandbox and Codex's network proxy. The run mode (Auto-review, Allowlist, Run Everything) and the sandbox network mode are UI-only in Cursor Settings > Agents.
+
 MCP servers are declared once in `mcp-servers.nix`; API keys live in the macOS Keychain and are injected into the Claude Code, Codex, and Cursor configs at activation (`keychain-mcp sync` seeds them from 1Password).
 
 Cursor's Agents Window reads project instructions from the active workspace, such as root `AGENTS.md` and `.cursor/rules/*.mdc`. Global personal rules are Cursor User Rules configured through Cursor Settings > Rules; home-level `~/.cursor/rules/*.mdc` files are not a reliable injected prompt source for the Agents Window.

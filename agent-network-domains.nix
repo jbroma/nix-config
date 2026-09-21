@@ -1,6 +1,7 @@
 # Development subset of https://learn.chatgpt.com/docs/cloud/internet-access
 # plus the Nix caches and Claude distribution host used by this configuration.
-# Shared by Claude sandbox.network.allowedDomains and Codex network_proxy.domains.
+# Shared by Claude sandbox.network.allowedDomains, Codex network_proxy.domains and
+# Cursor sandbox.json networkPolicy.allow.
 [
   "github.com"
   "*.github.com"

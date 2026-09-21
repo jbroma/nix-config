@@ -39,6 +39,52 @@ let
       mcpServers = cursorMcpServers;
     }
   );
+  # Permission rules come from the same rules.json Claude Code uses, so
+  # rules.yaml in ai-sauce stays the one source. Cursor's allowlists take
+  # "git status" and "exa:web_fetch_exa" where Claude takes "Bash(git status:*)"
+  # and "mcp__exa__web_fetch_exa".
+  rules = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json");
+  matching = regex: list: lib.filter (m: m != null) (map (builtins.match regex) list);
+  bashRule = "Bash\\((.*):\\*\\)";
+  cursorPermissions = {
+    terminalAllowlist = map lib.head (matching bashRule rules.allow);
+    mcpAllowlist = map (m: "${lib.head m}:${lib.last m}") (matching "mcp__(.+)__(.+)" rules.allow);
+  };
+
+  # Cursor has allowlists but no deny list, so a hook enforces the deny rules.
+  # It prints nothing for anything else, which leaves the decision to the allowlist.
+  deniedCommands = lib.concatMapStringsSep "|" (m: lib.escapeRegex (lib.head m)) (
+    matching bashRule rules.deny
+  );
+  deniedReads = lib.concatMapStringsSep " " (
+    m:
+    ''"${
+      builtins.replaceStrings
+        [
+          "**"
+          "~/"
+        ]
+        [
+          "*"
+          "$HOME/"
+        ]
+        (lib.head m)
+    }"''
+  ) (matching "Read\\((.*)\\)" rules.deny);
+  cursorDenyHook = pkgs.writeShellScript "cursor-deny-hook" ''
+    subject=$(${pkgs.jq}/bin/jq -r '.command // .file_path // ""')
+    # A denied command at the start of the line or after a shell separator.
+    commands='(^|[;&|(`])[[:space:]]*(${deniedCommands})([[:space:]]|$)'
+    reads=(${deniedReads})
+    case $1 in
+      shell) [[ $subject =~ $commands ]] && denied=1 ;;
+      read) for glob in "''${reads[@]}"; do [[ $subject == $glob ]] && denied=1; done ;;
+    esac
+    [[ -n $denied ]] || exit 0
+    ${pkgs.jq}/bin/jq -n --arg message "Denied by ai-sauce rules: $subject" \
+      '{permission: "deny", user_message: $message, agent_message: $message}'
+  '';
+
   cursorAgentSources = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".toml" name) (
     builtins.readDir "${ai}/agents/codex"
   );
@@ -149,6 +195,24 @@ in
     # the pstack skills read the ~/.cursor/rules copy by path.
     ".cursor/plugins/local/ai-sauce/rules/pstack-models.mdc".source = "${ai}/pstack/for-cursor.mdc";
     ".cursor/rules/pstack-models.mdc".source = "${ai}/pstack/for-cursor.mdc";
+
+    # A key set here replaces the in-app allowlist of that type, and Cursor
+    # Settings shows it read-only. Which run mode is active stays a UI choice.
+    ".cursor/permissions.json".text = builtins.toJSON cursorPermissions;
+    # Same domains as Claude's sandbox and Codex's network proxy.
+    ".cursor/sandbox.json".text = builtins.toJSON {
+      networkPolicy = {
+        default = "deny";
+        allow = import ../agent-network-domains.nix;
+      };
+    };
+    ".cursor/hooks.json".text = builtins.toJSON {
+      version = 1;
+      hooks = {
+        beforeShellExecution = [ { command = "${cursorDenyHook} shell"; } ];
+        beforeReadFile = [ { command = "${cursorDenyHook} read"; } ];
+      };
+    };
   }
   // cursorAgentFiles
   // builtins.listToAttrs extensionLinks;
