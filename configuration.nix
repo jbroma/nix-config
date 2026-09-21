@@ -43,7 +43,7 @@ in
   environment.etc."nix/nix.custom.conf".text = ''
     trusted-users = root ${user.username}
     keep-going = true
-    show-trace = true
+    show-trace = false
   '';
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfreePackages;

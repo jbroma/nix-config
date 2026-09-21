@@ -47,6 +47,8 @@ The following shell commands are available after setup:
 -   `flake-update`: refresh flake inputs, including nixpkgs and Nix-managed Homebrew taps
 -   `darwin-cleanup`: prune the Nix cache
 
+Errors omit full evaluation traces by default. Use `darwin-rebuild-switch --show-trace` when debugging a Nix evaluation failure.
+
 ## Updates
 
 | Command | What it updates |
