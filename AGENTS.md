@@ -4,7 +4,7 @@ This file provides guidance to AI coding assistants when working with code in th
 
 ## Repository Purpose
 
-Personal macOS configuration using Nix Flakes, nix-darwin, and home-manager: dotfiles, tools, and the machine roles that live with them (the local-LLM server and its sandboxed harness under `macos/llm-*.nix`, `home-manager/llm.nix`, `containers/`). Project development environments themselves still use Docker Compose (see `devops-patterns` skill), not this repo.
+Personal macOS configuration using Nix Flakes, nix-darwin, and home-manager: dotfiles, tools, and the machine roles that live with them (the local-LLM server and its sandboxed harness under `macos/llm-*.nix`, `home-manager/llm.nix`, `containers/`). Project development environments themselves still use Docker Compose, not this repo.
 
 ## Commands
 
