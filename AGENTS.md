@@ -33,8 +33,8 @@ flake.nix                    # Entry point - two configs: work, personal
 ├── ssh-keys.nix             # Public keys per identity: git signing keys and LLM-server authorized keys
 │
 ├── home-manager/            # Home-manager modules
-│   ├── claude-code.nix      # Claude Code: settings, hooks, skills, agents
-│   ├── codex.nix            # Codex: settings, hooks, skills, agents, rules
+│   ├── claude-code.nix      # Claude Code: settings, skills, agents
+│   ├── codex.nix            # Codex: settings, skills, agents, rules
 │   ├── cursor.nix           # Cursor: settings, extensions, MCP, skills
 │   ├── zsh.nix              # Shell config with modern CLI aliases
 │   └── [tool].nix           # Per-tool configurations
@@ -59,7 +59,7 @@ Generic Apple container sandboxes live in `scripts/agent-sandbox.py`, `home-mana
 
 The `ai/` directory is a Nix flake input providing shared configuration for AI coding tools. Each tool has its own home-manager module that symlinks relevant parts:
 
-- `claude-code.nix`: `~/.claude/skills`, `~/.claude/hooks` (command blocking only), `~/.claude/agents`, `~/.claude/CLAUDE.md`
+- `claude-code.nix`: `~/.claude/skills`, `~/.claude/agents`, `~/.claude/CLAUDE.md`
 - `codex.nix`: `~/.codex/skills`, `~/.codex/agents`, `~/.codex/AGENTS.md`, `~/.codex/rules/default.rules`, generated `~/.codex/config.toml`
 - `cursor.nix`: `~/.cursor/skills`, `~/.cursor/agents`, a local plugin `~/.cursor/plugins/local/ai-sauce` carrying CORE.md as an always-applied rule, generated `~/.cursor/mcp.json` and Cursor settings. Cursor keeps its own copies: the IDE toggle "Include third-party Plugins, Skills, and other configs" must stay off (activation warns otherwise)
 

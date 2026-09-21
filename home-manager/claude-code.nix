@@ -13,14 +13,9 @@ let
   };
   mcpServersJson = builtins.toJSON mcpServersConfig;
 
-  hooksDir = "${config.home.homeDirectory}/.claude/hooks";
-  hookDefinitionsRaw = builtins.readFile "${ai}/hooks/definitions.json";
-  hookDefinitionsResolved =
-    builtins.replaceStrings [ "$USER_HOOKS_DIR" ] [ hooksDir ]
-      hookDefinitionsRaw;
-  hookDefinitions = builtins.fromJSON hookDefinitionsResolved;
-
-  permissions = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json");
+  permissions = builtins.fromJSON (builtins.readFile "${ai}/rules/rules.json") // {
+    defaultMode = "auto";
+  };
 
   # Managed keys. `model` is deliberately absent: the app owns the model choice.
   claudeSettings = {
@@ -48,7 +43,9 @@ let
     };
     # Permission rules from ai submodule.
     inherit permissions;
-    hooks = hookDefinitions;
+    autoMode.classifyAllShell = true;
+    # Clear the retired command-blocking hook from mutable user settings.
+    hooks = { };
     sandbox = {
       enabled = true;
       excludedCommands = [ "git" ];
@@ -63,7 +60,6 @@ in
 {
   # Claude Code symlinks (read-only, from ai submodule)
   home.file.".claude/CLAUDE.md".text = config.ai.instructions;
-  home.file.".claude/hooks".source = "${ai}/hooks";
   home.file.".claude/skills".source = "${ai}/skills";
   home.file.".claude/agents".source = "${ai}/agents/claude";
 
