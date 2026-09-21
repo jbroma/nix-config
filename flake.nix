@@ -164,6 +164,8 @@
                 user = user.username;
                 enableRosetta = false;
                 mutableTaps = false;
+                # Official formula/cask API metadata is not pinned with our custom taps.
+                extraEnv.HOMEBREW_NO_AUTO_UPDATE = "";
                 taps = {
                   "felixkratz/homebrew-formulae" = inputs.homebrew-felixkratz;
                   "nikitabobko/homebrew-tap" = inputs.homebrew-nikitabobko;

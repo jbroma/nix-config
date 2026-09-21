@@ -43,8 +43,9 @@ description = "Update flake inputs"
 run = "nix flake update"
 
 [tasks.homebrew-upgrade]
-description = "Upgrade installed Homebrew packages"
+description = "Refresh Homebrew metadata and upgrade packages; Nix-managed taps stay pinned"
 run = """
+brew update
 before=$(readlink /opt/homebrew/opt/ollama 2>/dev/null || true)
 before_squid=$(readlink /opt/homebrew/opt/squid 2>/dev/null || true)
 status=0
