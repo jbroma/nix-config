@@ -73,10 +73,29 @@ let
 in
 {
   # Symlinks from ai submodule
-  home.file.".codex/AGENTS.md".text = config.ai.instructions;
+  home.file.".codex/AGENTS.md".text =
+    config.ai.instructions + builtins.readFile "${ai}/pstack/for-codex.md";
   home.file.".codex/agents".source = "${ai}/agents/codex";
   home.file.".codex/skills".source = "${ai}/skills";
   home.file.".codex/rules/default.rules".source = "${ai}/rules/codex.rules";
+
+  # Same poteto-mode hook as Claude Code. Codex trusts a hook by the hash of its
+  # definition, so the command is a stable path and not the store path, which
+  # changes with every ai-sauce update. Trust it once through /hooks.
+  home.file.".codex/hooks/pstack-mode".source = config.ai.pstackModeHook;
+  home.file.".codex/hooks.json".text = builtins.toJSON {
+    hooks.UserPromptSubmit = [
+      {
+        hooks = [
+          {
+            type = "command";
+            command = "\"$HOME/.codex/hooks/pstack-mode\"";
+            timeout = 5;
+          }
+        ];
+      }
+    ];
+  };
 
   # Merge ~/.codex/config.toml at activation time so trusted projects can be
   # discovered dynamically without deleting Codex-managed plugin/app state.

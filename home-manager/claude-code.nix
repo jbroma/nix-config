@@ -44,8 +44,19 @@ let
     # Permission rules from ai submodule.
     inherit permissions;
     autoMode.classifyAllShell = true;
-    # Clear the retired command-blocking hook from mutable user settings.
-    hooks = { };
+    # The only hook: keeps pstack's poteto-mode on across turns. It adds context
+    # and never blocks a prompt or a command.
+    hooks.UserPromptSubmit = [
+      {
+        hooks = [
+          {
+            type = "command";
+            command = "${config.ai.pstackModeHook}";
+            timeout = 5;
+          }
+        ];
+      }
+    ];
     sandbox = {
       enabled = true;
       excludedCommands = [ "git" ];
@@ -60,7 +71,8 @@ let
 in
 {
   # Claude Code symlinks (read-only, from ai submodule)
-  home.file.".claude/CLAUDE.md".text = config.ai.instructions;
+  home.file.".claude/CLAUDE.md".text =
+    config.ai.instructions + builtins.readFile "${ai}/pstack/for-claude.md";
   home.file.".claude/skills".source = "${ai}/skills";
   home.file.".claude/agents".source = "${ai}/agents/claude";
 

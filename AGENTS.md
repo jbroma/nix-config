@@ -63,6 +63,10 @@ The `ai/` directory is a Nix flake input providing shared configuration for AI c
 - `codex.nix`: `~/.codex/skills`, `~/.codex/agents`, `~/.codex/AGENTS.md`, `~/.codex/rules/default.rules`, generated `~/.codex/config.toml`
 - `cursor.nix`: `~/.cursor/skills`, `~/.cursor/agents`, a local plugin `~/.cursor/plugins/local/ai-sauce` carrying CORE.md as an always-applied rule, generated `~/.cursor/mcp.json` and Cursor settings. Cursor keeps its own copies: the IDE toggle "Include third-party Plugins, Skills, and other configs" must stay off (activation warns otherwise)
 
+pstack's skills are written for Cursor, so each tool also gets ai-sauce's per-tool pstack file. `claude-code.nix` and `codex.nix` append `pstack/for-claude.md` and `pstack/for-codex.md` to the generated `CLAUDE.md` and `AGENTS.md`. `cursor.nix` links `pstack/for-cursor.mdc` as the `pstack-models` rule. It renders Cursor agents from `agents/codex/*.toml`, except where ai-sauce ships the agent in Cursor's own format under `agents/cursor/`, which wins.
+
+Claude Code and Codex have one hook, `ai.pstackModeHook` from `ai-instructions.nix`. It wraps ai-sauce's `pstack/mode-hook.sh` with its own PATH, because a hook inherits the tool's PATH and Nix's bash has no default one. It runs on `UserPromptSubmit` and keeps pstack's `poteto-mode` on across turns. Claude gets the store path in its settings. Codex gets `~/.codex/hooks.json` pointing at the stable `~/.codex/hooks/pstack-mode`, because Codex trusts a hook by the hash of its definition. After the first switch, trust it once through `/hooks` in Codex.
+
 MCP servers are declared once in `mcp-servers.nix`; API keys live in the macOS Keychain and are injected into the Claude Code, Codex, and Cursor configs at activation (`keychain-mcp sync` seeds them from 1Password).
 
 Cursor's Agents Window reads project instructions from the active workspace, such as root `AGENTS.md` and `.cursor/rules/*.mdc`. Global personal rules are Cursor User Rules configured through Cursor Settings > Rules; home-level `~/.cursor/rules/*.mdc` files are not a reliable injected prompt source for the Agents Window.

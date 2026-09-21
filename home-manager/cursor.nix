@@ -42,30 +42,40 @@ let
   cursorAgentSources = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".toml" name) (
     builtins.readDir "${ai}/agents/codex"
   );
-  cursorAgentFiles = lib.mapAttrs' (
-    filename: _:
-    let
-      agentName = lib.removeSuffix ".toml" filename;
-      agent = builtins.fromTOML (builtins.readFile "${ai}/agents/codex/${filename}");
-      readonly = (agent.sandbox_mode or "") == "read-only";
-    in
-    {
-      name = ".cursor/agents/${agentName}.md";
+  cursorAgentFiles =
+    lib.mapAttrs' (
+      filename: _:
+      let
+        agentName = lib.removeSuffix ".toml" filename;
+        agent = builtins.fromTOML (builtins.readFile "${ai}/agents/codex/${filename}");
+        readonly = (agent.sandbox_mode or "") == "read-only";
+      in
+      {
+        name = ".cursor/agents/${agentName}.md";
+        value = {
+          force = true;
+          text = ''
+            ---
+            name: ${builtins.toJSON (agent.name or agentName)}
+            description: ${builtins.toJSON (agent.description or "")}
+            model: inherit
+            readonly: ${if readonly then "true" else "false"}
+            ---
+
+            ${agent.developer_instructions or ""}
+          '';
+        };
+      }
+    ) cursorAgentSources
+    # Agents that ai-sauce ships in Cursor's own format (pstack's, copied from
+    # upstream) replace the copy rendered from TOML, so keys like is_background survive.
+    // lib.mapAttrs' (filename: _: {
+      name = ".cursor/agents/${filename}";
       value = {
         force = true;
-        text = ''
-          ---
-          name: ${builtins.toJSON (agent.name or agentName)}
-          description: ${builtins.toJSON (agent.description or "")}
-          model: inherit
-          readonly: ${if readonly then "true" else "false"}
-          ---
-
-          ${agent.developer_instructions or ""}
-        '';
+        source = "${ai}/agents/cursor/${filename}";
       };
-    }
-  ) cursorAgentSources;
+    }) (builtins.readDir "${ai}/agents/cursor");
 
   cursorExtensions =
     (with pkgs.vscode-marketplace; [
@@ -135,6 +145,10 @@ in
 
       ${config.ai.instructions}
     '';
+    # pstack's per-role models. The plugin copy makes the rule always apply, and
+    # the pstack skills read the ~/.cursor/rules copy by path.
+    ".cursor/plugins/local/ai-sauce/rules/pstack-models.mdc".source = "${ai}/pstack/for-cursor.mdc";
+    ".cursor/rules/pstack-models.mdc".source = "${ai}/pstack/for-cursor.mdc";
   }
   // cursorAgentFiles
   // builtins.listToAttrs extensionLinks;
