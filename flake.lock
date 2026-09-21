@@ -3,11 +3,11 @@
     "ai": {
       "flake": false,
       "locked": {
-        "lastModified": 1789989795,
-        "narHash": "sha256-TxTH+lcJD4uzOEEmgWYQQ8lISin0NvyJc9ZGJO2MNKM=",
+        "lastModified": 1790002241,
+        "narHash": "sha256-PU89cKcn85GTb3IMECpe3CRSBTXa+eKKIbZZcQHKXf8=",
         "ref": "refs/heads/main",
-        "rev": "10e7e263ed18d09c8d9ea2a141e8f38b8bfad0c4",
-        "revCount": 143,
+        "rev": "9588e25cb1ce1d78bafceaa2150360d896fbbf31",
+        "revCount": 145,
         "type": "git",
         "url": "ssh://git@github.com/jbroma/ai-sauce.git"
       },
