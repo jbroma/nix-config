@@ -7,11 +7,11 @@
 stdenvNoCC.mkDerivation rec {
   pname = "cleanshot";
   # License covers 4.x only. Do not update to 5.x.
-  version = "4.8.10";
+  version = "4.8.11";
 
   src = fetchurl {
     url = "https://updates.getcleanshot.com/v3/CleanShot-X-${version}.dmg";
-    sha256 = "0f1b1cdda9a93908ced0341abb0d505adc55e51d145562013085b1e70f366d84";
+    hash = "sha256-KYr7PQhe5jQ9rpVLoqdCm9YT5q2elCyPeQCGiM6xGoE=";
   };
 
   nativeBuildInputs = [ _7zz ];
