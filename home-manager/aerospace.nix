@@ -79,7 +79,7 @@
           run = "layout floating";
         }
         {
-          "if".app-name-regex-substring = "simulator";
+          "if".app-name-regex-substring = "device ?hub";
           run = "layout floating";
         }
         {

@@ -39,7 +39,7 @@
       "/System/Applications/Apps.app"
       "/Applications/Nix Apps/Google Chrome.app"
       "/Applications/Xcode.app"
-      "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app"
+      "/Applications/Xcode.app/Contents/Applications/DeviceHub.app"
       "/Applications/WezTerm.app"
       "/Applications/Cursor.app"
       "/Applications/Zed.app"
