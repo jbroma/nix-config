@@ -516,6 +516,8 @@ return {
   -- default_prog = { "zsh", "-l", "-c", "zellij -l welcome" },
   default_prog = { "zsh", "-l" },
   font = wezterm.font("Hack Nerd Font"),
+  -- Nix substitutes a store path so font loading survives macOS font updates.
+  font_dirs = { "@hackFontDir@" },
   font_size = 14.0,
   window_padding = {
     left = 8,
