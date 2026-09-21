@@ -71,7 +71,7 @@ description = "Update ai flake input submodule to latest"
 run = "nix flake update ai"
 
 [tasks.ai-plugins-update]
-description = "Update all Claude Code marketplaces and plugins"
+description = "Refresh Claude Code marketplaces and update user-installed plugins"
 run = "./scripts/ai-plugins-update.sh"
 
 [tasks.pkg-update]
@@ -79,5 +79,9 @@ description = "Update all local packages in pkgs/ (interactive with Claude)"
 run = "claude 'Use the pkg-update skill to update all packages in pkgs/'"
 
 [tasks.pkg-update-script]
-description = "Update all local packages in pkgs/ with the repo script"
+description = "Update scripted Nix packages and list packages needing manual updates"
 run = "./scripts/pkg-update.sh"
+
+[tasks.check-update-workflows]
+description = "Test updater failure handling with harmless local fixtures"
+run = "python3 scripts/check-update-workflows.py"

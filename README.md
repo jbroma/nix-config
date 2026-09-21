@@ -43,6 +43,18 @@ See [SETUP_DETAILS.md](./SETUP_DETAILS.md) for post-installation manual setup st
 
 The following shell commands are available after setup:
 
--   `darwin-rebuild-switch` — reload the configuration after making changes
--   `flake-update` — update to newest package versions
--   `darwin-cleanup` — prune the nix cache
+-   `darwin-rebuild-switch`: build and apply the pinned configuration
+-   `flake-update`: refresh flake inputs, including nixpkgs and Nix-managed Homebrew taps
+-   `darwin-cleanup`: prune the Nix cache
+
+## Updates
+
+| Command | What it updates |
+| --- | --- |
+| `mise run update` | Flake inputs: Nix packages, Homebrew itself, custom taps, Cursor extensions, and ai-sauce. Run `darwin-rebuild-switch` afterward to apply them. |
+| `mise run homebrew-upgrade` | Refreshes official Homebrew metadata and upgrades installed formulae and casks, including nightlies. Custom taps still use their applied Nix revisions. |
+| `mise run pkg-update` | Uses the package-update skill for local `pkgs/` pins. The script-only variant covers five packages and lists the rest for manual review. Build and apply afterward. |
+| `mise run ai-plugins-update` | Refreshes Claude marketplaces and updates user-installed plugins. Restart Claude afterward. |
+| `mise upgrade` | Upgrades mise runtimes within configured version ranges. The shell's `mise install` hook only installs missing versions. |
+
+Cursor's managed extensions, Claude Code CLI, and Vite+ have their own updaters disabled because Nix owns their versions. CleanShot stays on licensed 4.x releases. A successful rebuild does not check upstream for new versions.

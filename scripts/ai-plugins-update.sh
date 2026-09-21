@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Update all Claude Code marketplaces and plugins
+# Refresh Claude Code marketplaces and update user-installed plugins.
 
 set -euo pipefail
 
@@ -9,9 +9,17 @@ claude plugin marketplace update
 echo ""
 echo "=== Updating plugins ==="
 plugins=$(jq -r '.plugins | keys[]' ~/.claude/plugins/installed_plugins.json)
+failed_plugins=()
 for plugin in $plugins; do
   echo "Updating ${plugin}..."
-  claude plugin update "$plugin" 2>&1 || echo "  Failed to update ${plugin}"
+  if ! claude plugin update "$plugin"; then
+    failed_plugins+=("$plugin")
+  fi
 done
+if ((${#failed_plugins[@]} > 0)); then
+  printf '\nFailed to update:\n' >&2
+  printf '  %s\n' "${failed_plugins[@]}" >&2
+  exit 1
+fi
 echo ""
 echo "Done! Restart Claude Code to apply updates."

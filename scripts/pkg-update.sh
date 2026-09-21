@@ -6,7 +6,7 @@ usage() {
   cat <<'EOF'
 Usage: ./scripts/pkg-update.sh [--no-verify]
 
-Updates every custom package in pkgs/ with explicit source handlers:
+Updates the following packages and lists packages requiring manual updates:
   - claude-code
   - codex-cli
   - maestro-studio
@@ -57,21 +57,6 @@ current_version() {
   rg -o 'version = "[^"]+"' "$file" | head -n 1 | sed -E 's/.*"([^"]+)"/\1/'
 }
 
-prepare_update() {
-  local name=$1
-  local file=$2
-  local latest=$3
-  local url=$4
-
-  _pkg_update_before=$(current_version "$file")
-  if [[ "$_pkg_update_before" == "$latest" ]]; then
-    log_status "$name" "$_pkg_update_before" "$latest"
-    return 1
-  fi
-
-  ensure_url_exists "$url"
-}
-
 update_simple_sri() {
   local name=$1
   local file=$2
@@ -80,8 +65,13 @@ update_simple_sri() {
   local hash
   local before
 
-  prepare_update "$name" "$file" "$latest" "$url" || return 0
-  before=$_pkg_update_before
+  before=$(current_version "$file")
+  if [[ "$before" == "$latest" ]]; then
+    log_status "$name" "$before" "$latest"
+    return 0
+  fi
+
+  ensure_url_exists "$url"
   hash=$(prefetch_sri "$url")
 
   VERSION="$latest" HASH="$hash" replace_in_file "$file" '
@@ -174,7 +164,7 @@ main() {
     "vite-plus:update_vite_plus"
   )
   local failed_steps=()
-  local spec name handler status
+  local spec name handler status file
 
   while (($#)); do
     case "$1" in
@@ -206,6 +196,16 @@ main() {
 
   echo "Updating packages in pkgs/..."
 
+  for file in pkgs/*.nix pkgs/*/default.nix; do
+    rg -q 'version = "' "$file" || continue
+    name=${file#pkgs/}
+    name=${name%/default.nix}
+    name=${name%.nix}
+    if [[ " ${update_specs[*]} " != *" $name:"* ]]; then
+      printf '  %-15s not handled by this script; update manually via the pkg-update skill\n' "$name"
+    fi
+  done
+
   for spec in "${update_specs[@]}"; do
     name=${spec%%:*}
     handler=${spec#*:}
@@ -224,11 +224,11 @@ main() {
     echo ""
     echo "Verifying darwin configurations..."
 
-    if ! nix build .#darwinConfigurations.personal.system --no-link; then
+    if ! nix build .#darwinConfigurations.personal.system --no-link --option eval-cache false; then
       failed_steps+=("personal verification")
     fi
 
-    if ! nix build .#darwinConfigurations.work.system --no-link; then
+    if ! nix build .#darwinConfigurations.work.system --no-link --option eval-cache false; then
       failed_steps+=("work verification")
     fi
   fi
