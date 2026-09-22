@@ -51,39 +51,61 @@ let
     mcpAllowlist = map (m: "${lib.head m}:${lib.last m}") (matching "mcp__(.+)__(.+)" rules.allow);
   };
 
-  # Cursor has allowlists but no deny list, so a hook enforces the deny rules.
-  # It prints nothing for anything else, which leaves the decision to the allowlist.
-  deniedCommands = lib.concatMapStringsSep "|" (m: lib.escapeRegex (lib.head m)) (
-    matching bashRule rules.deny
-  );
-  deniedReads = lib.concatMapStringsSep " " (
+  # Cursor has allowlists but no deny list, so hooks enforce the deny rules. Each
+  # hook is one jq filter that prints a decision on a match and nothing otherwise,
+  # which leaves the decision to the allowlist.
+  readRule = "Read\\((.*)\\)";
+  denyHook =
+    name: field: permission: flags: regex:
+    "${pkgs.jq}/bin/jq -c -f ${pkgs.writeText "cursor-deny-${name}.jq" ''
+      .${field} // "" | select(test(${builtins.toJSON regex}; "${flags}"))
+      | "Matches an ai-sauce deny rule: \(.)" as $message
+      | {permission: "${permission}", user_message: $message, agent_message: $message}
+    ''}";
+  # A denied command at the start of a line or after a shell separator. It asks
+  # instead of denying, because the same text inside a quoted string also matches.
+  deniedCommands = map (m: lib.escapeRegex (lib.head m)) (matching bashRule rules.deny);
+  shellHook =
+    denyHook "shell" "command" "ask" ""
+      "(^|[;&|(`\n])\\s*(${lib.concatStringsSep "|" deniedCommands})(\\s|$)";
+  # Claude's globs as regexes, matched without case because APFS ignores it.
+  deniedReads = map (
     m:
-    ''"${
+    "^${
       builtins.replaceStrings
         [
-          "**"
+          "\\*\\*"
+          "\\*"
           "~/"
         ]
         [
-          "*"
-          "$HOME/"
+          ".*"
+          "[^/]*"
+          "${lib.escapeRegex config.home.homeDirectory}/"
         ]
-        (lib.head m)
-    }"''
-  ) (matching "Read\\((.*)\\)" rules.deny);
-  cursorDenyHook = pkgs.writeShellScript "cursor-deny-hook" ''
-    subject=$(${pkgs.jq}/bin/jq -r '.command // .file_path // ""')
-    # A denied command at the start of the line or after a shell separator.
-    commands='(^|[;&|(`])[[:space:]]*(${deniedCommands})([[:space:]]|$)'
-    reads=(${deniedReads})
-    case $1 in
-      shell) [[ $subject =~ $commands ]] && denied=1 ;;
-      read) for glob in "''${reads[@]}"; do [[ $subject == $glob ]] && denied=1; done ;;
-    esac
-    [[ -n $denied ]] || exit 0
-    ${pkgs.jq}/bin/jq -n --arg message "Denied by ai-sauce rules: $subject" \
-      '{permission: "deny", user_message: $message, agent_message: $message}'
-  '';
+        (lib.escapeRegex (lib.head m))
+    }$"
+  ) (matching readRule rules.deny);
+  readHook = denyHook "read" "file_path" "deny" "i" (lib.concatStringsSep "|" deniedReads);
+  # Bare tool names such as WebFetch have no Cursor equivalent. A parameterised
+  # deny rule in a form this module cannot translate fails the build.
+  untranslated = lib.filter (
+    rule:
+    lib.hasInfix "(" rule
+    && builtins.match bashRule rule == null
+    && builtins.match readRule rule == null
+  ) rules.deny;
+  cursorHooks =
+    assert lib.assertMsg (
+      untranslated == [ ]
+    ) "cursor.nix cannot translate these deny rules: ${toString untranslated}";
+    lib.optionalAttrs (deniedCommands != [ ]) {
+      beforeShellExecution = [ { command = shellHook; } ];
+    }
+    // lib.optionalAttrs (deniedReads != [ ]) {
+      beforeReadFile = [ { command = readHook; } ];
+      beforeTabFileRead = [ { command = readHook; } ];
+    };
 
   cursorAgentSources = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".toml" name) (
     builtins.readDir "${ai}/agents/codex"
@@ -208,10 +230,7 @@ in
     };
     ".cursor/hooks.json".text = builtins.toJSON {
       version = 1;
-      hooks = {
-        beforeShellExecution = [ { command = "${cursorDenyHook} shell"; } ];
-        beforeReadFile = [ { command = "${cursorDenyHook} read"; } ];
-      };
+      hooks = cursorHooks;
     };
   }
   // cursorAgentFiles
