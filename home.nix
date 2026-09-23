@@ -92,6 +92,7 @@ in
     ./home-manager/agent-sandbox.nix
     ./home-manager/vite-plus.nix
     ./home-manager/zed.nix
+    ./home-manager/t3code.nix
   ]
   ++ lib.optionals enableAi [
     ./home-manager/ai-instructions.nix

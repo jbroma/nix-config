@@ -11,6 +11,7 @@ Updates the following packages and lists packages requiring manual updates:
   - codex-cli
   - maestro-studio
   - minisim
+  - t3code
   - vite-plus
 
 By default, runs:
@@ -119,6 +120,15 @@ update_maestro_studio() {
   update_simple_sri "maestro-studio" "$file" "$latest" "$url"
 }
 
+update_t3code() {
+  local file="pkgs/t3code.nix"
+  local latest url
+
+  latest=$(gh api repos/pingdotgg/t3code/releases/latest --jq '.tag_name' | sed 's/^v//')
+  url="https://github.com/pingdotgg/t3code/releases/download/v${latest}/T3-Code-${latest}-arm64.zip"
+  update_simple_sri "t3code" "$file" "$latest" "$url"
+}
+
 update_vite_plus() {
   local file="pkgs/vite-plus.nix"
   local latest url
@@ -161,6 +171,7 @@ main() {
     "codex-cli:update_codex_cli"
     "minisim:update_minisim"
     "maestro-studio:update_maestro_studio"
+    "t3code:update_t3code"
     "vite-plus:update_vite_plus"
   )
   local failed_steps=()
