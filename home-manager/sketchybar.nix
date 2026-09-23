@@ -23,4 +23,7 @@ in
       enable = true;
     };
   };
+  # Launch through a script named "sketchybar" instead of /bin/sh, so Login Items shows that
+  # name instead of "sh". The store is mounted long before login, so the wait is not needed.
+  launchd.agents.sketchybar.waitForNixStore = false;
 }

@@ -10,6 +10,12 @@
 let
   # Bootstrap profiles pass ai = null: no AI tool config until the private input is reachable.
   enableAi = ai != null;
+  # Readable replacement for System Settings > Login Items, which labels every nix service "sh".
+  loginItems = pkgs.writeShellApplication {
+    name = "login-items";
+    runtimeInputs = [ pkgs.jq ];
+    text = builtins.readFile ./scripts/login-items.sh;
+  };
 in
 {
   # Symlink ai flake input to ~/.nix/ai for visibility
@@ -32,6 +38,7 @@ in
       gh
       jq
       htop
+      loginItems
       maestro
       pnpm
       sd
