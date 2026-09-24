@@ -20,6 +20,7 @@
 	"files.autoSave": "off",
 	"files.autoSaveDelay": 100,
 	"git.autofetch": true,
+	"js/ts.tsserver.maxMemory": 8192,
 	"json.schemaDownload.enable": true,
 	"material-icon-theme.folders.theme": "classic",
 	"notebook.defaultFormatter": "esbenp.prettier-vscode",
@@ -31,7 +32,6 @@
 	"react-native-tools.showUserTips": false,
 	"terminal.integrated.fontSize": 14,
 	"terminal.integrated.lineHeight": 1.1,
-	"terminal.integrated.localEchoStyle": "dim",
 	"terminal.integrated.profiles.osx": {
 		"bash": {
 			"path": "bash",
@@ -43,9 +43,7 @@
 			"args": ["-l"]
 		}
 	},
-	"typescript.tsserver.maxTsServerMemory": 8192,
 	"update.mode": "none",
-	"window.customTitleBarVisibility": "never",
 	"window.nativeTabs": false,
 	"window.newWindowDimensions": "maximized",
 	"window.titleBarStyle": "custom",
