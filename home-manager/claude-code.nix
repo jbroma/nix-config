@@ -36,6 +36,10 @@ let
       DISABLE_AUTOUPDATER = "1";
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
       ENABLE_TOOL_SEARCH = "true";
+      # Pin the aliases subagents pass (pstack's model table uses them): a bare
+      # `opus` can otherwise resolve to the older claude-opus-5.
+      ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-5-5";
+      ANTHROPIC_DEFAULT_FABLE_MODEL = "claude-fable-5-1";
     };
     attribution = {
       commit = "";
