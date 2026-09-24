@@ -1,6 +1,4 @@
 # agent-browser - prebuilt release binary (nixpkgs lags several versions behind)
-# Update: bump version, then
-#   nix hash convert --hash-algo sha256 "$(nix-prefetch-url https://github.com/vercel-labs/agent-browser/releases/download/v<version>/agent-browser-darwin-arm64)"
 {
   lib,
   stdenv,

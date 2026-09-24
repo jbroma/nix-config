@@ -7,12 +7,17 @@ usage() {
 Usage: ./scripts/pkg-update.sh [--no-verify]
 
 Updates the following packages and lists packages requiring manual updates:
+  - agent-browser
+  - agent-device
+  - apple-container
   - claude-code
+  - cleanshot (4.x only)
   - codex-cli
   - cursor-cli
   - maestro-studio
   - minisim
   - vite-plus
+  - wsmancli
 
 By default, runs:
   nix build .#darwinConfigurations.personal.system --no-link
@@ -55,7 +60,21 @@ replace_in_file() {
 
 current_version() {
   local file=$1
-  rg -o 'version = "[^"]+"' "$file" | head -n 1 | sed -E 's/.*"([^"]+)"/\1/'
+  local n=${2:-1}
+  rg -o 'version = "[^"]+"' "$file" | sed -n "${n}p" | sed -E 's/.*"([^"]+)"/\1/'
+}
+
+# Sets the value of the n-th `key = "...";` in a file with several versions or hashes.
+set_nth() {
+  local file=$1
+  local key=$2
+  local n=$3
+  local value=$4
+
+  KEY="$key" N="$n" VALUE="$value" replace_in_file "$file" '
+    my $i = 0;
+    s/(\b\Q$ENV{KEY}\E = ")[^"]+(";)/++$i == $ENV{N} ? "$1$ENV{VALUE}$2" : $&/ge;
+  '
 }
 
 update_simple_sri() {
@@ -138,6 +157,79 @@ update_vite_plus() {
   update_simple_sri "vite-plus" "$file" "$latest" "$url"
 }
 
+update_agent_browser() {
+  local file="pkgs/agent-browser.nix"
+  local latest url
+
+  latest=$(gh api repos/vercel-labs/agent-browser/releases/latest --jq '.tag_name' | sed 's/^v//')
+  url="https://github.com/vercel-labs/agent-browser/releases/download/v${latest}/agent-browser-darwin-arm64"
+  update_simple_sri "agent-browser" "$file" "$latest" "$url"
+}
+
+update_apple_container() {
+  local file="pkgs/apple-container.nix"
+  local latest url
+
+  latest=$(gh api repos/apple/container/releases/latest --jq '.tag_name')
+  url="https://github.com/apple/container/releases/download/${latest}/container-${latest}-installer-signed.pkg"
+  update_simple_sri "apple-container" "$file" "$latest" "$url"
+}
+
+# The license covers 4.x only, and the public appcast stops at 3.x, so probe the
+# download host for the next patch or minor 4.x release until none exists.
+update_cleanshot() {
+  local file="pkgs/cleanshot.nix"
+  local base="https://updates.getcleanshot.com/v3/CleanShot-X-"
+  local latest major minor patch
+
+  latest=$(current_version "$file")
+  IFS=. read -r major minor patch <<<"$latest"
+  patch=${patch:-0}
+
+  while true; do
+    if curl -fsIL -o /dev/null "${base}${major}.${minor}.$((patch + 1)).dmg"; then
+      patch=$((patch + 1))
+      latest="${major}.${minor}.${patch}"
+    elif curl -fsIL -o /dev/null "${base}${major}.$((minor + 1)).dmg"; then
+      minor=$((minor + 1))
+      patch=0
+      latest="${major}.${minor}"
+    else
+      break
+    fi
+  done
+
+  update_simple_sri "cleanshot" "$file" "$latest" "${base}${latest}.dmg"
+}
+
+# Two source builds in one file: openwsman (first version/hash), then wsmancli.
+# GitHub's "latest release" for wsmancli is an old one, so take the highest v* tag.
+update_wsmancli() {
+  local file="pkgs/wsmancli.nix"
+  local n repo before latest hash
+
+  for n in 1 2; do
+    if [[ $n == 1 ]]; then repo=openwsman; else repo=wsmancli; fi
+    before=$(current_version "$file" "$n")
+    latest=$(gh api "repos/Openwsman/${repo}/tags" --paginate --jq '.[].name' | sed -n 's/^v\([0-9.]*\)$/\1/p' | sort -V | tail -n 1)
+    if [[ "$before" != "$latest" ]]; then
+      hash=$(nix flake prefetch --json "github:Openwsman/${repo}/v${latest}" | jq -r '.hash')
+      set_nth "$file" version "$n" "$latest"
+      set_nth "$file" hash "$n" "$hash"
+    fi
+    log_status "$repo" "$before" "$latest"
+  done
+}
+
+update_agent_device() {
+  local file="pkgs/agent-device.nix"
+  local latest url
+
+  latest=$(curl -fsSL "https://registry.npmjs.org/agent-device/latest" | jq -r '.version')
+  url="https://registry.npmjs.org/agent-device/-/agent-device-${latest}.tgz"
+  update_simple_sri "agent-device" "$file" "$latest" "$url"
+}
+
 log_status() {
   local name=$1
   local before=$2
@@ -167,12 +259,17 @@ run_isolated_handler() {
 main() {
   local verify=true
   local update_specs=(
+    "agent-browser:update_agent_browser"
+    "agent-device:update_agent_device"
+    "apple-container:update_apple_container"
     "claude-code:update_claude_code"
+    "cleanshot:update_cleanshot"
     "codex-cli:update_codex_cli"
     "cursor-cli:update_cursor_cli"
     "minisim:update_minisim"
     "maestro-studio:update_maestro_studio"
     "vite-plus:update_vite_plus"
+    "wsmancli:update_wsmancli"
   )
   local failed_steps=()
   local spec name handler status file
