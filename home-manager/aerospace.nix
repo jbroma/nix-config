@@ -22,8 +22,10 @@
       # You can use it to add commands that run after AeroSpace startup.
       # 'after-startup-command' is run after 'after-login-command'
       # Available commands : https://nikitabobko.github.io/AeroSpace/commands
+      # Only repaint the workspaces. A full --reload raced sketchybar's own startup at login:
+      # both runs of sketchybarrc added items at once, which reordered them and lost pills.
       after-startup-command = [
-        "exec-and-forget /opt/homebrew/bin/sketchybar --reload"
+        "exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_change"
       ];
 
       # Sketchybar follows workspace and window changes through `aerospace subscribe`
