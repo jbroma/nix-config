@@ -20,8 +20,8 @@ let
     approvals_reviewer = "auto_review";
     sandbox_mode = "workspace-write";
     sandbox_workspace_write.network_access = true;
-    model_context_window = 1000000;
-    model_auto_compact_token_limit = 900000;
+    model_context_window = 872000;
+    model_auto_compact_token_limit = 800000;
     model_reasoning_effort = "medium";
     model_reasoning_summary = "concise";
     hide_agent_reasoning = true;
@@ -33,26 +33,22 @@ let
     features = {
       network_proxy = {
         enabled = true;
-        domains = lib.genAttrs (import ../agent-network-domains.nix) (_: "allow");
+        # Loopback must be allowlisted by literal for local dev servers.
+        domains = lib.genAttrs (
+          import ../agent-network-domains.nix
+          ++ [
+            "localhost"
+            "127.0.0.1"
+          ]
+        ) (_: "allow");
       };
-      browser_use = true;
-      browser_use_external = true;
-      goals = true;
-      in_app_browser = true;
       prevent_idle_sleep = true;
-      shell_tool = true;
-      shell_snapshot = true;
-      unified_exec = true;
-      computer_use = true;
-      multi_agent = true;
       memories = false;
     };
 
     agents = {
       max_concurrent_threads_per_session = 8;
     };
-
-    history.persistence = "save-all";
 
     tui = {
       animations = true;
