@@ -280,4 +280,22 @@ in
   };
 
   services.tailscale.enable = true;
+
+  # Determinate Nix owns the daemon, so nix-darwin's nix.gc is unavailable; prune weekly
+  # like the darwin-cleanup alias. launchd runs a missed slot after wake.
+  launchd.daemons.nix-gc.serviceConfig = {
+    ProgramArguments = [
+      "/nix/var/nix/profiles/default/bin/nix-collect-garbage"
+      "--delete-older-than"
+      "7d"
+    ];
+    StartCalendarInterval = [
+      {
+        Weekday = 0;
+        Hour = 12;
+      }
+    ];
+    StandardOutPath = "/var/log/nix-gc.log";
+    StandardErrorPath = "/var/log/nix-gc.log";
+  };
 }
