@@ -14,4 +14,8 @@
   "cache.flakehub.com"
   "install.determinate.systems"
   "storage.googleapis.com"
+  # Loopback, by literal, so sandboxed commands reach local dev servers.
+  "localhost"
+  "127.0.0.1"
+  "::1"
 ]
