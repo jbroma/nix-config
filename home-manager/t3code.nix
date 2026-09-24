@@ -9,6 +9,8 @@
       # This switch also gates T3's hourly model list fetch, so off means no new models
       # until the next app release. Explicit because activation merges into the old false.
       enableProviderUpdateChecks = true;
+      enableDeviceSupport = true;
+      enableAgentDeviceAccess = true;
       providers = {
         claudeAgent.binaryPath = lib.getExe pkgs.claude-code;
         codex.binaryPath = lib.getExe pkgs.codex-cli;
