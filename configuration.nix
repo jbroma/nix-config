@@ -262,6 +262,10 @@ in
   );
 
   # dnsmasq config
+  # home-manager's ~/.zshrc runs compinit; a second one here, with a different fpath,
+  # rewrote ~/.zcompdump on every shell start (about 1s per login shell).
+  programs.zsh.enableGlobalCompInit = false;
+
   services.dnsmasq.enable = true;
   services.dnsmasq.bind = "127.0.0.1";
   services.dnsmasq.addresses = {
