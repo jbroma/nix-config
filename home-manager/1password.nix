@@ -40,12 +40,12 @@ in
 
   programs.git = {
     signing = {
+      format = "ssh";
       signByDefault = signingKey != null;
       key = signingKey;
       signer = signPath;
     };
     settings = {
-      gpg.format = "ssh";
       gpg.ssh.allowedSignersFile = "${allowedSigners}";
     };
   };
