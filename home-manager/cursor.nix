@@ -246,16 +246,19 @@ in
       "${pkgs.jq}/bin/jq"
   '';
 
-  # Warn if a Cursor update turned third-party (Claude/Codex) config loading back on.
-  home.activation.checkCursorThirdParty = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  # Cursor keeps these toggles in its state database, which Nix can't safely write
+  # while Cursor runs, so warn when one is on (for example after an update).
+  home.activation.checkCursorToggles = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     db="$HOME/Library/Application Support/Cursor/User/globalStorage/state.vscdb"
-    if [ -f "$db" ]; then
+    check() {
       enabled="$(/usr/bin/sqlite3 -readonly "file:''${db// /%20}?immutable=1" \
-        "select value from ItemTable where key = 'cursor/thirdPartyExtensibilityEnabled';" 2>/dev/null || true)"
-      if [ "$enabled" != "false" ]; then
-        warnEcho "Cursor third-party config loading is on: it will read ~/.claude and ~/.codex."
-        warnEcho "Turn off Cursor Settings > Rules, Skills, Subagents > Include third-party Plugins, Skills, and other configs"
-      fi
+        "select value from ItemTable where key = '$1';" 2>/dev/null || true)"
+      if [ "$enabled" != "false" ]; then warnEcho "$2"; fi
+    }
+    if [ -f "$db" ]; then
+      check cursor/thirdPartyExtensibilityEnabled \
+        "Turn off Cursor Settings > Rules, Skills, Subagents > Include third-party Plugins, Skills, and other configs (it makes Cursor read ~/.claude and ~/.codex)"
+      check cursor/memoriesEnabled "Turn off Cursor Settings > Rules > Memories"
     fi
   '';
 

@@ -23,6 +23,7 @@ let
     switchModelsOnFlag = false;
     # Keep extended thinking enabled.
     alwaysThinkingEnabled = true;
+    autoMemoryEnabled = false;
     # Built-in style: result first, no narration, short by default; full detail on request.
     outputStyle = "Concise";
     # Less on screen: focus view hides tool-call noise; no thinking summaries or turn timer.

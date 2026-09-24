@@ -45,6 +45,7 @@ let
       unified_exec = true;
       computer_use = true;
       multi_agent = true;
+      memories = false;
     };
 
     agents = {
