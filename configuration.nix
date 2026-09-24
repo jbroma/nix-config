@@ -29,10 +29,17 @@ let
     "vscode-extension-mhutchie-git-graph"
   ];
 
-  mkLaunchAgent = path: {
+  # `open` hands off to a running copy instead of starting a second one ("already running"),
+  # and a stable app path keeps the plist unchanged, so a switch doesn't relaunch the app.
+  mkLaunchAgent = app: {
     serviceConfig = {
       Disabled = false;
-      ProgramArguments = [ path ];
+      ProgramArguments = [
+        "/usr/bin/open"
+        "-g"
+        "-a"
+        app
+      ];
       RunAtLoad = true;
     };
   };
@@ -176,10 +183,10 @@ in
 
   # apps to launch on login
   launchd.user.agents = {
-    aerospace = mkLaunchAgent "/Applications/AeroSpace.app/Contents/MacOS/AeroSpace";
+    aerospace = mkLaunchAgent "/Applications/AeroSpace.app";
     # Raycast 2.x dropped the RaycastLauncher login item; start the app itself like CleanShot.
-    raycast = mkLaunchAgent "${pkgs.raycast}/Applications/Raycast.app/Contents/MacOS/Raycast";
-    cleanshot-x = mkLaunchAgent "${pkgs.cleanshot}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
+    raycast = mkLaunchAgent "/Applications/Nix Apps/Raycast.app";
+    cleanshot-x = mkLaunchAgent "/Applications/Nix Apps/CleanShot X.app";
   };
 
   security = {
