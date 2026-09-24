@@ -9,6 +9,7 @@ Usage: ./scripts/pkg-update.sh [--no-verify]
 Updates the following packages and lists packages requiring manual updates:
   - claude-code
   - codex-cli
+  - cursor-cli
   - maestro-studio
   - minisim
   - vite-plus
@@ -101,6 +102,15 @@ update_codex_cli() {
   update_simple_sri "codex-cli" "$file" "$latest" "$url"
 }
 
+update_cursor_cli() {
+  local file="pkgs/cursor-cli.nix"
+  local latest url
+
+  latest=$(curl -fsSL https://cursor.com/install | rg -o -m1 'downloads\.cursor\.com/lab/[^/]+' | sed 's|.*/||')
+  url="https://downloads.cursor.com/lab/${latest}/darwin/arm64/agent-cli-package.tar.gz"
+  update_simple_sri "cursor-cli" "$file" "$latest" "$url"
+}
+
 update_minisim() {
   local file="pkgs/minisim.nix"
   local latest url
@@ -159,6 +169,7 @@ main() {
   local update_specs=(
     "claude-code:update_claude_code"
     "codex-cli:update_codex_cli"
+    "cursor-cli:update_cursor_cli"
     "minisim:update_minisim"
     "maestro-studio:update_maestro_studio"
     "vite-plus:update_vite_plus"

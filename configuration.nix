@@ -18,6 +18,7 @@ let
     "claude-code"
     "cleanshot"
     "codex-cli"
+    "cursor-cli"
     "google-chrome"
     "lmstudio"
     "maestro-studio"
@@ -55,6 +56,7 @@ in
       [
         # xcode
         codex-cli
+        cursor-cli
         cleanshot
         maestro-studio
         # nixpkgs still selects Electron 41, which is EOL.

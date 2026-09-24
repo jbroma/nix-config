@@ -12,6 +12,10 @@
       providers = {
         claudeAgent.binaryPath = lib.getExe pkgs.claude-code;
         codex.binaryPath = lib.getExe pkgs.codex-cli;
+        cursor = {
+          enabled = true;
+          binaryPath = lib.getExe pkgs.cursor-cli;
+        };
       };
     };
   };

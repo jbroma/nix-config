@@ -266,4 +266,13 @@ in
       "${managedCursorSettingsFile}" \
       "${pkgs.jq}/bin/jq"
   '';
+
+  # cursor-agent replaces itself under ~/.local on every run unless its channel is "static".
+  # The CLI rewrites this file (login, settings), so merge the key in on switch.
+  home.activation.cursorCliChannel = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run ${pkgs.bash}/bin/bash ${../scripts/merge-cursor-settings.sh} \
+      "$HOME/.cursor/cli-config.json" \
+      "${pkgs.writeText "cursor-cli-config.json" (builtins.toJSON { channel = "static"; })}" \
+      "${pkgs.jq}/bin/jq"
+  '';
 }

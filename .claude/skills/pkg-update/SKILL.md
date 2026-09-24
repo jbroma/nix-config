@@ -10,7 +10,7 @@ Updates local packages in `~/.nix/pkgs/`. Build and verify only; never apply the
 
 ## Workflow
 
-1. Run the repo updater first: `mise run pkg-update-script` (`./scripts/pkg-update.sh`). It covers claude-code, codex-cli, maestro-studio, minisim and vite-plus, and skips a package when the pinned version already matches upstream.
+1. Run the repo updater first: `mise run pkg-update-script` (`./scripts/pkg-update.sh`). It covers claude-code, codex-cli, cursor-cli, maestro-studio, minisim and vite-plus, and skips a package when the pinned version already matches upstream.
 2. For the packages the script does not cover, or when it fails, update by hand: bump `version` and any URL segment tied to it, then prefetch the hash: `nix store prefetch-file --json "$url" | jq -r '.hash'`
 3. Verify both configs:
    - `mise run check-personal`
@@ -26,6 +26,7 @@ Updates local packages in `~/.nix/pkgs/`. Build and verify only; never apply the
 | `claude-code` | `curl -fsSL https://registry.npmjs.org/@anthropic-ai/claude-code/latest \| jq -r '.version'` | SRI (`hash`) | Script. Native binary from the GCS bucket, npm version is only the candidate; the script checks the binary URL exists. |
 | `cleanshot` | Check vendor releases within 4.x | SRI (`hash`) | Manual. The license covers 4.x only; do not upgrade to a new major version. |
 | `codex-cli` | `gh api repos/openai/codex/releases/latest --jq '.tag_name' \| sed 's/^rust-v//'` | SRI (`hash`) | Script. Release tag is `rust-v${version}`; asset is `codex-package-aarch64-apple-darwin.tar.gz`. |
+| `cursor-cli` | `curl -fsSL https://cursor.com/install \| rg -o -m1 'downloads\.cursor\.com/lab/[^/]+' \| sed 's\|.*/\|\|'` | SRI (`hash`) | Script. `overrideAttrs` of the nixpkgs derivation onto `agent-cli-package.tar.gz` for `darwin/arm64`. Its self-updater stays off through `channel = "static"` in `~/.cursor/cli-config.json` (`home-manager/cursor.nix`). |
 | `maestro-studio` | `gh api repos/mobile-dev-inc/maestro-studio/releases/latest --jq '.tag_name' \| sed 's/^v//'` | SRI (`hash`) | Script. Asset is `Maestro-Studio-mac-universal.zip`. Build fails with the real version if `Info.plist` disagrees. |
 | `minisim` | `gh api repos/okwasniewski/MiniSim/releases/latest --jq '.tag_name' \| sed 's/^v//'` | SRI (`hash`) | Script. Asset is `MiniSim.app.zip`. |
 | `vite-plus` | `curl -fsSL 'https://registry.npmjs.org/@voidzero-dev%2Fvite-plus-cli-darwin-arm64/latest' \| jq -r '.version'` | SRI (`hash`) | Script. Platform tarball from npm; `home-manager/vite-plus.nix` bootstraps the matching global install on switch. |
