@@ -20,7 +20,6 @@ let
     "codex-cli"
     "cursor-cli"
     "google-chrome"
-    "lmstudio"
     "maestro-studio"
     "obsidian"
     "orbstack"
@@ -70,7 +69,6 @@ in
         (openscreen.override { electron_41 = electron_42; })
         raycast
         google-chrome
-        lmstudio
         _1password-gui
         minisim
         # root needs git for the git+ssh flake input during darwin-rebuild
