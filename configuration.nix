@@ -23,7 +23,6 @@ let
     "maestro-studio"
     "obsidian"
     "orbstack"
-    "raycast"
     "slack"
     "vscode-extension-mhutchie-git-graph"
   ];
@@ -67,7 +66,6 @@ in
         maestro-studio
         # nixpkgs still selects Electron 41, which is EOL.
         (openscreen.override { electron_41 = electron_42; })
-        raycast
         google-chrome
         _1password-gui
         minisim
@@ -130,6 +128,8 @@ in
       "claude"
       "cursor"
       "nikitabobko/tap/aerospace"
+      # A cask, not nixpkgs, so Raycast updates itself and keeps up with new macOS releases.
+      "raycast"
       "spotify"
       "t3-code"
       "wezterm@nightly"
@@ -183,7 +183,7 @@ in
   launchd.user.agents = {
     aerospace = mkLaunchAgent "/Applications/AeroSpace.app";
     # Raycast 2.x dropped the RaycastLauncher login item; start the app itself like CleanShot.
-    raycast = mkLaunchAgent "/Applications/Nix Apps/Raycast.app";
+    raycast = mkLaunchAgent "/Applications/Raycast.app";
     cleanshot-x = mkLaunchAgent "/Applications/Nix Apps/CleanShot X.app";
   };
 
