@@ -64,7 +64,6 @@ in
         lmstudio
         _1password-gui
         minisim
-        t3code
         # root needs git for the git+ssh flake input during darwin-rebuild
         git
         nixfmt
@@ -125,6 +124,7 @@ in
       "cursor"
       "nikitabobko/tap/aerospace"
       "spotify"
+      "t3-code"
       "wezterm@nightly"
       "zed"
     ]
@@ -178,17 +178,6 @@ in
     # Raycast 2.x dropped the RaycastLauncher login item; start the app itself like CleanShot.
     raycast = mkLaunchAgent "${pkgs.raycast}/Applications/Raycast.app/Contents/MacOS/Raycast";
     cleanshot-x = mkLaunchAgent "${pkgs.cleanshot}/Applications/CleanShot X.app/Contents/MacOS/CleanShot X";
-  };
-  # T3 Code lives in the read-only Nix store; its self-updater can only fail there.
-  # launchctl setenv doesn't survive a reboot, so set it from a login agent.
-  launchd.user.agents.t3code-env.serviceConfig = {
-    ProgramArguments = [
-      "/bin/launchctl"
-      "setenv"
-      "T3CODE_DISABLE_AUTO_UPDATE"
-      "true"
-    ];
-    RunAtLoad = true;
   };
 
   security = {
@@ -251,7 +240,6 @@ in
       ensure_app_link "Slack"
       ensure_app_link "Openscreen"
       ensure_app_link "CleanShot X"
-      ensure_app_link "T3 Code (Alpha)"
 
       # Nix preserves fixed bundle timestamps; force LaunchServices to reread updated apps.
       for nix_app in "/Applications/Nix Apps/"*.app; do
