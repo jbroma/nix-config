@@ -199,7 +199,7 @@ let
       mode = "enabled";
       networkAccess = "user_config_only";
     };
-    # No "Made with Cursor" trailer on commits, matching Claude Code's empty attribution.
+    # No "Made with Cursor" trailer on commits; PR attribution stays on.
     attribution.attributeCommitsToAgent = false;
   };
 in
