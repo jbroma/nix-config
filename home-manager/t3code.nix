@@ -11,6 +11,8 @@
       enableProviderUpdateChecks = true;
       enableDeviceSupport = true;
       enableAgentDeviceAccess = true;
+      # "Auto" in the UI: providers that support it approve routine actions; others still ask.
+      defaultRuntimeMode = "auto";
       providers = {
         claudeAgent.binaryPath = lib.getExe pkgs.claude-code;
         codex.binaryPath = lib.getExe pkgs.codex-cli;
