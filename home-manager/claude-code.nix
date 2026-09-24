@@ -21,22 +21,19 @@ let
   claudeSettings = {
     "$schema" = "https://json.schemastore.org/claude-code-settings.json";
     switchModelsOnFlag = false;
-    # Keep extended thinking enabled.
-    alwaysThinkingEnabled = true;
     autoMemoryEnabled = false;
     # Built-in style: result first, no narration, short by default; full detail on request.
     outputStyle = "Concise";
-    # Less on screen: focus view hides tool-call noise; no thinking summaries or turn timer.
+    # Less on screen: focus view hides tool-call noise; no turn timer. Focus view
+    # needs the fullscreen renderer, which is otherwise picked by a server-side gate.
+    tui = "fullscreen";
     viewMode = "focus";
-    showThinkingSummaries = false;
     showTurnDuration = false;
     # Native completion/permission notifications: OSC 9, which WezTerm shows as a macOS notification.
     preferredNotifChannel = "iterm2";
     # Claude-specific environment configuration belongs in settings.json.
     env = {
-      DISABLE_AUTOUPDATER = "1";
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
-      ENABLE_TOOL_SEARCH = "true";
       # Pin the aliases subagents pass (pstack's model table uses them): a bare
       # `opus` can otherwise resolve to the older claude-opus-5.
       ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-5-5";
@@ -65,7 +62,6 @@ let
     sandbox = {
       enabled = true;
       excludedCommands = [ "git" ];
-      autoAllowBashIfSandboxed = true;
       network = {
         allowLocalBinding = true;
         allowedDomains = import ../agent-network-domains.nix;
@@ -103,7 +99,6 @@ in
     mkdir -p "${config.home.homeDirectory}/.claude"
     if [ -e "$settings" ] || [ -L "$settings" ]; then
       "${pkgs.jq}/bin/jq" -s '.[1] as $managed
-        | del(.[0].extraKnownMarketplaces["ai-sauce"])
         | (.[0] * $managed) | .hooks = $managed.hooks | .env = $managed.env' "$settings" "${claudeSettingsFile}" > "$tmp"
     else
       cp "${claudeSettingsFile}" "$tmp"
