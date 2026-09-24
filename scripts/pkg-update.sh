@@ -304,6 +304,7 @@ main() {
 
   echo "Updating packages in pkgs/..."
 
+  shopt -s nullglob
   for file in pkgs/*.nix pkgs/*/default.nix; do
     rg -q 'version = "' "$file" || continue
     name=${file#pkgs/}
