@@ -280,7 +280,11 @@ class Runner:
             match = re.search(r"nameserver\[0\]\s*:\s*(\S+)", dns)
             options = ["--dns", match[1]] if match else []
             self.container("builder", "start", *options)
-            self.container("build", "-t", image, context)
+            try:
+                self.container("build", "-t", image, context)
+            finally:
+                # The builder is a 2 GB VM that otherwise idles until reboot; images are cached.
+                self.container("builder", "stop", check=False)
         return image
 
     def create(self, args):
