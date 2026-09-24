@@ -105,6 +105,11 @@
           run = "move-node-to-workspace 4";
         }
         {
+          # T3 Code
+          "if".app-id = "com.t3tools.t3code";
+          run = "move-node-to-workspace 4";
+        }
+        {
           # Zed
           "if".app-id = "dev.zed.Zed";
           run = "move-node-to-workspace 3";
