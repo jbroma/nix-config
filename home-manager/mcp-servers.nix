@@ -55,12 +55,13 @@ let
 
   # Desktop apps whose own Keychain items macOS pins to a single build hash on
   # "Always Allow", so every app update re-prompts. `keychain-mcp repin` moves
-  # them to the vendor's team id (OpenAI 2DC432GLL2, Anthropic Q6L2SF6YDW).
+  # them to the vendor's team id (OpenAI 2DC432GLL2, Anthropic Q6L2SF6YDW, T3 Tools ARK85ZXQ4Z).
   appKeychainItems = {
     "Codex Safe Storage" = "2DC432GLL2";
     "Codex Storage Key" = "2DC432GLL2";
     "Codex MCP Credentials" = "2DC432GLL2";
     "Claude Safe Storage" = "Q6L2SF6YDW";
+    "t3code Safe Storage" = "ARK85ZXQ4Z";
   };
 
   configLines = attrs: lib.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "${k}=${v}") attrs);
