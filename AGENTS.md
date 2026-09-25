@@ -51,7 +51,6 @@ flake.nix                    # Entry point - two configs: work, personal
 
 - `specialArgs = { inherit type user ai llm; }` passes profile type (work/personal), user info, the private AI input and the local-LLM role (`llm.server`, `llm.host`, `llm.clients`, derived from `user.nix`) to all modules
 - Custom packages in `./pkgs/` are auto-loaded via `mapAttrs'` over the directory
-- Overlays substitute custom packages such as Claude Code and Codex CLI
 
 ## AI Integration
 

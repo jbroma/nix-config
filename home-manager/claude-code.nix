@@ -77,9 +77,6 @@ in
   home.file.".claude/skills".source = "${ai}/skills";
   home.file.".claude/agents".source = "${ai}/agents/claude";
 
-  # Binary symlink for ~/.local/bin (needed by claude code native install)
-  home.file.".local/bin/claude".source = "${pkgs.claude-code}/bin/claude";
-
   # MCP servers: merge into ~/.claude.json (preserves OAuth, preferences, stats)
   home.activation.setupMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run ${../scripts/merge-mcp-servers.sh} \
@@ -105,9 +102,4 @@ in
     fi
     mv "$tmp" "$settings"
   '';
-
-  programs.claude-code = {
-    enable = true;
-    package = pkgs.claude-code;
-  };
 }

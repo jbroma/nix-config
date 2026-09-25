@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+_:
 {
   programs.t3code = {
     enable = true;
@@ -16,11 +16,11 @@
       # "Auto" in the UI: providers that support it approve routine actions; others still ask.
       defaultRuntimeMode = "auto";
       providers = {
-        claudeAgent.binaryPath = lib.getExe pkgs.claude-code;
-        codex.binaryPath = lib.getExe pkgs.codex-cli;
+        claudeAgent.binaryPath = "/opt/homebrew/bin/claude";
+        codex.binaryPath = "/opt/homebrew/bin/codex";
         cursor = {
           enabled = true;
-          binaryPath = lib.getExe pkgs.cursor-cli;
+          binaryPath = "/opt/homebrew/bin/cursor-agent";
         };
       };
     };

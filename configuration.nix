@@ -15,10 +15,7 @@ let
     # "Xcode.app"
     "1password"
     "1password-gui"
-    "claude-code"
     "cleanshot"
-    "codex-cli"
-    "cursor-cli"
     "google-chrome"
     "maestro-studio"
     "obsidian"
@@ -60,8 +57,6 @@ in
       with pkgs;
       [
         # xcode
-        codex-cli
-        cursor-cli
         cleanshot
         maestro-studio
         # nixpkgs still selects Electron 41, which is EOL.
@@ -126,7 +121,12 @@ in
       "android-studio"
       "chatgpt"
       "claude"
+      # AI CLIs as casks: the vendors' signed binaries, which Keychain pins by team id
+      # (a Nix build re-signs them ad hoc, so every update re-prompts).
+      "claude-code@latest"
+      "codex"
       "cursor"
+      "cursor-cli"
       "nikitabobko/tap/aerospace"
       # A cask, not nixpkgs, so Raycast updates itself and keeps up with new macOS releases.
       "raycast"

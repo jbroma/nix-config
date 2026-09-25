@@ -10,10 +10,7 @@ Updates the following packages and lists packages requiring manual updates:
   - agent-browser
   - agent-device
   - apple-container
-  - claude-code
   - cleanshot (4.x only)
-  - codex-cli
-  - cursor-cli
   - maestro-studio
   - minisim
   - vite-plus
@@ -100,34 +97,6 @@ update_simple_sri() {
   '
 
   log_status "$name" "$before" "$latest"
-}
-
-update_claude_code() {
-  local file="pkgs/claude-code.nix"
-  local latest url
-
-  latest=$(curl -fsSL "https://registry.npmjs.org/@anthropic-ai/claude-code/latest" | jq -r '.version')
-  url="https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/${latest}/darwin-arm64/claude"
-
-  update_simple_sri "claude-code" "$file" "$latest" "$url"
-}
-
-update_codex_cli() {
-  local file="pkgs/codex-cli.nix"
-  local latest url
-
-  latest=$(gh api repos/openai/codex/releases/latest --jq '.tag_name' | sed 's/^rust-v//')
-  url="https://github.com/openai/codex/releases/download/rust-v${latest}/codex-package-aarch64-apple-darwin.tar.gz"
-  update_simple_sri "codex-cli" "$file" "$latest" "$url"
-}
-
-update_cursor_cli() {
-  local file="pkgs/cursor-cli.nix"
-  local latest url
-
-  latest=$(curl -fsSL https://cursor.com/install | rg -o -m1 'downloads\.cursor\.com/lab/[^/]+' | sed 's|.*/||')
-  url="https://downloads.cursor.com/lab/${latest}/darwin/arm64/agent-cli-package.tar.gz"
-  update_simple_sri "cursor-cli" "$file" "$latest" "$url"
 }
 
 update_minisim() {
@@ -262,10 +231,7 @@ main() {
     "agent-browser:update_agent_browser"
     "agent-device:update_agent_device"
     "apple-container:update_apple_container"
-    "claude-code:update_claude_code"
     "cleanshot:update_cleanshot"
-    "codex-cli:update_codex_cli"
-    "cursor-cli:update_cursor_cli"
     "minisim:update_minisim"
     "maestro-studio:update_maestro_studio"
     "vite-plus:update_vite_plus"
