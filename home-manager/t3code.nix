@@ -10,7 +10,9 @@
       # until the next app release. Explicit because activation merges into the old false.
       enableProviderUpdateChecks = true;
       enableDeviceSupport = true;
-      enableAgentDeviceAccess = true;
+      # Off until pingdotgg/t3code#12926 is fixed: the agent-device shim launches a
+      # second T3 instance, which marks live sessions lost and breaks Cmd+Tab.
+      enableAgentDeviceAccess = false;
       # "Auto" in the UI: providers that support it approve routine actions; others still ask.
       defaultRuntimeMode = "auto";
       providers = {
