@@ -37,6 +37,7 @@ let
       # Pin the aliases subagents pass (pstack's model table uses them): a bare
       # `opus` can otherwise resolve to the older claude-opus-5.
       ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-5-5";
+      ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-5-5";
       ANTHROPIC_DEFAULT_FABLE_MODEL = "claude-fable-5-1";
     };
     attribution = {
