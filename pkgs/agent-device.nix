@@ -9,11 +9,11 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "agent-device";
-  version = "0.21.14";
+  version = "0.21.16";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/agent-device/-/agent-device-${finalAttrs.version}.tgz";
-    hash = "sha256-KVouAwTwiBkr8d0gsViPiRJp58uOEZ2PllPOphQp5N0=";
+    hash = "sha256-UD2yx7B1OBYvEIxVhc24MrgQHt7wahatZggtzsVkO6k=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
