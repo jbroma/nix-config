@@ -43,7 +43,7 @@ flake.nix                    # Entry point - two configs: work, personal
 ├── pkgs/                    # Custom package derivations (auto-loaded by flake)
 ├── scripts/                 # Shell scripts packaged or run by modules (pi-sandbox launcher, helpers)
 ├── containers/              # Image build contexts (pi-sandbox: Dockerfile + entrypoint)
-├── dotfiles/                # Non-Nix config files (sketchybar, oh-my-posh, vscode)
+├── dotfiles/                # Non-Nix config files (oh-my-posh, vscode)
 └── ai/                      # Nix flake input (ai-sauce) - skills, agents, rules
 ```
 

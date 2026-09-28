@@ -20,14 +20,6 @@
       url = "github:nikitabobko/homebrew-tap";
       flake = false;
     };
-    homebrew-malpern = {
-      url = "github:malpern/homebrew-tap";
-      flake = false;
-    };
-    homebrew-felixkratz = {
-      url = "github:FelixKratz/homebrew-formulae";
-      flake = false;
-    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -167,9 +159,7 @@
                 # Official formula/cask API metadata is not pinned with our custom taps.
                 extraEnv.HOMEBREW_NO_AUTO_UPDATE = "";
                 taps = {
-                  "felixkratz/homebrew-formulae" = inputs.homebrew-felixkratz;
                   "nikitabobko/homebrew-tap" = inputs.homebrew-nikitabobko;
-                  "malpern/homebrew-tap" = inputs.homebrew-malpern;
                 };
               };
             }

@@ -58,6 +58,7 @@ in
       [
         # xcode
         cleanshot
+        liquid-bar
         maestro-studio
         # nixpkgs still selects Electron 41, which is EOL.
         (openscreen.override { electron_41 = electron_42; })
@@ -113,10 +114,6 @@ in
 
   homebrew = {
     enable = true;
-    brews = [
-      "felixkratz/formulae/sketchybar"
-      "malpern/tap/sketchybar-toggle"
-    ];
     casks = [
       "android-studio"
       "chatgpt"
@@ -185,6 +182,14 @@ in
     # Raycast 2.x dropped the RaycastLauncher login item; start the app itself like CleanShot.
     raycast = mkLaunchAgent "/Applications/Raycast.app";
     cleanshot-x = mkLaunchAgent "/Applications/Nix Apps/CleanShot X.app";
+    # Run the binary directly, not through `open`, so launchd sees a crash and restarts the bar.
+    liquid-bar.serviceConfig = {
+      ProgramArguments = [ "${pkgs.liquid-bar}/Applications/LiquidBar.app/Contents/MacOS/liquid-bar" ];
+      RunAtLoad = true;
+      KeepAlive.SuccessfulExit = false;
+      LimitLoadToSessionType = "Aqua";
+      ProcessType = "Interactive";
+    };
   };
 
   security = {
@@ -247,6 +252,7 @@ in
       ensure_app_link "Slack"
       ensure_app_link "Openscreen"
       ensure_app_link "CleanShot X"
+      ensure_app_link "LiquidBar"
 
       # Nix preserves fixed bundle timestamps; force LaunchServices to reread updated apps.
       for nix_app in "/Applications/Nix Apps/"*.app; do

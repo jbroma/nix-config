@@ -8,8 +8,8 @@
   system.defaults.NSGlobalDomain = {
     # Enable subpixel font rendering on non-Apple LCDs
     AppleFontSmoothing = 1;
-    # Hide menu bar
-    _HIHideMenuBar = true;
+    # liquid-bar hides the native menu bar itself; auto-hide off keeps windows below its strip.
+    _HIHideMenuBar = false;
     # Disable wallpaper tinting in windows
     AppleReduceDesktopTinting = true;
   };

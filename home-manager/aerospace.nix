@@ -22,14 +22,7 @@
       # You can use it to add commands that run after AeroSpace startup.
       # 'after-startup-command' is run after 'after-login-command'
       # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-      # Only repaint the workspaces. A full --reload raced sketchybar's own startup at login:
-      # both runs of sketchybarrc added items at once, which reordered them and lost pills.
-      after-startup-command = [
-        "exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_change"
-      ];
-
-      # Sketchybar follows workspace and window changes through `aerospace subscribe`
-      # (dotfiles/sketchybar/plugins/aerospace_events.sh), so no callback is needed here.
+      after-startup-command = [ ];
 
       # nix-darwin launches the Homebrew-managed app bundle.
       start-at-login = false;
@@ -160,10 +153,7 @@
         outer = {
           left = 10;
           bottom = 10;
-          top = [
-            { monitor."^built-in retina display$" = 16; }
-            44
-          ];
+          top = 10;
           right = 10;
         };
       };

@@ -8,7 +8,7 @@ My personal macOS configuration using [Nix](https://nixos.org/), [nix-darwin](ht
 -   Development tools and CLI utilities
 -   Shell configuration (zsh, oh-my-posh)
 -   Terminal setup (wezterm, zellij)
--   Window management (aerospace, sketchybar)
+-   Window management (aerospace, liquid-bar)
 -   Git, editor configs, and more
 
 ## Quick Start

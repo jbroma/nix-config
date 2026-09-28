@@ -73,38 +73,6 @@
         "type": "github"
       }
     },
-    "homebrew-felixkratz": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1780547371,
-        "narHash": "sha256-QGCVV5N1QC56GQK3ck2YJ6J6/S8SQ6rTElz69y58078=",
-        "owner": "FelixKratz",
-        "repo": "homebrew-formulae",
-        "rev": "70b2071488b61c14f773ce9e1bf6626ee851981a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "FelixKratz",
-        "repo": "homebrew-formulae",
-        "type": "github"
-      }
-    },
-    "homebrew-malpern": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1778966800,
-        "narHash": "sha256-AaRFsNsCOYUupaEBog1M3Yw4YnUTPiBbW43mo+YA8Kc=",
-        "owner": "malpern",
-        "repo": "homebrew-tap",
-        "rev": "b97e910c48ebe836f28f2af4ad87901519f4a06d",
-        "type": "github"
-      },
-      "original": {
-        "owner": "malpern",
-        "repo": "homebrew-tap",
-        "type": "github"
-      }
-    },
     "homebrew-nikitabobko": {
       "flake": false,
       "locked": {
@@ -180,8 +148,6 @@
         "ai": "ai",
         "darwin": "darwin",
         "home-manager": "home-manager",
-        "homebrew-felixkratz": "homebrew-felixkratz",
-        "homebrew-malpern": "homebrew-malpern",
         "homebrew-nikitabobko": "homebrew-nikitabobko",
         "nix-homebrew": "nix-homebrew",
         "nix-vscode-extensions": "nix-vscode-extensions",

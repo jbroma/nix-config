@@ -43,7 +43,6 @@ in
       maestro
       pnpm
       sd
-      # sketchybar # gets installed on it's own when using home-manager integration
       tree
       choose
       curlie
@@ -93,7 +92,6 @@ in
     ./home-manager/pnpm.nix
     ./home-manager/delta.nix
     ./home-manager/ripgrep.nix
-    ./home-manager/sketchybar.nix
     ./home-manager/aerospace.nix
     ./home-manager/mcp-servers.nix
     ./home-manager/llm.nix
