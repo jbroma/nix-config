@@ -128,7 +128,7 @@ in
       # A cask, not nixpkgs, so Raycast updates itself and keeps up with new macOS releases.
       "raycast"
       "spotify"
-      "t3-code"
+      "t3-code@nightly"
       "wezterm@nightly"
       "zed"
     ]

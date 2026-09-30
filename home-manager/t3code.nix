@@ -18,7 +18,7 @@
 
   programs.t3code = {
     enable = true;
-    # The app is the Homebrew cask (configuration.nix) so its own updater can replace it.
+    # The app is the t3-code@nightly cask (configuration.nix) so its own updater can replace it.
     package = null;
     # The GUI doesn't see the shell PATH, so point it at the Homebrew CLIs.
     userSettings = {
