@@ -6,11 +6,11 @@
 }:
 stdenvNoCC.mkDerivation rec {
   pname = "liquid-bar";
-  version = "0.10.0";
+  version = "0.12.0";
 
   src = fetchurl {
     url = "https://github.com/jbroma/liquid-bar/releases/download/v${version}/LiquidBar-${version}.zip";
-    hash = "sha256-IcOF5oDpW0ZhP4CjVHhyCQ0XagERRShE+QJOWKPCX8U=";
+    hash = "sha256-bc79dm0p5ZYugyztuPHRVwLcojF1v9dGjLle7bTecCo=";
   };
 
   nativeBuildInputs = [ unzip ];
