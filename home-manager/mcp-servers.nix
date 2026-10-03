@@ -44,7 +44,8 @@ let
   # `keychain-mcp sync` copies these 1Password fields into the Keychain services above.
   keychainKeys = {
     exa-api-key = "op://Personal/Exa/Personal API Key";
-    firecrawl-api-key = "op://Personal/Firecrawl/Personal API Key";
+    # Work vault item, by ID: one Firecrawl key shared by the personal and work machines.
+    firecrawl-api-key = "op://mz4rpkz745f6qw7vcj2qteq4dm/2hhnlmvoueotqul5mnqjyucomu/API Key";
   };
 
   # Desktop apps whose own Keychain items macOS pins to a single build hash on
