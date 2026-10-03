@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Report where this machine has drifted from the repo: unpushed or stale git state,
+# Report where this machine has drifted from the repo: unpushed or unpulled commits,
 # an unapplied system, and leftovers of removed MCP servers in tool configs,
 # Keychain items and allow lists. Read-only; prints one line per finding.
 set -uo pipefail
@@ -9,9 +9,8 @@ drift=0
 report() { echo "DRIFT  $*"; drift=1; }
 ok() { echo "ok     $*"; }
 
-# Git: ~/.nix and the locked ai-sauce revision.
+# Git: ~/.nix against origin and the locked ai-sauce revision.
 git fetch -q origin 2>/dev/null
-[ -z "$(git status --porcelain --untracked-files=no)" ] && ok "~/.nix clean" || report "~/.nix has uncommitted changes"
 read -r behind ahead < <(git rev-list --left-right --count '@{u}...HEAD')
 [ "$ahead$behind" = 00 ] && ok "~/.nix in sync with origin" || report "~/.nix is $ahead ahead, $behind behind origin"
 locked=$(jq -r .nodes.ai.locked.rev flake.lock)
