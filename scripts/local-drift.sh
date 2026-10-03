@@ -37,8 +37,8 @@ check_servers() { # <label> <names...>
 }
 check_servers ~/.claude.json $(jq -r '.mcpServers // {} | keys[]' ~/.claude.json)
 check_servers ~/.cursor/mcp.json $(jq -r '.mcpServers // {} | keys[]' ~/.cursor/mcp.json)
-# The Codex app adds servers of its own (cua_repl, node_repl); those show up here too and are fine.
-check_servers ~/.codex/config.toml $(yq -p=toml -o=yaml '.mcp_servers // {} | keys | .[]' ~/.codex/config.toml)
+# The Codex app adds cua_repl and node_repl on its own.
+check_servers ~/.codex/config.toml $(yq -p=toml -o=yaml '.mcp_servers // {} | keys | .[]' ~/.codex/config.toml | grep -v -x -e cua_repl -e node_repl)
 
 # Keychain: *-api-key items for this user that no MCP secret uses.
 stale=$(comm -13 <(echo "$services") <(security dump-keychain 2>/dev/null |

@@ -14,7 +14,7 @@ allowed-tools: Bash, Read, Edit, Grep
 | `~/.nix` uncommitted, ahead or behind | Commit, push or pull, following the repo's Git Workflow. |
 | ai input behind ai-sauce main | `mise run ai-update`, both build checks, commit `flake.lock`. |
 | Applied system differs | The user runs `darwin-rebuild-switch`. Agents never apply. |
-| Tool config has servers Nix does not declare | If Nix used to declare it, make activation remove it: for Codex, add `.mcp_servers.<name>` to the `del(...)` list in `scripts/generate-codex-config.sh`. Servers a tool adds on its own (Codex's `cua_repl`, `node_repl`) are fine; leave them. |
+| Tool config has servers Nix does not declare | If Nix used to declare it, make activation remove it: for Codex, add `.mcp_servers.<name>` to the `del(...)` list in `scripts/generate-codex-config.sh`. If a tool added the server on its own, leave it and add the name to the script's ignore list next to Codex's `cua_repl` and `node_repl`. |
 | Unused Keychain API key | Give the user the `security delete-generic-password -s <name> -a "$USER"` command. Do not read or delete credentials yourself. |
 | Allow list names a removed server | Edit the file. `.claude/settings.local.json` is untracked; `~/.claude/settings.json` is generated, so fix its source in ai-sauce `rules/rules.yaml` and run `rules/generate.sh`. |
 
