@@ -15,6 +15,7 @@ mise run check-work          # Build the work config without applying
 mise run check-llm-server    # Build with the LLM server role forced on (server-only code never evaluates otherwise)
 mise run check-agent-sandbox # Build the standalone sandbox role and run harmless fixture tests
 mise run update              # Update flake inputs
+mise run drift               # Report local drift (see the local-cleanup skill)
 
 # Manual shell aliases (human use only; agents must not apply config)
 darwin-rebuild-switch        # Rebuild and apply darwin configuration
