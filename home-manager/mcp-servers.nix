@@ -13,10 +13,6 @@ let
   # activation from `mcp.secrets`.
   servers = {
     # Web access (ai-sauce CORE.md "Web Access" says which tool does what)
-    context7 = {
-      type = "http";
-      url = "https://mcp.context7.com/mcp";
-    };
     exa = {
       type = "http";
       url = "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa";
@@ -37,7 +33,6 @@ let
     prefix = "Bearer ";
   };
   secrets = {
-    context7 = bearer "context7-api-key";
     exa = {
       service = "exa-api-key";
       header = "x-api-key";
@@ -50,7 +45,6 @@ let
   keychainKeys = {
     exa-api-key = "op://Personal/Exa/Personal API Key";
     firecrawl-api-key = "op://Personal/Firecrawl/Personal API Key";
-    context7-api-key = "op://Personal/Context7/Personal API Key";
   };
 
   # Desktop apps whose own Keychain items macOS pins to a single build hash on
