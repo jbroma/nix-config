@@ -6,3 +6,5 @@ ai
 result
 result-*
 .scratch/
+# Claude Code worktrees
+.claude/worktrees/
