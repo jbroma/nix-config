@@ -180,8 +180,14 @@ in
   # apps to launch on login
   launchd.user.agents = {
     aerospace = mkLaunchAgent "/Applications/AeroSpace.app";
-    # Raycast 2.x dropped the RaycastLauncher login item; start the app itself like CleanShot.
-    raycast = mkLaunchAgent "/Applications/Raycast.app";
+    # Run the binary directly, not through `open`, so launchd restarts Raycast whenever it exits.
+    raycast.serviceConfig = {
+      ProgramArguments = [ "/Applications/Raycast.app/Contents/MacOS/Raycast" ];
+      RunAtLoad = true;
+      KeepAlive = true;
+      LimitLoadToSessionType = "Aqua";
+      ProcessType = "Interactive";
+    };
     cleanshot-x = mkLaunchAgent "/Applications/Nix Apps/CleanShot X.app";
     # Run the binary directly, not through `open`, so launchd sees a crash and restarts the bar.
     liquid-bar.serviceConfig = {
