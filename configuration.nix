@@ -135,6 +135,7 @@ in
     ++ lib.optionals (type == "personal") [
       "home-assistant"
       "nordvpn"
+      "transmission"
     ];
     onActivation = {
       autoUpdate = false;
