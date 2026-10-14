@@ -1,17 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}:
-let
-  configureOpts = builtins.concatStringsSep " " [
-    "--with-libyaml-include=${pkgs.libyaml.dev}/include"
-    "--with-libyaml-lib=${pkgs.libyaml.out}/lib"
-    "--with-jemalloc-dir=${pkgs.jemalloc}"
-    "--disable-install-doc"
-    "--enable-yjit"
-  ];
-in
+{ config, ... }:
 {
   programs.mise = {
     enable = true;
@@ -40,9 +27,9 @@ in
           "python"
         ];
 
-        ruby = {
-          ruby_build_opts = configureOpts;
-        };
+        # Only source builds (versions without a precompiled binary) read this.
+        # Keep Nix store paths out: they get garbage-collected and break the build.
+        ruby.ruby_build_opts = "--disable-install-doc";
       };
     };
   };
