@@ -214,6 +214,7 @@ in
     ./macos/siri.nix
     ./macos/spotlight.nix
     ./macos/system.nix
+    ./macos/t3-code.nix
   ];
 
   system.primaryUser = user.username;
