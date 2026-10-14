@@ -284,8 +284,6 @@ in
     "test" = "127.0.0.1";
   };
 
-  services.tailscale.enable = true;
-
   # Determinate Nix owns the daemon, so nix-darwin's nix.gc is unavailable; prune weekly
   # like the darwin-cleanup alias. launchd runs a missed slot after wake.
   launchd.daemons.nix-gc.serviceConfig = {
