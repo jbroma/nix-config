@@ -36,6 +36,16 @@ _:
     LSQuarantine = false;
   };
 
+  networking.applicationFirewall = {
+    enable = true;
+    # Don't answer pings or probes to closed ports
+    enableStealthMode = true;
+    # Apple services (AirPlay receiver, sharing) keep accepting connections
+    allowSigned = true;
+    # Any other app asks once before it may accept incoming connections
+    allowSignedApp = false;
+  };
+
   system.defaults.CustomUserPreferences = {
     # The CleanShot license covers 4.x only.
     "pl.maketheweb.cleanshotx" = {
