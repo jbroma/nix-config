@@ -180,11 +180,13 @@ in
   # apps to launch on login
   launchd.user.agents = {
     aerospace = mkLaunchAgent "/Applications/AeroSpace.app";
-    # Run the binary directly, not through `open`, so launchd restarts Raycast whenever it exits.
+    # Run the binary directly, not through `open`, so launchd restarts Raycast when it crashes.
+    # Raycast relaunches itself outside launchd after updates; a second copy then exits 0 with
+    # "already running", so restart only on a non-zero exit.
     raycast.serviceConfig = {
       ProgramArguments = [ "/Applications/Raycast.app/Contents/MacOS/Raycast" ];
       RunAtLoad = true;
-      KeepAlive = true;
+      KeepAlive.SuccessfulExit = false;
       LimitLoadToSessionType = "Aqua";
       ProcessType = "Interactive";
     };
