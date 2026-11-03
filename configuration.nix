@@ -60,8 +60,6 @@ in
         cleanshot
         liquid-bar
         maestro-studio
-        # nixpkgs still selects Electron 41, which is EOL.
-        (openscreen.override { electron_41 = electron_42; })
         google-chrome
         _1password-gui
         minisim
