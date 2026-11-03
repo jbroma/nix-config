@@ -5,12 +5,12 @@
   fetchurl,
 }:
 let
-  version = "0.39.0";
+  version = "0.41.1";
 
   sources = {
     "aarch64-darwin" = {
       url = "https://github.com/vercel-labs/agent-browser/releases/download/v${version}/agent-browser-darwin-arm64";
-      hash = "sha256-Y2/JqiaeOBm1OZmKpbh+HDlTVWwZ7rloUFN0MoNGT6o=";
+      hash = "sha256-Y7Cpe4WlS0ybKHExivdBBMKbgKvVB7U6MDFohOBihUs=";
     };
   };
 
