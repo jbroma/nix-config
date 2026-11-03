@@ -2,13 +2,13 @@
   writeShellApplication,
   python3,
   git,
-  apple-container,
+  container,
 }:
 writeShellApplication {
   name = "agent-sandbox";
   runtimeInputs = [
     git
-    apple-container
+    container
   ];
   text = ''exec ${python3}/bin/python3 ${../scripts/agent-sandbox.py} "$@"'';
 }

@@ -9,7 +9,6 @@ Usage: ./scripts/pkg-update.sh [--no-verify]
 Updates the following packages and lists packages requiring manual updates:
   - agent-browser
   - agent-device
-  - apple-container
   - cleanshot (4.x only)
   - maestro-studio
   - minisim
@@ -135,15 +134,6 @@ update_agent_browser() {
   update_simple_sri "agent-browser" "$file" "$latest" "$url"
 }
 
-update_apple_container() {
-  local file="pkgs/apple-container.nix"
-  local latest url
-
-  latest=$(gh api repos/apple/container/releases/latest --jq '.tag_name')
-  url="https://github.com/apple/container/releases/download/${latest}/container-${latest}-installer-signed.pkg"
-  update_simple_sri "apple-container" "$file" "$latest" "$url"
-}
-
 # The license covers 4.x only, and the public appcast stops at 3.x, so probe the
 # download host for the next patch or minor 4.x release until none exists.
 update_cleanshot() {
@@ -230,7 +220,6 @@ main() {
   local update_specs=(
     "agent-browser:update_agent_browser"
     "agent-device:update_agent_device"
-    "apple-container:update_apple_container"
     "cleanshot:update_cleanshot"
     "minisim:update_minisim"
     "maestro-studio:update_maestro_studio"

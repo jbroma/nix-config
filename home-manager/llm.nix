@@ -54,7 +54,7 @@ let
   pi-sandbox = pkgs.writeShellApplication {
     name = "pi-sandbox";
     runtimeInputs = [
-      pkgs.apple-container
+      pkgs.container
       pkgs.agent-sandbox
     ];
     runtimeEnv = {

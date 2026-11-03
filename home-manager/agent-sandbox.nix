@@ -34,11 +34,11 @@ in
 lib.mkIf sandbox.enable {
   home.packages = [
     pkgs.agent-sandbox
-    pkgs.apple-container
+    pkgs.container
   ];
   home.file.".config/agent-sandbox/config.json".text = builtins.toJSON {
     stateDir = "${config.home.homeDirectory}/.local/state/agent-sandbox";
-    container = "${pkgs.apple-container}/bin/container";
+    container = "${pkgs.container}/bin/container";
     context = "${../containers/agent-sandbox}";
     firewallCheck = "/run/current-system/sw/bin/agent-sandbox-check";
     inherit (sandbox) networks proxyPort;
@@ -47,16 +47,16 @@ lib.mkIf sandbox.enable {
   };
   home.file.".local/state/agent-sandbox/.keep".text = "";
   # A running apiserver keeps serving from the store path it started from, so restart it
-  # after an apple-container bump. Skipped while containers other than the image builder
+  # after a container bump. Skipped while containers other than the image builder
   # (buildkit) run, so a switch never kills a sandbox.
   home.activation.restartContainerSystem = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     running="$(/bin/ps -axo command= | /usr/bin/awk '$1 ~ /\/container-apiserver$/ { print $1; exit }')"
-    if [ -n "$running" ] && [ "$running" != "${pkgs.apple-container}/bin/container-apiserver" ]; then
+    if [ -n "$running" ] && [ "$running" != "${pkgs.container}/bin/container-apiserver" ]; then
       if "''${running%-apiserver}" list --quiet 2>/dev/null | /usr/bin/grep -qvx buildkit; then
-        warnEcho "apple-container changed, but containers are running. Stop them, then run: container system stop && container system start"
+        warnEcho "container changed, but containers are running. Stop them, then run: container system stop && container system start"
       else
-        run ${pkgs.apple-container}/bin/container system stop
-        run ${pkgs.apple-container}/bin/container system start --enable-kernel-install
+        run ${pkgs.container}/bin/container system stop
+        run ${pkgs.container}/bin/container system start --enable-kernel-install
       fi
     fi
   '';
