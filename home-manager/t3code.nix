@@ -1,4 +1,4 @@
-{ ... }:
+_:
 {
   programs.t3code = {
     enable = true;
