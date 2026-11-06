@@ -58,7 +58,6 @@ in
       [
         # xcode
         cleanshot
-        liquid-bar
         maestro-studio
         google-chrome
         _1password-gui
@@ -81,8 +80,9 @@ in
         # libs
         libyaml
       ]
-      # Work machines have these apps installed outside Nix.
+      # Personal-only apps; work installs Obsidian outside Nix.
       ++ lib.optionals (type == "personal") [
+        liquid-bar
         obsidian
       ]
       # Work-only tools and apps managed by Nix.
@@ -189,6 +189,8 @@ in
       ProcessType = "Interactive";
     };
     cleanshot-x = mkLaunchAgent "/Applications/Nix Apps/CleanShot X.app";
+  }
+  // lib.optionalAttrs (type == "personal") {
     # Run the binary directly, not through `open`, so launchd sees a crash and restarts the bar.
     liquid-bar.serviceConfig = {
       ProgramArguments = [ "${pkgs.liquid-bar}/Applications/LiquidBar.app/Contents/MacOS/liquid-bar" ];
