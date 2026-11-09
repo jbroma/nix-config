@@ -22,6 +22,8 @@ let
     "$schema" = "https://json.schemastore.org/claude-code-settings.json";
     switchModelsOnFlag = false;
     autoMemoryEnabled = false;
+    # Don't fetch claude.ai connectors; MCP servers come from mcp-servers.nix.
+    disableClaudeAiConnectors = true;
     # Built-in style: result first, no narration, short by default; full detail on request.
     outputStyle = "Concise";
     # Less on screen: focus view hides tool-call noise; no turn timer. Focus view
