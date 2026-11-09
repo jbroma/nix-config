@@ -6,12 +6,12 @@
   fetchurl,
 }:
 let
-  version = "1.4.0";
+  version = "1.5.0";
 
   sources = {
     "aarch64-darwin" = {
       url = "https://registry.npmjs.org/@voidzero-dev/vite-plus-cli-darwin-arm64/-/vite-plus-cli-darwin-arm64-${version}.tgz";
-      hash = "sha256-h8OmqE6TVswjuyHwbGUJ3/M892WTS/9mO6RAQCqO4rU=";
+      hash = "sha256-M8ADLM5oxEbxY0mRwQfX9i3vtjfF4NnhaiTunBvTOw4=";
     };
   };
 
