@@ -62,6 +62,7 @@ in
   // lib.optionalAttrs (type == "work") {
     PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+    RORK_WORKTREE_TOOLCHAIN = "mise";
   };
 
   fonts.fontconfig.enable = true;
