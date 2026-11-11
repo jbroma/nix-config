@@ -134,11 +134,21 @@ in
       "home-assistant"
       "nordvpn"
       "transmission"
+    ]
+    ++ lib.optionals (type == "work") [
+      "tailscale-app"
     ];
     onActivation = {
       autoUpdate = false;
       upgrade = false;
       cleanup = "none";
+    };
+  };
+
+  system.defaults.CustomUserPreferences = lib.mkIf (type == "work") {
+    "/Users/${user.username}/Library/Preferences/io.tailscale.ipn.macsys.plist" = {
+      SUEnableAutomaticChecks = true;
+      SUAutomaticallyUpdate = true;
     };
   };
 
