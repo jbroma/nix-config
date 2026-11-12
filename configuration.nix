@@ -136,6 +136,7 @@ in
       "transmission"
     ]
     ++ lib.optionals (type == "work") [
+      "grok-bot"
       "tailscale-app"
     ];
     onActivation = {
