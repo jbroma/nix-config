@@ -136,6 +136,7 @@ in
       "transmission"
     ]
     ++ lib.optionals (type == "work") [
+      "bb"
       "grok-bot"
       "tailscale-app"
     ];
