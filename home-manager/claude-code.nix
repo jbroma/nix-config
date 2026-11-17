@@ -41,11 +41,21 @@ let
       ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-5-5";
       ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-5-5";
       ANTHROPIC_DEFAULT_FABLE_MODEL = "claude-fable-5-1";
+      # Impeccable's design hooks are off by default. A frontend project turns them
+      # on with IMPECCABLE_HOOK_DISABLED = "0" in its .claude/settings.local.json env.
+      IMPECCABLE_HOOK_DISABLED = "1";
+      IMPECCABLE_NO_TELEMETRY = "1";
     };
     attribution = {
       commit = "";
       pr = "";
     };
+    # Plugins. settings.json deep-merges, so plugins added through /plugin survive.
+    extraKnownMarketplaces.impeccable.source = {
+      source = "github";
+      repo = "pbakaus/impeccable";
+    };
+    enabledPlugins."impeccable@impeccable" = true;
     # Permission rules from ai submodule.
     inherit permissions;
     autoMode.classifyAllShell = true;

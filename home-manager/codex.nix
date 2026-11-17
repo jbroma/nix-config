@@ -27,6 +27,8 @@ let
     # Built-in web search is off; web access goes through the MCP servers (ai-sauce CORE.md "Web Access").
     web_search = "disabled";
     file_opener = "cursor";
+    # Impeccable (the skill linked below) sends no usage pings.
+    shell_environment_policy.set.IMPECCABLE_NO_TELEMETRY = "1";
 
     features = {
       network_proxy = {
@@ -66,6 +68,17 @@ in
   home.file.".codex/agents".source = "${ai}/agents/codex";
   home.file.".codex/skills".source = "${ai}/skills";
   home.file.".codex/rules/default.rules".source = "${ai}/rules/codex.rules";
+
+  # Impeccable design skill, the Codex build of the plugin Claude Code installs
+  # from its marketplace. Codex reads user skills from ~/.agents/skills.
+  home.file.".agents/skills/impeccable".source =
+    pkgs.fetchFromGitHub {
+      owner = "pbakaus";
+      repo = "impeccable";
+      tag = "skill-v4.9.1";
+      hash = "sha256-MTQYnggsUG9J6RF8f3uk2VuYtGbjDsGJSgscBAgoxXk=";
+    }
+    + "/.agents/skills/impeccable";
 
   # Same poteto-mode hook as Claude Code. Codex trusts a hook by the hash of its
   # definition, so the command is a stable path and not the store path, which
